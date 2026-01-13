@@ -21,13 +21,10 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -111,10 +108,10 @@ public class ModuleIOSpark implements ModuleIO {
         .uvwAverageDepth(2);
     driveConfig
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pidf(
+        .feedbackSensor(com.revrobotics.spark.FeedbackSensor.kPrimaryEncoder)
+        .pid(
             driveKp.get(), 0.0,
-            driveKd.get(), 0.0);
+            driveKd.get());
     driveConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
@@ -129,7 +126,7 @@ public class ModuleIOSpark implements ModuleIO {
         5,
         () ->
             driveSpark.configure(
-                driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+                driveConfig, com.revrobotics.ResetMode.kResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters));
     tryUntilOk(driveSpark, 5, () -> driveEncoder.setPosition(0.0));
 
     // Configure turn motor
@@ -147,10 +144,10 @@ public class ModuleIOSpark implements ModuleIO {
         .averageDepth(2);
     turnConfig
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .feedbackSensor(com.revrobotics.spark.FeedbackSensor.kAbsoluteEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .pidf(turnKp.get(), 0.0, turnKd.get(), 0.0);
+        .pid(turnKp.get(), 0.0, turnKd.get());
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
@@ -165,7 +162,7 @@ public class ModuleIOSpark implements ModuleIO {
         5,
         () ->
             turnSpark.configure(
-                turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+                turnConfig, com.revrobotics.ResetMode.kResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters));
 
     // Create odometry queues
     timestampQueue = SparkOdometryThread.getInstance().makeTimestampQueue();
@@ -230,7 +227,7 @@ public class ModuleIOSpark implements ModuleIO {
   public void setDriveVelocity(double velocityRadPerSec) {
     double ffVolts =
         driveKs.get() * Math.signum(velocityRadPerSec) + driveKv.get() * velocityRadPerSec;
-    driveController.setReference(
+    driveController.setSetpoint(
         velocityRadPerSec,
         ControlType.kVelocity,
         ClosedLoopSlot.kSlot0,
@@ -243,6 +240,6 @@ public class ModuleIOSpark implements ModuleIO {
     double setpoint =
         MathUtil.inputModulus(
             rotation.plus(zeroRotation).getRadians(), turnPIDMinInput, turnPIDMaxInput);
-    turnController.setReference(setpoint, ControlType.kPosition);
+    turnController.setSetpoint(setpoint, ControlType.kPosition);
   }
 }
