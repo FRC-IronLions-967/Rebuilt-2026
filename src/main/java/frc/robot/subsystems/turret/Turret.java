@@ -17,7 +17,7 @@ public class Turret extends SubsystemBase {
     SHOOTING
   }
 
-  private enum CurrentState {
+  public enum CurrentState {
     IDLE,
     SHOOTING,
     RESETTING
@@ -27,7 +27,7 @@ public class Turret extends SubsystemBase {
   private CurrentState currentState;
 
   private boolean hitMax;
-  private Rotation2d targetYawRot;
+  private double targetYawRot;
   private double targetDistance;
 
   /** Creates a new Turret. */
@@ -77,16 +77,20 @@ public class Turret extends SubsystemBase {
         break;
       case SHOOTING:
         io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
-        io.setTurretAngle(TurretConstants.turretAngleController.calculate(targetYawRot.getRadians(), 0));
+        io.setTurretAngle(TurretConstants.turretAngleController.calculate(targetYawRot, 0));
         io.setHoodAngle(getHoodAngleBasedOnDistance(targetDistance));
         break;
       default:
+        io.setFlyWheelSpeed(0.0);
+        io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
+        io.setTurretAngle(inputs.turretAngle);
         break;
     }
   }
 
   /**
    * Sets the turret's state
+   * USE ADDITIONAL PARAMETERS IF {@code wantedState == WantedState.SHOOTING}!
    * @param wantedState what state to set to.
   */
   public void setWantedState(WantedState wantedState) {
@@ -94,11 +98,13 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   * Should be updated periodically if we are shooting
+   * Sets the turret's state
+   * @param wantedState what state to set to.
    * @param turretRotationSetpoint yaw of the target
    * @param hoodDistanceSetpoint distance to plug into a map
    */
-  public void updateTurretTarget (Rotation2d turretRotationSetpoint, double hoodDistanceSetpoint) {
+  public void setWantedState(WantedState wantedState, double turretRotationSetpoint, double hoodDistanceSetpoint) {
+    this.wantedState = wantedState;
     this.targetYawRot = turretRotationSetpoint;
     this.targetDistance = hoodDistanceSetpoint;
   }
@@ -111,5 +117,9 @@ public class Turret extends SubsystemBase {
       return Math.PI*3/8;
     }
     return Math.PI/4;
+  }
+
+  public CurrentState getCurrentState() {
+    return currentState;
   }
 }

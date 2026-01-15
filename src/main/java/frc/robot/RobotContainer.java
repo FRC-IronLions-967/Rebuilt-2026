@@ -24,12 +24,17 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretIO;
+import frc.robot.subsystems.turret.TurretIOSim;
+import frc.robot.subsystems.turret.TurretIOSpark;
 import frc.robot.subsystems.vision.AprilTagIO;
 import frc.robot.subsystems.vision.AprilTagIOPhotonVision;
 import frc.robot.subsystems.vision.AprilTagIOSim;
@@ -51,6 +56,8 @@ public class RobotContainer {
   private final Drive drive;
   private final AprilTagVision aprilTagVision;
   private final ObjectDetectionVision objectDetectionVision;
+  private final Turret turret;
+  private final Superstructure superstructure;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -80,6 +87,7 @@ public class RobotContainer {
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3),
                 aprilTagVision::getPoseObs);
+        turret = new Turret(new TurretIOSpark());
         break;
 
       case SIM:
@@ -100,6 +108,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 aprilTagVision::getPoseObs);
         aprilTagVision.setPoseSupplierIfSim(drive::getPose);
+        turret = new Turret(new TurretIOSim());
         break;
 
       default:
@@ -114,8 +123,11 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 aprilTagVision::getPoseObs);
+        turret = new Turret(new TurretIO() {});
         break;
     }
+
+    superstructure = new Superstructure(drive, aprilTagVision, objectDetectionVision, turret);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
