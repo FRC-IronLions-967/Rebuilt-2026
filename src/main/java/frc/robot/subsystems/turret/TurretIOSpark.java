@@ -60,17 +60,11 @@ public class TurretIOSpark implements TurretIO{
         inputs.flywheelSpeed = turret.getEncoder().getVelocity();
         inputs.hoodAngle = hood.getAbsoluteEncoder().getPosition();
         inputs.turretAngle = turret.getEncoder().getPosition();
+        inputs.turretSetAngle = turretSetAngle;
 
         flywheelController.setSetpoint(flywheelSetSpeed, ControlType.kVelocity);
         hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
-        //HANDLE TURRET ROTATION HERE
-        if (turret.getEncoder().getPosition() < TurretConstants.turretMaxAngle && turretSetAngle > TurretConstants.turretMaxAngle) {
-            turretSetAngle -= Math.PI;
-        } else if (turret.getEncoder().getPosition() > TurretConstants.turretMinAngle && turretSetAngle < TurretConstants.turretMinAngle) {
-            turretSetAngle += Math.PI;
-        } else {
-            turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
-        }
+        turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }
 
     @Override

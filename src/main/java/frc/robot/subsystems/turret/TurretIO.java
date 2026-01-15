@@ -13,6 +13,7 @@ public interface TurretIO {
         double flywheelSpeed;
         double hoodAngle;
         double turretAngle;
+        double turretSetAngle;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {}

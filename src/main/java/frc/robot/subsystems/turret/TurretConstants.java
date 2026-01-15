@@ -6,6 +6,8 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
+import edu.wpi.first.math.controller.PIDController;
+
 /** Add your docs here. */
 public class TurretConstants {
     public static final LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("flywheelP", 1.0);
@@ -26,4 +28,15 @@ public class TurretConstants {
 
     public static final double turretMaxAngle = 1.5 * Math.PI;
     public static final double turretMinAngle = -1.5 * Math.PI;
+
+    public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 6784);
+    public static final LoggedNetworkNumber flywheelShootingSpeed = new LoggedNetworkNumber("flywheelShootingSpeed", 6784);
+
+    public static final LoggedNetworkNumber hoodIDLEPosition = new LoggedNetworkNumber("hoodIDLEPosition", hoodMaxAngle);
+
+    public static final PIDController turretAngleController =
+        new PIDController(
+            new LoggedNetworkNumber("turretControllerP", 1.0).get(),
+            0.0,
+            new LoggedNetworkNumber("turretControllerD", 0.0).get());
 }
