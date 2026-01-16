@@ -9,6 +9,9 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /** Add your docs here. */
@@ -33,4 +36,6 @@ public class VisionConstants {
       new LoggedNetworkNumber("Tuning/Vision/maxAmb", 0.3);
   public static final LoggedNetworkNumber maxZError =
       new LoggedNetworkNumber("Tuning/Vision/maxZError", 0.75);
+
+    public static final int hubAprilTag = DriverStation.getAlliance().get() == Alliance.Red ? 10 : 26;
 }

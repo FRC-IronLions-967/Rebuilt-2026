@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 
 /** Add your docs here. */
@@ -23,9 +22,7 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
   public AprilTagIOPhotonVision(String cameraName, Transform3d robotToCamera) {
     camera = new PhotonCamera(cameraName);
     this.robotToCamera = robotToCamera;
-    poseEstimator =
-        new PhotonPoseEstimator(
-            VisionConstants.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCamera);
+    poseEstimator = new PhotonPoseEstimator(VisionConstants.kTagLayout, robotToCamera);
   }
 
   @Override

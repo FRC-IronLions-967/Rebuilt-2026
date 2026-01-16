@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,6 +12,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.subsystems.vision.ObjectDetectionVision;
+import frc.robot.subsystems.vision.VisionConstants;
 
 public class Superstructure extends SubsystemBase {
   /** Creates a new Superstructure. */
@@ -23,6 +25,7 @@ public class Superstructure extends SubsystemBase {
   public enum CurrentState {
     IDLE,
     SHOOTING,
+    PASSING,
     RESETTINGTURRET,
     EJECTING
   }
@@ -35,6 +38,9 @@ public class Superstructure extends SubsystemBase {
   private ObjectDetectionVision objectDetectionVision;
   private Turret turret;
 
+  private Translation2d passingTarget;
+  private double passingTurretRot;
+
   public Superstructure(Drive drive, AprilTagVision aprilTagVision, ObjectDetectionVision objectDetectionVision, Turret turret) {
     this.drive = drive;
     this.aprilTagVision = aprilTagVision;
@@ -46,6 +52,7 @@ public class Superstructure extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     currentState = updateState(wantedState);
+    applyState();
   }
 
   private CurrentState updateState(WantedState wantedState) {
@@ -55,7 +62,7 @@ public class Superstructure extends SubsystemBase {
       case SHOOTING:
         if (turret.getCurrentState() == Turret.CurrentState.RESETTING) {
           yield CurrentState.RESETTINGTURRET;
-        }
+        } else if (drive.getPose().getX() > 4.5) yield CurrentState.PASSING;
         yield CurrentState.SHOOTING;
       case EJECTING:
         yield CurrentState.EJECTING;
@@ -69,9 +76,15 @@ public class Superstructure extends SubsystemBase {
         //intake->IDLE
         break;
       case SHOOTING:
-      //APRILTAG IDS still need set and camera index
-        turret.setWantedState(Turret.WantedState.SHOOTING, aprilTagVision.getTargetInfo(0, 0).targetRot().getX(), aprilTagVision.getTargetInfo(0, 0).distanceToTarget());
+      // set camera index
+        turret.setWantedState(Turret.WantedState.SHOOTING, aprilTagVision.getTargetInfo(0, VisionConstants.hubAprilTag).targetRot().getX(), aprilTagVision.getTargetInfo(0, VisionConstants.hubAprilTag).distanceToTarget());
         //intake->intaking
+        break;
+      case PASSING:
+        passingTarget = drive.getPose().getX() > 4 ? new Translation2d(1, 7) : new Translation2d(1, 1);
+        passingTurretRot = passingTarget.minus(drive.getPose().getTranslation()).getAngle().minus(drive.getRotation()).getRadians();
+        turret.setWantedState(Turret.WantedState.SHOOTING, passingTurretRot, drive.getPose().getTranslation().getDistance(passingTarget));
+        //intake-intaking
         break;
       case RESETTINGTURRET:
         turret.setWantedState(Turret.WantedState.SHOOTING);

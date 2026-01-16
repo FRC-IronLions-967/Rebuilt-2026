@@ -181,25 +181,6 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-
-    controller
-        .leftTrigger()
-        .onTrue(
-            DriveCommands.joystickDriveFacingTarget(
-                drive,
-                () -> 0.5,
-                () -> 0.0,
-                () ->
-                    objectDetectionVision.getObjectX(VisionConstants.ObjectDetectionCameraIndex)));
-    controller.rightTrigger().onTrue(DriveCommands.goToPoseWithPP(drive));
-    controller
-        .rightTrigger()
-        .onFalse(
-            DriveCommands.joystickDrive(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> -controller.getRightX())); // used to be able to control the robot
     controller
         .start()
         .onTrue(
@@ -207,6 +188,10 @@ public class RobotContainer {
                 () -> {
                   resetOdometryWithVision();
                 }));
+
+    controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
+    controller.rightBumper().onTrue(superstructure.setWantedStateCommand(Superstructure.WantedState.IDLE));
+    controller.x().whileTrue(superstructure.setWantedStateCommand(Superstructure.WantedState.EJECTING));
   }
 
   /**

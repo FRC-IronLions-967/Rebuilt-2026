@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.turret;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -14,12 +13,14 @@ public class Turret extends SubsystemBase {
 
   public enum WantedState {
     IDLE,
-    SHOOTING
+    SHOOTING,
+    PASSING
   }
 
   public enum CurrentState {
     IDLE,
     SHOOTING,
+    PASSING,
     RESETTING
   }
 
@@ -56,6 +57,13 @@ public class Turret extends SubsystemBase {
         } else {
           yield CurrentState.SHOOTING;
         }
+      case PASSING:
+        if ((currentState == CurrentState.RESETTING && ((hitMax && inputs.turretAngle > 0) || (!hitMax && inputs.turretAngle < 0))) 
+        || (inputs.turretSetAngle > TurretConstants.turretMaxAngle || inputs.turretSetAngle < TurretConstants.turretMinAngle)) {
+          yield CurrentState.RESETTING;
+        } else {
+          yield CurrentState.PASSING;
+        }
     };
   }
 
@@ -80,6 +88,11 @@ public class Turret extends SubsystemBase {
         io.setTurretAngle(TurretConstants.turretAngleController.calculate(targetYawRot, 0));
         io.setHoodAngle(getHoodAngleBasedOnDistance(targetDistance));
         break;
+      case PASSING:
+        io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
+        io.setTurretAngle(targetYawRot);
+        io.setHoodAngle(targetDistance);
+        break;
       default:
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
@@ -100,7 +113,7 @@ public class Turret extends SubsystemBase {
   /**
    * Sets the turret's state
    * @param wantedState what state to set to.
-   * @param turretRotationSetpoint yaw of the target
+   * @param turretRotationSetpoint yaw of the target if shooting or turret setpoint if passing
    * @param hoodDistanceSetpoint distance to plug into a map
    */
   public void setWantedState(WantedState wantedState, double turretRotationSetpoint, double hoodDistanceSetpoint) {
