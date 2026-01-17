@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,10 +37,7 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
           targetInfos.clear();
           for (var target : result.targets) {
             targetInfos.add(
-                new TargetInfo(
-                    target.fiducialId,
-                    new Rotation3d(target.getYaw(), target.getPitch(), target.getSkew()),
-                    target.getBestCameraToTarget().getTranslation().getNorm()));
+                new TargetInfo(target.getFiducialId(), target.getYaw(), target.getPitch(), target.getBestCameraToTarget().getTranslation().getNorm()));
           }
           // update pose
           if (VisionConstants.kTagLayout

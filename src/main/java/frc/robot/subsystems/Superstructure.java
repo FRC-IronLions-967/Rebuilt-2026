@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.AprilTagVision;
-import frc.robot.subsystems.vision.ObjectDetectionVision;
 import frc.robot.subsystems.vision.VisionConstants;
 
 public class Superstructure extends SubsystemBase {
@@ -35,16 +34,14 @@ public class Superstructure extends SubsystemBase {
 
   private Drive drive;
   private AprilTagVision aprilTagVision;
-  private ObjectDetectionVision objectDetectionVision;
   private Turret turret;
 
   private Translation2d passingTarget;
   private double passingTurretRot;
 
-  public Superstructure(Drive drive, AprilTagVision aprilTagVision, ObjectDetectionVision objectDetectionVision, Turret turret) {
+  public Superstructure(Drive drive, AprilTagVision aprilTagVision, Turret turret) {
     this.drive = drive;
     this.aprilTagVision = aprilTagVision;
-    this.objectDetectionVision = objectDetectionVision;
     this.turret = turret;
   }
 
@@ -76,8 +73,7 @@ public class Superstructure extends SubsystemBase {
         //intake->IDLE
         break;
       case SHOOTING:
-      // set camera index
-        turret.setWantedState(Turret.WantedState.SHOOTING, aprilTagVision.getTargetInfo(0, VisionConstants.hubAprilTag).targetRot().getX(), aprilTagVision.getTargetInfo(0, VisionConstants.hubAprilTag).distanceToTarget());
+        turret.setWantedState(Turret.WantedState.SHOOTING, aprilTagVision.getTargetInfo(VisionConstants.turretCameraIndex, VisionConstants.hubAprilTag).targetYaw(), aprilTagVision.getTargetInfo(VisionConstants.turretCameraIndex, VisionConstants.hubAprilTag).distanceToTarget());
         //intake->intaking
         break;
       case PASSING:

@@ -6,7 +6,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
+
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -20,7 +20,7 @@ public interface AprilTagIO {
     public PoseObservation[] poseObservations = new PoseObservation[0];
   }
 
-  public static record TargetInfo(int tagID, Rotation3d targetRot, double distanceToTarget) {}
+  public static record TargetInfo(int tagID, double targetYaw, double targetPitch, double distanceToTarget) {}
 
   public static record PoseObservation(
       double ambiguity, Pose3d pose, boolean hasTags, double timestamp) {}

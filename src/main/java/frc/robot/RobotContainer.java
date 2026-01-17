@@ -39,9 +39,6 @@ import frc.robot.subsystems.vision.AprilTagIO;
 import frc.robot.subsystems.vision.AprilTagIOPhotonVision;
 import frc.robot.subsystems.vision.AprilTagIOSim;
 import frc.robot.subsystems.vision.AprilTagVision;
-import frc.robot.subsystems.vision.ObjectDetectionIO;
-import frc.robot.subsystems.vision.ObjectDetectionIOPhotonVision;
-import frc.robot.subsystems.vision.ObjectDetectionVision;
 import frc.robot.subsystems.vision.VisionConstants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -55,7 +52,6 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final AprilTagVision aprilTagVision;
-  private final ObjectDetectionVision objectDetectionVision;
   private final Turret turret;
   private final Superstructure superstructure;
 
@@ -73,12 +69,7 @@ public class RobotContainer {
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagIOPhotonVision(
-                    VisionConstants.AprilTagCameraName, VisionConstants.AprilTagCameraTransform));
-        objectDetectionVision =
-            new ObjectDetectionVision(
-                new ObjectDetectionIOPhotonVision(
-                    VisionConstants.ObjectDetectionCameraName,
-                    VisionConstants.ObjectDetectionCameraTransform));
+                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform));
         drive =
             new Drive(
                 new GyroIONavX(),
@@ -95,10 +86,7 @@ public class RobotContainer {
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagIOSim(
-                    VisionConstants.AprilTagCameraName, VisionConstants.AprilTagCameraTransform));
-        objectDetectionVision =
-            new ObjectDetectionVision(
-                new ObjectDetectionIO() {}); // No object detection sim because complex💀
+                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform));
         drive =
             new Drive(
                 new GyroIO() {},
@@ -114,7 +102,6 @@ public class RobotContainer {
       default:
         // Replayed robot, disable IO implementations
         aprilTagVision = new AprilTagVision(new AprilTagIO() {});
-        objectDetectionVision = new ObjectDetectionVision(new ObjectDetectionIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
@@ -127,7 +114,7 @@ public class RobotContainer {
         break;
     }
 
-    superstructure = new Superstructure(drive, aprilTagVision, objectDetectionVision, turret);
+    superstructure = new Superstructure(drive, aprilTagVision, turret);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

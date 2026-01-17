@@ -17,16 +17,20 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 /** Add your docs here. */
 public class VisionConstants {
   // April Tag Cmaera 1
-  public static final String AprilTagCameraName = "April_Tag";
-  public static final Transform3d AprilTagCameraTransform =
+  public static final String AprilTagCamera1Name = "April_Tag_1";
+  public static final Transform3d AprilTagCamera1Transform =
       new Transform3d(
           Units.inchesToMeters(6.376), 0, Units.inchesToMeters(8.85), new Rotation3d(0, 0, 0));
-  public static final int AprilTagCameraIndex = 0;
+  public static final int AprilTagCamera1Index = 0;
 
-  // Object Detection Camera
-  public static final String ObjectDetectionCameraName = "ObjectDetectionCamera";
-  public static final Transform3d ObjectDetectionCameraTransform = new Transform3d();
-  public static final int ObjectDetectionCameraIndex = 1;
+  public static final String AprilTagCamera2Name = "April_Tag_2";
+  public static final Transform3d AprilTagCamera2Transform =
+      new Transform3d(
+          Units.inchesToMeters(6.376), 0, Units.inchesToMeters(8.85), new Rotation3d(0, 0, 0));
+  public static final int AprilTagCamera2Index = 1;
+
+    public static final String turretCameraName ="Turret";
+    public static final int turretCameraIndex = 2;
 
   public static final AprilTagFieldLayout kTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
