@@ -29,9 +29,6 @@ public class VisionConstants {
           Units.inchesToMeters(6.376), 0, Units.inchesToMeters(8.85), new Rotation3d(0, 0, 0));
   public static final int AprilTagCamera2Index = 1;
 
-    public static final String turretCameraName ="Turret";
-    public static final int turretCameraIndex = 2;
-
   public static final AprilTagFieldLayout kTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 

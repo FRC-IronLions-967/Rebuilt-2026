@@ -69,8 +69,7 @@ public class RobotContainer {
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagIOPhotonVision(
-                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera2Transform),
-                    new AprilTagIOPhotonVision(VisionConstants.turretCameraName, null));
+                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera2Transform));
         drive =
             new Drive(
                 new GyroIONavX(),
@@ -79,7 +78,7 @@ public class RobotContainer {
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3),
                 aprilTagVision::getPoseObs);
-        turret = new Turret(new TurretIOSpark());
+        turret = new Turret(new TurretIOSpark(), drive::getPose);
         break;
 
       case SIM:
@@ -87,8 +86,7 @@ public class RobotContainer {
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagIOSim(
-                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera2Transform),
-                    new AprilTagIOSim(VisionConstants.turretCameraName, null));
+                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera2Transform));
         drive =
             new Drive(
                 new GyroIO() {},
@@ -98,7 +96,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 aprilTagVision::getPoseObs);
         aprilTagVision.setPoseSupplierIfSim(drive::getPose);
-        turret = new Turret(new TurretIOSim());
+        turret = new Turret(new TurretIOSim(), drive::getPose);
         break;
 
       default:
@@ -112,7 +110,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 aprilTagVision::getPoseObs);
-        turret = new Turret(new TurretIO() {});
+        turret = new Turret(new TurretIO() {}, drive::getPose);
         break;
     }
 

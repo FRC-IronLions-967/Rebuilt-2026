@@ -5,8 +5,16 @@
 package frc.robot.subsystems.turret;
 
 /** Add your docs here. */
-public class TurretIOSim extends TurretIOSpark{
-    public TurretIOSim() {
+public class TurretIOSim extends TurretIOSpark {
+    public TurretIOSim () {
+        super();
+    }
 
+    @Override
+    public void updateInputs(TurretIOInputs inputs) {
+        inputs.flywheelSpeed = flywheelSetSpeed;
+        inputs.hoodAngle = hoodSetAngle;
+        inputs.turretAngle = turretSetAngle;
+        inputs.turretSetAngle = turretSetAngle;
     }
 }

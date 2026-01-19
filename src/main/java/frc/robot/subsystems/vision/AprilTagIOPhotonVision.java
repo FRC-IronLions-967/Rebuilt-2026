@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import java.util.LinkedList;
 import java.util.List;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
 
 /** Add your docs here. */

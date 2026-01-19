@@ -4,6 +4,14 @@
 
 package frc.robot.subsystems.turret;
 
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -11,16 +19,16 @@ public class Turret extends SubsystemBase {
   private TurretIO io;
   private TurretIOInputsAutoLogged inputs;
 
+  private Supplier<Pose2d> poseSupplier;
+
   public enum WantedState {
     IDLE,
     SHOOTING,
-    PASSING
   }
 
   public enum CurrentState {
     IDLE,
     SHOOTING,
-    PASSING,
     RESETTING
   }
 
@@ -28,20 +36,21 @@ public class Turret extends SubsystemBase {
   private CurrentState currentState = CurrentState.IDLE;
 
   private boolean hitMax;
-  private double targetYawRot;
-  private double targetDistance;
+
+  private PIDController turretController = new PIDController(TurretConstants.turretControllerP.get(), 0, TurretConstants.turretControllerD.get());
 
   /** Creates a new Turret. */
-  public Turret(TurretIO io) {
+  public Turret(TurretIO io, Supplier<Pose2d> poseSupplier) {
     this.io = io;
+    this.poseSupplier = poseSupplier;
     inputs = new TurretIOInputsAutoLogged();
-    TurretConstants.turretAngleController.enableContinuousInput(TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
+    Logger.processInputs("Turret", inputs);
     currentState = updateState();
     applyState();
   }
@@ -56,13 +65,6 @@ public class Turret extends SubsystemBase {
           yield CurrentState.RESETTING;
         } else {
           yield CurrentState.SHOOTING;
-        }
-      case PASSING:
-        if ((currentState == CurrentState.RESETTING && ((hitMax && inputs.turretAngle > 0) || (!hitMax && inputs.turretAngle < 0))) 
-        || (inputs.turretSetAngle > TurretConstants.turretMaxAngle || inputs.turretSetAngle < TurretConstants.turretMinAngle)) {
-          yield CurrentState.RESETTING;
-        } else {
-          yield CurrentState.PASSING;
         }
     };
   }
@@ -84,14 +86,19 @@ public class Turret extends SubsystemBase {
         }
         break;
       case SHOOTING:
-        io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
-        io.setTurretAngle(TurretConstants.turretAngleController.calculate(targetYawRot, 0));
-        io.setHoodAngle(getHoodAngleBasedOnDistance(targetDistance));
-        break;
-      case PASSING:
-        io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-        io.setTurretAngle(targetYawRot);
-        io.setHoodAngle(targetDistance);
+        if (poseSupplier.get().getX() < 4.5) {
+          io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
+          io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.hub));
+          io.setTurretAngle(turretController.calculate(getFieldOrientedTurretRotation2d(inputs.turretAngle).getRadians(), getRobotToTargetAngle(TurretConstants.hub).getRadians()));
+        } else if (poseSupplier.get().getY() < 4) {
+          io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
+          io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.right));
+          io.setTurretAngle(turretController.calculate(getFieldOrientedTurretRotation2d(inputs.turretAngle).getRadians(), getRobotToTargetAngle(TurretConstants.right).getRadians()));
+        } else {
+          io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
+          io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.left));
+          io.setTurretAngle(turretController.calculate(getFieldOrientedTurretRotation2d(inputs.turretAngle).getRadians(), getRobotToTargetAngle(TurretConstants.left).getRadians()));
+        }
         break;
       default:
         io.setFlyWheelSpeed(0.0);
@@ -103,33 +110,26 @@ public class Turret extends SubsystemBase {
 
   /**
    * Sets the turret's state
-   * USE ADDITIONAL PARAMETERS IF {@code wantedState == WantedState.SHOOTING}!
    * @param wantedState what state to set to.
   */
   public void setWantedState(WantedState wantedState) {
     this.wantedState = wantedState;
   }
 
-  /**
-   * Sets the turret's state
-   * @param wantedState what state to set to.
-   * @param turretRotationSetpoint yaw of the target if shooting or turret setpoint if passing
-   * @param hoodDistanceSetpoint distance to plug into a map
-   */
-  public void setWantedState(WantedState wantedState, double turretRotationSetpoint, double hoodDistanceSetpoint) {
-    this.wantedState = wantedState;
-    this.targetYawRot = turretRotationSetpoint;
-    this.targetDistance = hoodDistanceSetpoint;
+  //Make table
+  private double getHoodAngleBasedOnDistance(Translation2d target) {
+    double distance = poseSupplier.get().getTranslation().getDistance(target);
+    //do something with distance
+    return Math.PI;
   }
 
-  //Make table
-  private double getHoodAngleBasedOnDistance(double distance) {
-    if (distance < 1) {
-      return Math.PI/2;
-    } else if (distance >= 1 && distance < 2) {
-      return Math.PI*3/8;
-    }
-    return Math.PI/4;
+  private Rotation2d getRobotToTargetAngle(Translation2d target) {
+    Translation2d robotToTargetTranslation = target.minus(poseSupplier.get().getTranslation());
+    return Rotation2d.fromRadians(Math.atan(robotToTargetTranslation.getY()/robotToTargetTranslation.getX()));
+  }
+
+  private Rotation2d getFieldOrientedTurretRotation2d(double robotRelativeAngle) {
+    return Rotation2d.fromRadians(robotRelativeAngle).plus(poseSupplier.get().getRotation());
   }
 
   public CurrentState getCurrentState() {
