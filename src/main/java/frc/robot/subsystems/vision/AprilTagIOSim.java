@@ -30,7 +30,7 @@ public class AprilTagIOSim extends AprilTagIOPhotonVision {
     // Add sim camera
     var cameraProperties = new SimCameraProperties();
     cameraSim = new PhotonCameraSim(camera, cameraProperties, VisionConstants.kTagLayout);
-    visionSim.addCamera(cameraSim, robotToCamera);
+    visionSim.addCamera(cameraSim, robotToCamera != null ? robotToCamera : new Transform3d());
   }
 
   @Override

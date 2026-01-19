@@ -15,14 +15,12 @@ import org.photonvision.PhotonUtils;
 public class AprilTagIOPhotonVision implements AprilTagIO {
 
   protected PhotonCamera camera;
-  protected Transform3d robotToCamera;
-  protected PhotonPoseEstimator poseEstimator;
+  protected Transform3d robotToCamera = null;
 
   public AprilTagIOPhotonVision(String cameraName, Transform3d robotToCamera) {
     camera = new PhotonCamera(cameraName);
     this.robotToCamera = robotToCamera;
-    poseEstimator = new PhotonPoseEstimator(VisionConstants.kTagLayout, robotToCamera);
-  }
+  } 
 
   @Override
   public void updateInputs(AprilTagIOInputs inputs) {
@@ -42,7 +40,7 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
           // update pose
           if (VisionConstants.kTagLayout
               .getTagPose(result.getBestTarget().getFiducialId())
-              .isPresent()) {
+              .isPresent() && robotToCamera != null) {
             poseObservations.add(
                 new PoseObservation(
                     result.getBestTarget().getPoseAmbiguity(),

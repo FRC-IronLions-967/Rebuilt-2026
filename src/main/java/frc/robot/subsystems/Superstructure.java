@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -29,8 +31,8 @@ public class Superstructure extends SubsystemBase {
     EJECTING
   }
 
-  private WantedState wantedState;
-  private CurrentState currentState;
+  private WantedState wantedState = WantedState.IDLE;
+  private CurrentState currentState = CurrentState.IDLE;
 
   private Drive drive;
   private AprilTagVision aprilTagVision;

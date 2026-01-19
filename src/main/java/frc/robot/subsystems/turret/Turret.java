@@ -24,8 +24,8 @@ public class Turret extends SubsystemBase {
     RESETTING
   }
 
-  private WantedState wantedState;
-  private CurrentState currentState;
+  private WantedState wantedState = WantedState.IDLE;
+  private CurrentState currentState = CurrentState.IDLE;
 
   private boolean hitMax;
   private double targetYawRot;

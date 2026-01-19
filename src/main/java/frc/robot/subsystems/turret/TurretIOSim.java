@@ -5,4 +5,8 @@
 package frc.robot.subsystems.turret;
 
 /** Add your docs here. */
-public class TurretIOSim extends TurretIOSpark{}
+public class TurretIOSim extends TurretIOSpark{
+    public TurretIOSim() {
+
+    }
+}

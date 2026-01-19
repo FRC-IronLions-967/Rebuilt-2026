@@ -69,7 +69,8 @@ public class RobotContainer {
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagIOPhotonVision(
-                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform));
+                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera2Transform),
+                    new AprilTagIOPhotonVision(VisionConstants.turretCameraName, null));
         drive =
             new Drive(
                 new GyroIONavX(),
@@ -86,7 +87,8 @@ public class RobotContainer {
         aprilTagVision =
             new AprilTagVision(
                 new AprilTagIOSim(
-                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform));
+                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera2Transform),
+                    new AprilTagIOSim(VisionConstants.turretCameraName, null));
         drive =
             new Drive(
                 new GyroIO() {},
@@ -101,7 +103,7 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        aprilTagVision = new AprilTagVision(new AprilTagIO() {});
+        aprilTagVision = new AprilTagVision(new AprilTagIO() {}, new AprilTagIO() {}, new AprilTagIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
