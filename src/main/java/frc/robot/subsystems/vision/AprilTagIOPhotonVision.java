@@ -4,11 +4,14 @@
 
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Transform3d;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 
 /** Add your docs here. */
 public class AprilTagIOPhotonVision implements AprilTagIO {
@@ -37,9 +40,21 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
                 new TargetInfo(target.getFiducialId(), target.getYaw(), target.getPitch(), target.getBestCameraToTarget().getTranslation().getNorm()));
           }
           // update pose
-          if (VisionConstants.kTagLayout
+          if (result.multitagResult.isPresent()) {
+            inputs.poseType = PoseTypes.MULTI;
+
+            var multitagResult = result.getMultiTagResult().get();
+
+            Transform3d fieldToCamera = multitagResult.estimatedPose.best;
+            Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
+            Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
+
+            poseObservations.add(new PoseObservation(multitagResult.estimatedPose.ambiguity, robotPose, result.getTimestampSeconds()));
+          } else {
+            inputs.poseType = PoseTypes.SINGLE;
+            if (VisionConstants.kTagLayout
               .getTagPose(result.getBestTarget().getFiducialId())
-              .isPresent() && robotToCamera != null) {
+              .isPresent()) {
             poseObservations.add(
                 new PoseObservation(
                     result.getBestTarget().getPoseAmbiguity(),
@@ -49,10 +64,9 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
                             .getTagPose(result.getBestTarget().getFiducialId())
                             .get(),
                         robotToCamera),
-                    inputs.hasTarget,
                     result.getTimestampSeconds()));
+            }
           }
-        }
         inputs.targetInfo = new TargetInfo[targetInfos.size()];
         for (int i = 0; i < targetInfos.size(); i++) {
           inputs.targetInfo[i] = targetInfos.get(i);
@@ -61,9 +75,10 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
         for (int i = 0; i < poseObservations.size(); i++) {
           inputs.poseObservations[i] = poseObservations.get(i);
         }
-      }
-    } else {
-      inputs.hasTarget = false;
+        } else {
+          inputs.hasTarget = false;
+        }
+      } 
     }
   }
 }
