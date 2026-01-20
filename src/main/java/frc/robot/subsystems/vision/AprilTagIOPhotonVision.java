@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -50,21 +49,18 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
             Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
             poseObservations.add(new PoseObservation(multitagResult.estimatedPose.ambiguity, robotPose, result.getTimestampSeconds()));
-          } else {
+          } else if (!result.targets.isEmpty()) {
             inputs.poseType = PoseTypes.SINGLE;
-            if (VisionConstants.kTagLayout
-              .getTagPose(result.getBestTarget().getFiducialId())
-              .isPresent()) {
-            poseObservations.add(
-                new PoseObservation(
-                    result.getBestTarget().getPoseAmbiguity(),
-                    PhotonUtils.estimateFieldToRobotAprilTag(
-                        result.getBestTarget().getBestCameraToTarget(),
-                        VisionConstants.kTagLayout
-                            .getTagPose(result.getBestTarget().getFiducialId())
-                            .get(),
-                        robotToCamera),
-                    result.getTimestampSeconds()));
+            var target = result.getTargets().get(0);
+
+            var tagPose = VisionConstants.kTagLayout.getTagPose(target.fiducialId);
+            if (tagPose.isPresent()) {
+              Transform3d fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
+              Transform3d cameraToTarget = target.bestCameraToTarget;
+              Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
+              Pose3d robotPose = new Pose3d(fieldToCamera.getTranslation(), fieldToCamera.getRotation());
+
+              poseObservations.add(new PoseObservation(target.poseAmbiguity, robotPose, result.getTimestampSeconds()));
             }
           }
         inputs.targetInfo = new TargetInfo[targetInfos.size()];
