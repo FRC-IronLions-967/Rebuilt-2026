@@ -6,8 +6,6 @@ package frc.robot.subsystems.turret;
 
 import java.util.function.BooleanSupplier;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
@@ -18,7 +16,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.util.LimitSwitchManager;
 
@@ -83,7 +80,8 @@ public class TurretIOSpark implements TurretIO{
         inputs.turretSetAngle = turretSetAngle;
         inputs.turretMinLimitSwitch = turretMinLimitSwitch.getAsBoolean();
         inputs.turretMaxLimitSwitch = turretMaxLimitSwitch.getAsBoolean();
-
+        inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
+        
         flywheelController.setSetpoint(flywheelSetSpeed, ControlType.kVelocity);
         hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
         turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
@@ -102,15 +100,23 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setTurretAngle(double angle) {
         if (angle < TurretConstants.turretMinAngle) {
-            turretSetAngle = 
-                TurretConstants.turretMinAngle - angle <= angle + Math.PI*2 - TurretConstants.turretMaxAngle  
-                ? TurretConstants.turretMinAngle  
-                : TurretConstants.turretMaxAngle;
+            if (angle + Math.PI*2 > TurretConstants.turretMaxAngle) {
+                turretSetAngle = 
+                    TurretConstants.turretMinAngle - angle <= angle + Math.PI*2 - TurretConstants.turretMaxAngle  
+                    ? TurretConstants.turretMinAngle
+                    : TurretConstants.turretMaxAngle;
+            } else {
+                turretSetAngle = angle + Math.PI*2;
+            }
         } else if (angle > TurretConstants.turretMaxAngle ) {
-            turretSetAngle =
-                angle - TurretConstants.turretMaxAngle <= TurretConstants.turretMinAngle - angle - Math.PI*2
-                ? TurretConstants.turretMaxAngle
-                : TurretConstants.turretMinAngle;
+            if (angle - Math.PI*2 < TurretConstants.turretMinAngle) {
+                turretSetAngle =
+                    angle - TurretConstants.turretMaxAngle <= TurretConstants.turretMinAngle - angle - Math.PI*2
+                    ? TurretConstants.turretMaxAngle
+                    : TurretConstants.turretMinAngle;
+            } else {
+                turretSetAngle = angle - Math.PI * 2;
+            }
         } else {
             turretSetAngle = angle;
         }

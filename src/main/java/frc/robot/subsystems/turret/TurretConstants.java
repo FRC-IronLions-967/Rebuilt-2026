@@ -6,7 +6,6 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /** Add your docs here. */

@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,21 +22,16 @@ public class Turret extends SubsystemBase {
 
   public enum WantedState {
     IDLE,
-    SHOOTING,
+    SHOOTING
   }
 
   public enum CurrentState {
     IDLE,
-    SHOOTING,
-    RESETTING
+    SHOOTING
   }
 
   private WantedState wantedState = WantedState.IDLE;
   private CurrentState currentState = CurrentState.IDLE;
-
-  private boolean hitMax;
-
-  private PIDController turretController = new PIDController(TurretConstants.turretControllerP.get(), 0, TurretConstants.turretControllerD.get());
 
   /** Creates a new Turret. */
   public Turret(TurretIO io, Supplier<Pose2d> poseSupplier) {
@@ -60,12 +54,7 @@ public class Turret extends SubsystemBase {
       case IDLE: 
         yield CurrentState.IDLE;
       case SHOOTING:
-        if ((currentState == CurrentState.RESETTING && ((hitMax && inputs.turretAngle > 0) || (!hitMax && inputs.turretAngle < 0))) 
-        || (inputs.turretSetAngle > TurretConstants.turretMaxAngle || inputs.turretSetAngle < TurretConstants.turretMinAngle)) {
-          yield CurrentState.RESETTING;
-        } else {
-          yield CurrentState.SHOOTING;
-        }
+        yield CurrentState.SHOOTING;
     };
   }
 
@@ -76,28 +65,19 @@ public class Turret extends SubsystemBase {
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
         io.setTurretAngle(inputs.turretAngle);
         break;
-      case RESETTING:
-        if (inputs.turretAngle > 0) {
-          hitMax = true;
-          io.setTurretAngle(-.1);
-        } else {
-          hitMax = false;
-          io.setTurretAngle(0.1);
-        }
-        break;
       case SHOOTING:
         if (poseSupplier.get().getX() < 4.5) {
           io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
           io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.hub));
-          io.setTurretAngle(turretController.calculate(getFieldOrientedTurretRotation2d(inputs.turretAngle).getRadians(), getRobotToTargetAngle(TurretConstants.hub).getRadians()));
+          io.setFieldRelativeTurretAngle(getRobotToTargetAngle(TurretConstants.hub), poseSupplier.get().getRotation());
         } else if (poseSupplier.get().getY() < 4) {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.right));
-          io.setTurretAngle(turretController.calculate(getFieldOrientedTurretRotation2d(inputs.turretAngle).getRadians(), getRobotToTargetAngle(TurretConstants.right).getRadians()));
+          io.setFieldRelativeTurretAngle(getRobotToTargetAngle(TurretConstants.right), poseSupplier.get().getRotation());
         } else {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.left));
-          io.setTurretAngle(turretController.calculate(getFieldOrientedTurretRotation2d(inputs.turretAngle).getRadians(), getRobotToTargetAngle(TurretConstants.left).getRadians()));
+          io.setFieldRelativeTurretAngle(getRobotToTargetAngle(TurretConstants.left), poseSupplier.get().getRotation());
         }
         break;
       default:
@@ -124,15 +104,15 @@ public class Turret extends SubsystemBase {
   }
 
   private Rotation2d getRobotToTargetAngle(Translation2d target) {
-    Translation2d robotToTargetTranslation = target.minus(poseSupplier.get().getTranslation());
-    return Rotation2d.fromRadians(Math.atan(robotToTargetTranslation.getY()/robotToTargetTranslation.getX()));
-  }
-
-  private Rotation2d getFieldOrientedTurretRotation2d(double robotRelativeAngle) {
-    return Rotation2d.fromRadians(robotRelativeAngle).plus(poseSupplier.get().getRotation());
+    Translation2d robotToTarget = target.minus(poseSupplier.get().getTranslation());
+    return robotToTarget.getAngle();
   }
 
   public CurrentState getCurrentState() {
     return currentState;
+  }
+
+  public boolean getResetting() {
+    return inputs.resetting;
   }
 }

@@ -38,5 +38,5 @@ public class VisionConstants {
   public static final LoggedNetworkNumber maxZError =
       new LoggedNetworkNumber("Tuning/Vision/maxZError", 0.75);
 
-    public static final int hubAprilTag = DriverStation.getAlliance().get() == Alliance.Red ? 10 : 26;
+    // public static final int hubAprilTag = DriverStation.getAlliance().get() == Alliance.Red ? 10 : 26;
 }

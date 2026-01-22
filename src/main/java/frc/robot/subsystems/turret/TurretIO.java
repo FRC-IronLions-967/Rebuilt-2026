@@ -6,7 +6,6 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 /** Add your docs here. */
@@ -19,6 +18,7 @@ public interface TurretIO {
         double turretSetAngle;
         boolean turretMinLimitSwitch;
         boolean turretMaxLimitSwitch;
+        boolean resetting;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {}
