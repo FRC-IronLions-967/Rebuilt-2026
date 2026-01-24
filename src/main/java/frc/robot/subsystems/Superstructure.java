@@ -35,7 +35,7 @@ public class Superstructure extends SubsystemBase {
   private Turret turret;
   private Intake intake;
 
-  public Superstructure(Drive drive, AprilTagVision aprilTagVision, Turret turret) {
+  public Superstructure(Drive drive, AprilTagVision aprilTagVision, Turret turret, Intake intake) {
     this.drive = drive;
     this.aprilTagVision = aprilTagVision;
     this.turret = turret;

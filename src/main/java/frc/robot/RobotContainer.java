@@ -31,6 +31,9 @@ import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOSim;
@@ -54,6 +57,7 @@ public class RobotContainer {
   private final AprilTagVision aprilTagVision;
   private final Turret turret;
   private final Superstructure superstructure;
+  private final Intake intake;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -79,6 +83,7 @@ public class RobotContainer {
                 new ModuleIOSpark(3),
                 aprilTagVision::getPoseObs);
         turret = new Turret(new TurretIOSpark(), drive::getPose);
+        intake = new Intake(new IntakeIOSpark());
         break;
 
       case SIM:
@@ -97,6 +102,7 @@ public class RobotContainer {
                 aprilTagVision::getPoseObs);
         aprilTagVision.setPoseSupplierIfSim(drive::getPose);
         turret = new Turret(new TurretIOSim(), drive::getPose);
+        intake = new Intake(new IntakeIOSpark());
         break;
 
       default:
@@ -111,10 +117,11 @@ public class RobotContainer {
                 new ModuleIO() {},
                 aprilTagVision::getPoseObs);
         turret = new Turret(new TurretIO() {}, drive::getPose);
+        intake = new Intake(new IntakeIO() {});
         break;
     }
 
-    superstructure = new Superstructure(drive, aprilTagVision, turret);
+    superstructure = new Superstructure(drive, aprilTagVision, turret, intake);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
