@@ -25,6 +25,7 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
 
   @Override
   public void updateInputs(AprilTagIOInputs inputs) {
+    inputs.isTrying = true;
     inputs.isConnected = camera.isConnected();
     if (inputs.isConnected) {
       List<PoseObservation> poseObservations = new LinkedList<>();
@@ -58,7 +59,8 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
               Transform3d fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
               Transform3d cameraToTarget = target.bestCameraToTarget;
               Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
-              Pose3d robotPose = new Pose3d(fieldToCamera.getTranslation(), fieldToCamera.getRotation());
+              Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
+              Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
               poseObservations.add(new PoseObservation(target.poseAmbiguity, robotPose, result.getTimestampSeconds()));
             }

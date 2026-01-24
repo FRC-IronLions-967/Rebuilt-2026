@@ -66,7 +66,10 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
-        aprilTagVision = new AprilTagVision(drive::addVisionMeasurement, new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform));
+        aprilTagVision = 
+            new AprilTagVision(drive::addVisionMeasurement,
+            new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), 
+            new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform));
         break;
 
       case SIM:

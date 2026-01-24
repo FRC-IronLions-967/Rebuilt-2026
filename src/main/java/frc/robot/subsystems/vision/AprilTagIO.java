@@ -18,6 +18,7 @@ public interface AprilTagIO {
     public TargetInfo[] targetInfo;
     public PoseObservation[] poseObservations = new PoseObservation[0];
     public PoseTypes poseType;
+    public boolean isTrying = false;
   }
 
   public enum PoseTypes {SINGLE, MULTI};
