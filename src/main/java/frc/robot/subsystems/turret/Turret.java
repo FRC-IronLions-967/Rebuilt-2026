@@ -12,11 +12,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.turret.TurretIO.TurretIOInputs;
 
 
 public class Turret extends SubsystemBase {
   private TurretIO io;
-  private TurretIOInputsAutoLogged inputs;
+  private TurretIOInputs inputs;
 
   private Supplier<Pose2d> poseSupplier;
 
@@ -37,7 +38,7 @@ public class Turret extends SubsystemBase {
   public Turret(TurretIO io, Supplier<Pose2d> poseSupplier) {
     this.io = io;
     this.poseSupplier = poseSupplier;
-    inputs = new TurretIOInputsAutoLogged();
+    inputs = new TurretIOInputs();
   }
 
   @Override

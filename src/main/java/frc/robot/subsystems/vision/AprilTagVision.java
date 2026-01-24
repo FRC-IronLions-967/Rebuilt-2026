@@ -7,6 +7,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.vision.AprilTagIO.AprilTagIOInputs;
 import frc.robot.subsystems.vision.AprilTagIO.PoseObservation;
 import frc.robot.subsystems.vision.AprilTagIO.TargetInfo;
 import frc.robot.subsystems.vision.AprilTagIO.VisionPoseObs;
@@ -18,7 +19,7 @@ import org.littletonrobotics.junction.Logger;
 public class AprilTagVision extends SubsystemBase {
 
   private final AprilTagIO[] io;
-  private final AprilTagIOInputsAutoLogged[] inputs;
+  private final AprilTagIOInputs[] inputs;
   private Pose2d acceptedPose;
   private boolean acceptedPoseGood;
   private double timestamp;
@@ -33,9 +34,9 @@ public class AprilTagVision extends SubsystemBase {
   public AprilTagVision(AprilTagIO... io) {
     this.io = io;
 
-    this.inputs = new AprilTagIOInputsAutoLogged[io.length];
+    this.inputs = new AprilTagIOInputs[io.length];
     for (int i = 0; i < inputs.length; i++) {
-      inputs[i] = new AprilTagIOInputsAutoLogged();
+      inputs[i] = new AprilTagIOInputs();
     }
 
     acceptedPose = new Pose2d();
