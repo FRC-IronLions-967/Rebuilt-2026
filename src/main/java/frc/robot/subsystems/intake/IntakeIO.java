@@ -19,8 +19,11 @@ public interface IntakeIO {
         public double feederSpeed;
         public double feederSetSpeed;
 
-        public double horizontalMotorSpeed;
-        public double horizontalMotorSetSpeed;
+        public double horizontalMotor1Speed;
+        public double horizontalMotor1SetSpeed;
+
+        public double horizontalMotor2Speed;
+        public double horizontalMotor2SetSpeed;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}
@@ -31,5 +34,7 @@ public interface IntakeIO {
 
     public default void setFeederSpeed(double speed) {}
 
-    public default void setHorizontalMotorSpeed(double speed) {}    
+    public default void setHorizontalMotor1Speed(double speed) {}    
+
+    public default void setHorizontalMotor2Speed(double speed) {}    
 }

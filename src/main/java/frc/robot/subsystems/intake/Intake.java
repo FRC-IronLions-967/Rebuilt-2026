@@ -59,25 +59,29 @@ public class Intake extends SubsystemBase {
         io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
         io.setIntakeSpeed(0.0);
         io.setFeederSpeed(0.0);
-        io.setHorizontalMotorSpeed(0.0);
+        io.setHorizontalMotor1Speed(0.0);
+        io.setHorizontalMotor2Speed(0.0);
         break;
       case INTAKING:
         io.setIntakeArmAngle(IntakeConstants.intakePosition);
         io.setIntakeSpeed(5600);
         io.setFeederSpeed(5600);
-        io.setHorizontalMotorSpeed(5600);
+        io.setHorizontalMotor1Speed(5600);
+        io.setHorizontalMotor2Speed(5600);
         break;
       case REVERSING:
         io.setIntakeArmAngle(IntakeConstants.intakePosition);
         io.setIntakeSpeed(-5600);
         io.setFeederSpeed(-5600);
-        io.setHorizontalMotorSpeed(-5600);
+        io.setHorizontalMotor1Speed(-5600);
+        io.setHorizontalMotor2Speed(-5600);
         break;
       default:
         io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
         io.setIntakeSpeed(0.0);
         io.setFeederSpeed(0.0);
-        io.setHorizontalMotorSpeed(0.0);
+        io.setHorizontalMotor1Speed(0.0);
+        io.setHorizontalMotor2Speed(0.0);
         break;
     }
   }

@@ -67,22 +67,22 @@ public class Superstructure extends SubsystemBase {
     switch (currentState) {
       case IDLE:
         turret.setWantedState(Turret.WantedState.IDLE);
-        //intake->IDLE
+        intake.setWantedState(Intake.WantedState.IDLE);
         break;
       case SHOOTING:
         turret.setWantedState(Turret.WantedState.SHOOTING);
-        //intake->intaking
+        intake.setWantedState(Intake.WantedState.INTAKING);
         break;
       case RESETTINGTURRET:
         turret.setWantedState(Turret.WantedState.SHOOTING);
-        //intake->idle
+        intake.setWantedState(Intake.WantedState.IDLE);
         break;
       case EJECTING:
         turret.setWantedState(Turret.WantedState.SHOOTING);
-        //intake->reversing
+        intake.setWantedState(Intake.WantedState.REVERSING);
       default:
         turret.setWantedState(Turret.WantedState.IDLE);
-        //intake->IDLE
+        intake.setWantedState(Intake.WantedState.IDLE);
         break;
     }
   }
