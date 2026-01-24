@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.intake;
 
-import java.util.spi.CurrencyNameProvider;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
@@ -19,13 +17,13 @@ public class Intake extends SubsystemBase {
   public enum WantedState {
     IDLE,
     INTAKING,
-    OUTPUTING
+    REVERSING
   }
 
   public enum CurrentState {
     IDLE,
     INTAKING,
-    OUTPUTING
+    REVERSING
   }
 
   private WantedState wantedState = WantedState.IDLE;
@@ -34,7 +32,7 @@ public class Intake extends SubsystemBase {
   public Intake(IntakeIO io) {
     this.io = io;
     inputs = new IntakeIOInputs();
-  } 
+    }
 
   @Override
   public void periodic() {
@@ -50,30 +48,38 @@ public class Intake extends SubsystemBase {
         yield CurrentState.IDLE;
       case INTAKING:
         yield CurrentState.INTAKING;
-      case OUTPUTING:
-        yield CurrentState.OUTPUTING;        
+      case REVERSING:
+        yield CurrentState.REVERSING;
     };
   }
 
-    private void applyState() {
-      switch (currentState) {
-        case IDLE:
-          io.runIntakeWheels(0.0000000000);
-          io.moveIntakeArm(inputs.intakeArmAngle);
-          break;
-        case INTAKING:
-          io.moveIntakeArm(IntakeConstants.intakePosition);
-          io.runIntakeWheels(5600);
-          break;
-        case OUTPUTING:
-          io.moveIntakeArm(IntakeConstants.intakePosition);
-          io.runIntakeWheels(-5600);
-          break;
-        default:
-          io.moveIntakeArm(inputs.intakeArmAngle);
-          io.runIntakeWheels(0.0000000000000000000000000000000000000000000000000000000000);
-          break;
-      }
+  private void applyState() {
+    switch (currentState) {
+      case IDLE:
+        io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
+        io.setIntakeSpeed(0.0);
+        io.setFeederSpeed(0.0);
+        io.setHorizontalMotorSpeed(0.0);
+        break;
+      case INTAKING:
+        io.setIntakeArmAngle(IntakeConstants.intakePosition);
+        io.setIntakeSpeed(5600);
+        io.setFeederSpeed(5600);
+        io.setHorizontalMotorSpeed(5600);
+        break;
+      case REVERSING:
+        io.setIntakeArmAngle(IntakeConstants.intakePosition);
+        io.setIntakeSpeed(-5600);
+        io.setFeederSpeed(-5600);
+        io.setHorizontalMotorSpeed(-5600);
+        break;
+      default:
+        io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
+        io.setIntakeSpeed(0.0);
+        io.setFeederSpeed(0.0);
+        io.setHorizontalMotorSpeed(0.0);
+        break;
+    }
   }
 
   public void setWantedState(WantedState wantedState) {

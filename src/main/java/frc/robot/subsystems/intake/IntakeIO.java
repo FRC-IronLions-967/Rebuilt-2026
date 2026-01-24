@@ -10,13 +10,26 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
     @AutoLog
     public static class IntakeIOInputs{
-        public double intakeArmAngle;
-        public double intakeWheelSpeed;        
+        public double armAngle;
+        public double armSetAngle;
+
+        public double intakeSpeed; 
+        public double intakeSetSpeed;
+
+        public double feederSpeed;
+        public double feederSetSpeed;
+
+        public double horizontalMotorSpeed;
+        public double horizontalMotorSetSpeed;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}
  
-    public default void moveIntakeArm(double angle) {}
+    public default void setIntakeArmAngle(double angle) {}
 
-    public default void runIntakeWheels(double speed) {}
+    public default void setIntakeSpeed(double speed) {}
+
+    public default void setFeederSpeed(double speed) {}
+
+    public default void setHorizontalMotorSpeed(double speed) {}    
 }

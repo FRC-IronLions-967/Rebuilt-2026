@@ -33,11 +33,13 @@ public class Superstructure extends SubsystemBase {
   private Drive drive;
   private AprilTagVision aprilTagVision;
   private Turret turret;
+  private Intake intake;
 
   public Superstructure(Drive drive, AprilTagVision aprilTagVision, Turret turret) {
     this.drive = drive;
     this.aprilTagVision = aprilTagVision;
     this.turret = turret;
+    this.intake = intake;
   }
 
   @Override
