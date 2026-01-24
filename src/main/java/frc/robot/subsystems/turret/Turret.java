@@ -7,6 +7,7 @@ package frc.robot.subsystems.turret;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,7 +46,7 @@ public class Turret extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
-    Logger.processInputs("Turret", inputs);
+    Logger.processInputs("Turret", (LoggableInputs) inputs);
     currentState = updateState();
     applyState();
   }

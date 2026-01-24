@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.AprilTagVision;
+import frc.robot.subsystems.intake.Intake;
 
 public class Superstructure extends SubsystemBase {
   /** Creates a new Superstructure. */

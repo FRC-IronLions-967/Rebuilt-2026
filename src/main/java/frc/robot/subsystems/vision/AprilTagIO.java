@@ -9,15 +9,27 @@ import edu.wpi.first.math.geometry.Pose3d;
 
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 /** Add your docs here. */
 public interface AprilTagIO {
   @AutoLog
-  public static class AprilTagIOInputs {
+  public static class AprilTagIOInputs implements LoggableInputs {
     public boolean isConnected = false;
     public boolean hasTarget = false;
     public TargetInfo[] targetInfo;
     public PoseObservation[] poseObservations = new PoseObservation[0];
+    @Override
+    public void toLog(LogTable table) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'toLog'");
+    }
+    @Override
+    public void fromLog(LogTable table) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'fromLog'");
+    }
   }
 
   public static record TargetInfo(int tagID, double targetYaw, double targetPitch, double distanceToTarget) {}

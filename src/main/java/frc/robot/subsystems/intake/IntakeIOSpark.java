@@ -8,9 +8,11 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkFlexExternalEncoderSim;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -32,13 +34,58 @@ public class IntakeIOSpark implements IntakeIO {
 
         intakeWheelController = intakeWheels.getClosedLoopController();
 
-        intakeWheelConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-        intakeWheelConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1, 0, 0);
-        intakeWheels.configure(intakeWheelConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
+        intakeWheelConfig
+                .idleMode(IdleMode.kCoast)
+                .smartCurrentLimit(40);
+        intakeWheelConfig
+                .closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .pid(IntakeConstants.intakeP, IntakeConstants.intakeI, IntakeConstants.intakeD);
+        intakeWheels
+            .configure(
+                    intakeWheelConfig, 
+                    ResetMode.kResetSafeParameters, 
+                    PersistMode.kNoPersistParameters);
         arm = new SparkFlex(13, MotorType.kBrushless);
         armConfig = new SparkFlexConfig();
 
         armController = arm.getClosedLoopController();
+
+        armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+        armConfig
+                .absoluteEncoder
+                .apply(new AbsoluteEncoderConfig())
+                .positionConversionFactor(2 * Math.PI)
+                .zeroOffset(IntakeConstants.armZeroOffset);
+        armConfig
+                .closedLoop
+                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+                .pid(IntakeConstants.armP, IntakeConstants.armI, IntakeConstants.armD)
+                .outputRange(-IntakeConstants.armPercentPower, IntakeConstants.armPercentPower);
+        
+        intakeWheelConfig
+                .closedLoop
+                .feedbackSensor(
+                    FeedbackSensor.kPrimaryEncoder)
+                    .pid(IntakeConstants.intakeP, IntakeConstants.intakeI, IntakeConstants.intakeD);
+        arm.configure(
+            armConfig, 
+            ResetMode.kResetSafeParameters, 
+            PersistMode.kPersistParameters);
     }
+
+    @Override
+    public void updateInputs(IntakeIOInputs inputs) {
+        inputs.intakeArmAngle = arm.getAbsoluteEncoder().getPosition();
+        inputs.intakeWheelSpeed = intakeWheels.getEncoder().getVelocity();
+    }
+
+    @Override
+  public void runIntakeWheels(double speed) {
+    intakeWheelController.setReference(speed, ControlType.kVelocity);
+  }
+
+  @Override
+  public void moveIntakeArm(double angle) {
+    armController.setReference(angle, ControlType.kPosition);
+  }
 }
