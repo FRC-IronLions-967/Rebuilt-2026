@@ -16,7 +16,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.util.LimitSwitchManager;
 
 /** Add your docs here. */
@@ -25,6 +24,9 @@ public class TurretIOSpark implements TurretIO{
     protected SparkFlex flywheel;
     protected SparkFlexConfig flywheelConfig;
     protected SparkClosedLoopController flywheelController;
+
+    protected SparkFlex flywheelFollower;
+    protected SparkFlexConfig flywheelFollowerConfig;
 
     protected SparkFlex hood;
     protected SparkFlexConfig hoodConfig;
@@ -48,16 +50,21 @@ public class TurretIOSpark implements TurretIO{
         flywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         flywheelController = flywheel.getClosedLoopController();
 
-        hood = new SparkFlex(10, MotorType.kBrushless);
+        flywheelFollower = new SparkFlex(10, MotorType.kBrushless);
+        flywheelFollowerConfig = new SparkFlexConfig();
+        flywheelFollowerConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).follow(flywheel);
+        flywheelFollower.configure(flywheelFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        hood = new SparkFlex(11, MotorType.kBrushless);
         hoodConfig = new SparkFlexConfig();
         hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kAbsoluteEncoder).outputRange(TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
         hoodConfig.absoluteEncoder.positionConversionFactor(2*Math.PI);
         hood.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
 
-        turret = new SparkFlex(11, MotorType.kBrushless);
+        turret = new SparkFlex(12, MotorType.kBrushless);
         turretConfig = new SparkFlexConfig();
-        turretConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.turretCurrentLimit).closedLoop.pid(TurretConstants.turretP.get(), 0, TurretConstants.turretD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).outputRange(TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle).positionWrappingEnabled(true);
+        turretConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(TurretConstants.turretCurrentLimit).closedLoop.pid(TurretConstants.turretP.get(), 0, TurretConstants.turretD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).outputRange(TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle).positionWrappingEnabled(true);
         turretConfig.encoder.positionConversionFactor(2*Math.PI * TurretConstants.turretGearRatio);
         turret.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretController = turret.getClosedLoopController();
@@ -120,10 +127,5 @@ public class TurretIOSpark implements TurretIO{
         } else {
             turretSetAngle = angle;
         }
-    }
-
-    @Override
-    public void setFieldRelativeTurretAngle(Rotation2d wantedRotation, Rotation2d robotRotation) {
-        setTurretAngle(wantedRotation.minus(robotRotation).getRadians());
     }
 }

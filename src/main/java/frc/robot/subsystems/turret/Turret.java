@@ -35,6 +35,9 @@ public class Turret extends SubsystemBase {
   private WantedState wantedState = WantedState.IDLE;
   private CurrentState currentState = CurrentState.IDLE;
 
+  private double turretSetPoint = TurretConstants.turretMinAngle;
+  private double hoodSetPoint = TurretConstants.hoodMinAngle;
+
   /** Creates a new Turret. */
   public Turret(TurretIO io, Supplier<Pose2d> poseSupplier) {
     this.io = io;
@@ -70,16 +73,19 @@ public class Turret extends SubsystemBase {
       case SHOOTING:
         if (poseSupplier.get().getX() < 4.5) {
           io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
-          io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.hub));
-          io.setFieldRelativeTurretAngle(getRobotToTargetAngle(TurretConstants.hub), poseSupplier.get().getRotation());
+          calculationToTarget(TurretConstants.hub);
+          io.setHoodAngle(hoodSetPoint);
+          io.setTurretAngle(turretSetPoint);
         } else if (poseSupplier.get().getY() < 4) {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-          io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.right));
-          io.setFieldRelativeTurretAngle(getRobotToTargetAngle(TurretConstants.right), poseSupplier.get().getRotation());
+          calculationToTarget(TurretConstants.left);
+          io.setHoodAngle(hoodSetPoint);
+          io.setTurretAngle(turretSetPoint);
         } else {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-          io.setHoodAngle(getHoodAngleBasedOnDistance(TurretConstants.left));
-          io.setFieldRelativeTurretAngle(getRobotToTargetAngle(TurretConstants.left), poseSupplier.get().getRotation());
+          calculationToTarget(TurretConstants.right);
+          io.setHoodAngle(hoodSetPoint);
+          io.setTurretAngle(turretSetPoint);
         }
         break;
       default:
@@ -98,16 +104,15 @@ public class Turret extends SubsystemBase {
     this.wantedState = wantedState;
   }
 
-  //Make table
-  private double getHoodAngleBasedOnDistance(Translation2d target) {
-    double distance = poseSupplier.get().getTranslation().getDistance(target);
-    //do something with distance
-    return Math.PI;
-  }
-
-  private Rotation2d getRobotToTargetAngle(Translation2d target) {
+  /**
+   * 
+   * @param target where the turret should be aimed at hood and turret
+   */
+  private void calculationToTarget(Translation2d target) {
     Translation2d robotToTarget = target.minus(poseSupplier.get().getTranslation());
-    return robotToTarget.getAngle();
+    Rotation2d turretToTargetAngle = poseSupplier.get().getRotation().minus(robotToTarget.getAngle());
+    turretSetPoint = turretToTargetAngle.getRadians();
+    //calculate hood angle based off distance
   }
 
   public CurrentState getCurrentState() {

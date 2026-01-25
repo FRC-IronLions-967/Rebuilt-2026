@@ -50,7 +50,7 @@ public class IntakeIOSpark implements IntakeIO {
   protected double armSetAngle;
 
   public IntakeIOSpark() {
-         intake = new SparkFlex(12, MotorType.kBrushless);
+         intake = new SparkFlex(13, MotorType.kBrushless);
          intakeConfig = new SparkFlexConfig();
          intakeController = intake.getClosedLoopController();
 
@@ -58,7 +58,7 @@ public class IntakeIOSpark implements IntakeIO {
          intakeConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(IntakeConstants.intakeP, IntakeConstants.intakeI, IntakeConstants.intakeD);
          intake.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-         arm = new SparkFlex(13, MotorType.kBrushless);
+         arm = new SparkFlex(14, MotorType.kBrushless);
          armConfig = new SparkFlexConfig();
          armController = arm.getClosedLoopController();
 
@@ -74,7 +74,7 @@ public class IntakeIOSpark implements IntakeIO {
                  .pid(IntakeConstants.armP, IntakeConstants.armI, IntakeConstants.armD);
          arm.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         
-         feeder = new SparkFlex(13, MotorType.kBrushless);
+         feeder = new SparkFlex(15, MotorType.kBrushless);
          feederConfig = new SparkFlexConfig();
          feederController = feeder.getClosedLoopController();
 
@@ -82,7 +82,7 @@ public class IntakeIOSpark implements IntakeIO {
          feederConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(IntakeConstants.feederP, IntakeConstants.feederI, IntakeConstants.feederD);
          feeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-         horizontalMotor1 = new SparkMax(13, MotorType.kBrushless);
+         horizontalMotor1 = new SparkMax(16, MotorType.kBrushless);
          horizontalMotor1Config = new SparkMaxConfig();
          horizontalMotor1Controller = horizontalMotor1.getClosedLoopController();
 
@@ -90,7 +90,7 @@ public class IntakeIOSpark implements IntakeIO {
          horizontalMotor1Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(IntakeConstants.horizontalMotor1P, IntakeConstants.horizontalMotor1I, IntakeConstants.horizontalMotor1D);
          horizontalMotor1.configure(horizontalMotor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-         horizontalMotor2 = new SparkMax(14, MotorType.kBrushless);
+         horizontalMotor2 = new SparkMax(17, MotorType.kBrushless);
          horizontalMotor2Config = new SparkMaxConfig();
          horizontalMotor2Controller = horizontalMotor2.getClosedLoopController();
 

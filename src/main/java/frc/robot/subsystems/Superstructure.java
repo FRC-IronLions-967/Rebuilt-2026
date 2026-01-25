@@ -30,7 +30,9 @@ public class Superstructure extends SubsystemBase {
   private WantedState wantedState = WantedState.IDLE;
   private CurrentState currentState = CurrentState.IDLE;
 
+  @SuppressWarnings("unused")
   private Drive drive;
+  @SuppressWarnings("unused")
   private AprilTagVision aprilTagVision;
   private Turret turret;
   private Intake intake;
