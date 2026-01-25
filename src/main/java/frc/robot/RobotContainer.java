@@ -20,11 +20,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
@@ -54,6 +52,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  @SuppressWarnings("unused")
   private final AprilTagVision aprilTagVision;
   private final Turret turret;
   private final Superstructure superstructure;
@@ -70,52 +69,55 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        aprilTagVision =
-            new AprilTagVision(
-                new AprilTagIOPhotonVision(
-                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera2Transform));
         drive =
             new Drive(
                 new GyroIONavX(),
                 new ModuleIOSpark(0),
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
-                new ModuleIOSpark(3),
-                aprilTagVision::getPoseObs);
+                new ModuleIOSpark(3));
+        aprilTagVision = 
+            new AprilTagVision(drive::addVisionMeasurement,
+            new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), 
+            new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform));
         turret = new Turret(new TurretIOSpark(), drive::getPose);
         intake = new Intake(new IntakeIOSpark());
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        aprilTagVision =
-            new AprilTagVision(
-                new AprilTagIOSim(
-                    VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera2Transform));
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new ModuleIOSim(),
-                aprilTagVision::getPoseObs);
-        aprilTagVision.setPoseSupplierIfSim(drive::getPose);
+                new ModuleIOSim());
+        aprilTagVision =
+            new AprilTagVision(
+                drive::addVisionMeasurement,
+                new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform, drive::getPose),
+                new AprilTagIOSim(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform, drive::getPose)
+            );
         turret = new Turret(new TurretIOSim(), drive::getPose);
         intake = new Intake(new IntakeIOSpark());
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        aprilTagVision = new AprilTagVision(new AprilTagIO() {}, new AprilTagIO() {}, new AprilTagIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {},
-                aprilTagVision::getPoseObs);
+                new ModuleIO() {});
+        aprilTagVision = 
+            new AprilTagVision(
+                drive::addVisionMeasurement,
+                new AprilTagIO() {},
+                new AprilTagIO() {}
+            );
         turret = new Turret(new TurretIO() {}, drive::getPose);
         intake = new Intake(new IntakeIO() {});
         break;
@@ -146,10 +148,6 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  public void resetOdometryWithVision() {
-    drive.setPose(aprilTagVision.getPoseObs().poseObs());
-  }
-
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -175,17 +173,6 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-    controller
-        .start()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  resetOdometryWithVision();
-                }));
-
-    controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
-    controller.rightBumper().onTrue(superstructure.setWantedStateCommand(Superstructure.WantedState.IDLE));
-    controller.x().whileTrue(superstructure.setWantedStateCommand(Superstructure.WantedState.EJECTING));
   }
 
   /**

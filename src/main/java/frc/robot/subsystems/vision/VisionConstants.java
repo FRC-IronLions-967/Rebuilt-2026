@@ -18,13 +18,19 @@ public class VisionConstants {
   public static final String AprilTagCamera1Name = "April_Tag_1";
   public static final Transform3d AprilTagCamera1Transform =
       new Transform3d(
-          Units.inchesToMeters(6.376), 0, Units.inchesToMeters(8.85), new Rotation3d(0, 0, 0));
+        Units.inchesToMeters(new LoggedNetworkNumber("ATC1x", -11.75).get()),
+        Units.inchesToMeters(new LoggedNetworkNumber("ATC1y", 11.75).get()), 
+        Units.inchesToMeters(new LoggedNetworkNumber("ATC1z", 9).get()),
+        new Rotation3d(0, Units.degreesToRadians(30), Units.degreesToRadians(new LoggedNetworkNumber("ATC1yaw", -135).get())));
   public static final int AprilTagCamera1Index = 0;
 
   public static final String AprilTagCamera2Name = "April_Tag_2";
   public static final Transform3d AprilTagCamera2Transform =
       new Transform3d(
-          Units.inchesToMeters(6.376), 0, Units.inchesToMeters(8.85), new Rotation3d(0, 0, 0));
+        Units.inchesToMeters(new LoggedNetworkNumber("ATC2x", -11.75).get()),
+        Units.inchesToMeters(new LoggedNetworkNumber("ATC2y", -11.75).get()),
+        Units.inchesToMeters(new LoggedNetworkNumber("ATC2z", 9).get()),
+        new Rotation3d(0, Units.degreesToRadians(30), new LoggedNetworkNumber("ATC2yaw", 135).get()));
   public static final int AprilTagCamera2Index = 1;
 
   public static final AprilTagFieldLayout kTagLayout =

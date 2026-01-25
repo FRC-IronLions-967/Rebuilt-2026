@@ -18,8 +18,10 @@ public class AprilTagIOSim extends AprilTagIOPhotonVision {
   private Supplier<Pose2d> poseSupplier;
   private final PhotonCameraSim cameraSim;
 
-  public AprilTagIOSim(String cameraName, Transform3d robotToCamera) {
+  public AprilTagIOSim(String cameraName, Transform3d robotToCamera, Supplier<Pose2d> robotPose) {
     super(cameraName, robotToCamera);
+
+    this.poseSupplier = robotPose;
 
     // Initialize vision sim
     if (visionSim == null) {
@@ -35,18 +37,7 @@ public class AprilTagIOSim extends AprilTagIOPhotonVision {
 
   @Override
   public void updateInputs(AprilTagIOInputs inputs) {
-    if (poseSupplier != null) {
-      visionSim.update(poseSupplier.get());
-    }
+    visionSim.update(poseSupplier.get());
     super.updateInputs(inputs);
-  }
-
-  /**
-   * needed because looping parameters USE ONCE AFTER BOTH DRIVE AND APRILTAGVISION ARE INITIALIZED
-   *
-   * @param poseSupplier updates the poseSupplier
-   */
-  public void givePoseSupplier(Supplier<Pose2d> poseSupplier) {
-    this.poseSupplier = poseSupplier;
   }
 }
