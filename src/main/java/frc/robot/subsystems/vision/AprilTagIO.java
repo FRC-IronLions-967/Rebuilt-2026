@@ -8,13 +8,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 /** Add your docs here. */
 public interface AprilTagIO {
   @AutoLog
-  public static class AprilTagIOInputs implements LoggableInputs {
+  public static class AprilTagIOInputs {
     public boolean isConnected = false;
     public boolean hasTarget = false;
     public TargetInfo[] targetInfo;

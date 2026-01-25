@@ -6,9 +6,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.subsystems.vision.AprilTagIO.AprilTagIOInputs;
-import frc.robot.subsystems.vision.AprilTagIO.PoseObservation;
+
 import frc.robot.subsystems.vision.AprilTagIO.TargetInfo;
 import org.littletonrobotics.junction.Logger;
 
@@ -27,7 +25,7 @@ public class AprilTagVision extends SubsystemBase {
     this.consumer = consumer;
     this.inputs = new AprilTagIOInputsAutoLogged[io.length];
     for (int i = 0; i < inputs.length; i++) {
-      inputs[i] = new AprilTagIOInputs();
+      inputs[i] = new AprilTagIOInputsAutoLogged();
     }
   }
 
