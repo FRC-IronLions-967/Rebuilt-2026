@@ -5,14 +5,12 @@
 package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 
 public class Intake extends SubsystemBase {
   private IntakeIO io;
-  private IntakeIOInputs inputs;
+  private IntakeIOInputsAutoLogged inputs;
 
   public enum WantedState {
     IDLE,
@@ -33,13 +31,13 @@ public class Intake extends SubsystemBase {
 
   public Intake(IntakeIO io) {
     this.io = io;
-    inputs = new IntakeIOInputs();
+    inputs = new IntakeIOInputsAutoLogged();
     }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Intake", (LoggableInputs) inputs);
+    Logger.processInputs("Intake", inputs);
     currentState = updateState();
     applyState();
   }

@@ -7,18 +7,16 @@ package frc.robot.subsystems.turret;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.turret.TurretIO.TurretIOInputs;
 
 
 public class Turret extends SubsystemBase {
   private TurretIO io;
-  private TurretIOInputs inputs;
+  private TurretIOInputsAutoLogged inputs;
 
   private Supplier<Pose2d> poseSupplier;
 
@@ -42,14 +40,14 @@ public class Turret extends SubsystemBase {
   public Turret(TurretIO io, Supplier<Pose2d> poseSupplier) {
     this.io = io;
     this.poseSupplier = poseSupplier;
-    inputs = new TurretIOInputs();
+    inputs = new TurretIOInputsAutoLogged();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
-    Logger.processInputs("Turret", (LoggableInputs) inputs);
+    Logger.processInputs("Turret", inputs);
     currentState = updateState();
     applyState();
   }

@@ -6,6 +6,8 @@ package frc.robot.subsystems.turret;
 
 import java.util.function.BooleanSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
@@ -110,27 +112,33 @@ public class TurretIOSpark implements TurretIO{
      */
     @Override
     public void setTurretAngle(double angle) {
+        Logger.recordOutput("setTurretAngleCaleed", true);
         if (angle < TurretConstants.turretMinAngle) {
             if (angle + Math.PI*2 > TurretConstants.turretMaxAngle) {
+                Logger.recordOutput("setTurretAngleState", 1);
                 if (TurretConstants.turretMinAngle - angle <= angle + Math.PI*2 - TurretConstants.turretMaxAngle) {
                     setTurretAngle(TurretConstants.turretMinAngle);
                 } else {
                     setTurretAngle(TurretConstants.turretMaxAngle);
                 }
             } else {
+                Logger.recordOutput("setTurretAngleState", 2);
                 setTurretAngle(angle + Math.PI*2);
             }
         } else if (angle > TurretConstants.turretMaxAngle ) {
             if (angle - Math.PI*2 < TurretConstants.turretMinAngle) {
+                Logger.recordOutput("setTurretAngleState", 3);
                 if (angle - TurretConstants.turretMaxAngle <= TurretConstants.turretMinAngle - angle - Math.PI*2) {
                     setTurretAngle(TurretConstants.turretMaxAngle);
                 } else {
                     setTurretAngle(TurretConstants.turretMinAngle);
                 }
             } else {
+                Logger.recordOutput("setTurretAngleState", 4);
                 setTurretAngle(angle - Math.PI * 2);
             }
         } else {
+            Logger.recordOutput("setTurretAngleState", 5);
             turretSetAngle = angle;
         }
     }
