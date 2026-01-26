@@ -76,12 +76,12 @@ public class Turret extends SubsystemBase {
           io.setTurretAngle(turretSetPoint);
         } else if (poseSupplier.get().getY() < 4) {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-          calculationToTarget(TurretConstants.left);
+          calculationToTarget(TurretConstants.right);
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
         } else {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-          calculationToTarget(TurretConstants.right);
+          calculationToTarget(TurretConstants.left);
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
         }
@@ -108,8 +108,11 @@ public class Turret extends SubsystemBase {
    */
   private void calculationToTarget(Translation2d target) {
     Translation2d robotToTarget = target.minus(poseSupplier.get().getTranslation());
-    Rotation2d turretToTargetAngle = poseSupplier.get().getRotation().minus(robotToTarget.getAngle());
+    Rotation2d turretToTargetAngle = robotToTarget.getAngle().minus(poseSupplier.get().getRotation());
     turretSetPoint = turretToTargetAngle.getRadians();
+    Logger.recordOutput("Calculations/target", target);
+    Logger.recordOutput("Calculations/robotToTarget", robotToTarget);
+    Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);
     //calculate hood angle based off distance
   }
 

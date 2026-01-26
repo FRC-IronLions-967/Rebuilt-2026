@@ -165,15 +165,7 @@ public class RobotContainer {
             () -> -controller.getRightX()));
 
     // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
-                .ignoringDisable(true));
+    controller.rightTrigger().toggleOnTrue(superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
   }
 
   /**
