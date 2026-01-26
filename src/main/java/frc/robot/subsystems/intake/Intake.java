@@ -17,12 +17,14 @@ public class Intake extends SubsystemBase {
   public enum WantedState {
     IDLE,
     INTAKING,
+    RESETTING,
     REVERSING
   }
 
   public enum CurrentState {
     IDLE,
     INTAKING,
+    RESETTING,
     REVERSING
   }
 
@@ -48,6 +50,8 @@ public class Intake extends SubsystemBase {
         yield CurrentState.IDLE;
       case INTAKING:
         yield CurrentState.INTAKING;
+      case RESETTING:
+        yield CurrentState.RESETTING;
       case REVERSING:
         yield CurrentState.REVERSING;
     };
@@ -64,18 +68,25 @@ public class Intake extends SubsystemBase {
         break;
       case INTAKING:
         io.setIntakeArmAngle(IntakeConstants.intakePosition);
-        io.setIntakeSpeed(5600);
-        io.setFeederSpeed(5600);
-        io.setHorizontalMotor1Speed(5600);
-        io.setHorizontalMotor2Speed(5600);
+        io.setIntakeSpeed(IntakeConstants.intakeIntakingSpeed);
+        io.setFeederSpeed(IntakeConstants.feederSpeed);
+        io.setHorizontalMotor1Speed(IntakeConstants.horizontal1Speed);
+        io.setHorizontalMotor2Speed(IntakeConstants.horizontal2Speed);
         break;
       case REVERSING:
         io.setIntakeArmAngle(IntakeConstants.intakePosition);
-        io.setIntakeSpeed(-5600);
-        io.setFeederSpeed(-5600);
-        io.setHorizontalMotor1Speed(-5600);
-        io.setHorizontalMotor2Speed(-5600);
+        io.setIntakeSpeed(-IntakeConstants.intakeIntakingSpeed);
+        io.setFeederSpeed(-IntakeConstants.feederSpeed);
+        io.setHorizontalMotor1Speed(-IntakeConstants.horizontal1Speed);
+        io.setHorizontalMotor2Speed(-IntakeConstants.horizontal2Speed);
         break;
+      case RESETTING:
+        //stop feeding but keep intaking
+        io.setIntakeArmAngle(IntakeConstants.intakePosition);
+        io.setIntakeSpeed(-IntakeConstants.intakeIntakingSpeed);
+        io.setFeederSpeed(0);
+        io.setHorizontalMotor1Speed(-IntakeConstants.horizontal1Speed);
+        io.setHorizontalMotor2Speed(-IntakeConstants.horizontal2Speed);
       default:
         io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
         io.setIntakeSpeed(0.0);

@@ -38,6 +38,7 @@ public class TurretConstants {
 
     public static final double turretMaxAngle = Math.PI*2;
     public static final double turretMinAngle = 0;
+    public static final double turretTolerance = 0.0872; //5 degrees
 
     public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 6784);
     public static final LoggedNetworkNumber flywheelShootingSpeed = new LoggedNetworkNumber("flywheelShootingSpeed", 6784);

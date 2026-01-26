@@ -104,25 +104,31 @@ public class TurretIOSpark implements TurretIO{
         hoodSetAngle = angle;
     }
 
+    /**
+     * loops through itself until it makes the angle become an angle a valid angle
+     * @param angle wanted angle
+     */
     @Override
     public void setTurretAngle(double angle) {
         if (angle < TurretConstants.turretMinAngle) {
             if (angle + Math.PI*2 > TurretConstants.turretMaxAngle) {
-                turretSetAngle = 
-                    TurretConstants.turretMinAngle - angle <= angle + Math.PI*2 - TurretConstants.turretMaxAngle  
-                    ? TurretConstants.turretMinAngle
-                    : TurretConstants.turretMaxAngle;
+                if (TurretConstants.turretMinAngle - angle <= angle + Math.PI*2 - TurretConstants.turretMaxAngle) {
+                    setTurretAngle(TurretConstants.turretMinAngle);
+                } else {
+                    setTurretAngle(TurretConstants.turretMaxAngle);
+                }
             } else {
-                turretSetAngle = angle + Math.PI*2;
+                setTurretAngle(angle + Math.PI*2);
             }
         } else if (angle > TurretConstants.turretMaxAngle ) {
             if (angle - Math.PI*2 < TurretConstants.turretMinAngle) {
-                turretSetAngle =
-                    angle - TurretConstants.turretMaxAngle <= TurretConstants.turretMinAngle - angle - Math.PI*2
-                    ? TurretConstants.turretMaxAngle
-                    : TurretConstants.turretMinAngle;
+                if (angle - TurretConstants.turretMaxAngle <= TurretConstants.turretMinAngle - angle - Math.PI*2) {
+                    setTurretAngle(TurretConstants.turretMaxAngle);
+                } else {
+                    setTurretAngle(TurretConstants.turretMinAngle);
+                }
             } else {
-                turretSetAngle = angle - Math.PI * 2;
+                setTurretAngle(angle - Math.PI * 2);
             }
         } else {
             turretSetAngle = angle;

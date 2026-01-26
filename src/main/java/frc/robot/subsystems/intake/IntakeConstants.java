@@ -35,5 +35,10 @@ public class IntakeConstants{
 
   public static final double intakePosition = 3.00;
   public static final double armRestingPosition = 0 * Math.PI / 180;
+
+  public static final double intakeIntakingSpeed = 6666;
+  public static final double feederSpeed = 6666;
+  public static final double horizontal1Speed = 10000;
+  public static final double horizontal2Speed = 6666;
 }
 
