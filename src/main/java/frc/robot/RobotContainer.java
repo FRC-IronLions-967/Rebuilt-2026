@@ -81,7 +81,7 @@ public class RobotContainer {
             new AprilTagVision(drive::addVisionMeasurement,
             new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), 
             new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform));
-        turret = new Turret(new TurretIOSpark(), drive::getPose);
+        turret = new Turret(new TurretIOSpark(), drive::getPose, drive::getChassisSpeeds);
         intake = new Intake(new IntakeIOSpark());
         break;
 
@@ -100,7 +100,7 @@ public class RobotContainer {
                 new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform, drive::getPose),
                 new AprilTagIOSim(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform, drive::getPose)
             );
-        turret = new Turret(new TurretIOSim(), drive::getPose);
+        turret = new Turret(new TurretIOSim(), drive::getPose, drive::getChassisSpeeds);
         intake = new Intake(new IntakeIOSpark());
         break;
 
@@ -119,7 +119,7 @@ public class RobotContainer {
                 new AprilTagIO() {},
                 new AprilTagIO() {}
             );
-        turret = new Turret(new TurretIO() {}, drive::getPose);
+        turret = new Turret(new TurretIO() {}, drive::getPose, drive::getChassisSpeeds);
         intake = new Intake(new IntakeIO() {});
         break;
     }
