@@ -88,6 +88,9 @@ public class TurretIOSpark implements TurretIO{
         inputs.turretMinLimitSwitch = turretMinLimitSwitch.getAsBoolean();
         inputs.turretMaxLimitSwitch = turretMaxLimitSwitch.getAsBoolean();
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
+        inputs.intakeSafe = 
+            ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
+            || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
         
         flywheelController.setSetpoint(flywheelSetSpeed, ControlType.kVelocity);
         hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);

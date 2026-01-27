@@ -43,6 +43,8 @@ public class Turret extends SubsystemBase {
   private double turretSetPoint = TurretConstants.turretMinAngle;
   private double hoodSetPoint = TurretConstants.hoodMinAngle;
 
+  double closestSafeAngle;
+
   /** Creates a new Turret. */
   public Turret(TurretIO io, Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> speedsSupplier) {
     this.io = io;
@@ -81,7 +83,11 @@ public class Turret extends SubsystemBase {
       case IDLE:
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
-        io.setTurretAngle(inputs.turretAngle);
+        closestSafeAngle = 
+          Math.abs(TurretConstants.turretIDLEPosition2.get() - inputs.turretAngle) < Math.abs(TurretConstants.turretIDLEPosition1.get() - inputs.turretAngle) 
+          ? TurretConstants.turretIDLEPosition1.get() 
+          : TurretConstants.turretIDLEPosition2.get();
+        io.setTurretAngle(closestSafeAngle);
         break;
       case SHOOTING:
         if (poseSupplier.get().getX() < 4.5) {
@@ -156,5 +162,8 @@ public class Turret extends SubsystemBase {
 
   public boolean getResetting() {
     return inputs.resetting;
+  }
+  public boolean intakeSafe() {
+    return inputs.intakeSafe;
   }
 }
