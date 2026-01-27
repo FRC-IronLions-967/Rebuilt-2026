@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,6 +51,9 @@ public class Superstructure extends SubsystemBase {
     // This method will be called once per scheduler run
     currentState = updateState(wantedState);
     applyState();
+    
+    Logger.recordOutput("Wanted State", wantedState);
+    Logger.recordOutput("CurrentState", getCurrentState());
   }
 
   private CurrentState updateState(WantedState wantedState) {
@@ -87,6 +92,10 @@ public class Superstructure extends SubsystemBase {
         intake.setWantedState(Intake.WantedState.IDLE);
         break;
     }
+  }
+
+  public CurrentState getCurrentState() {
+    return currentState;
   }
 
   public void setWantedState(WantedState wantedState) {

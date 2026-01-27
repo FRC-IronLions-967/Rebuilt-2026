@@ -36,8 +36,8 @@ public class TurretConstants {
     public static final double hoodMaxAngle = Math.PI/2;
     public static final double hoodMinAngle = Math.PI/4;
 
-    public static final double turretMaxAngle = Math.PI*2;
-    public static final double turretMinAngle = 0;
+    public static final double turretMaxAngle = Math.PI-0.0872;
+    public static final double turretMinAngle = -Math.PI+0.0872;
     public static final double turretTolerance = 0.0872; //5 degrees
 
     public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 6784);
