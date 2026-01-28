@@ -19,7 +19,7 @@ public class Superstructure extends SubsystemBase {
   public enum WantedState {
     IDLE,
     SHOOTING,
-    EJECTING
+    EJECTING  
   }
 
   public enum CurrentState {
