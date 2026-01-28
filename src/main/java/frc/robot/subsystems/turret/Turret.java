@@ -29,7 +29,8 @@ public class Turret extends SubsystemBase {
 
   public enum WantedState {
     IDLE,
-    SHOOTING
+    SHOOTING,
+    TRENCH
   }
 
   public enum CurrentState {
@@ -81,6 +82,8 @@ public class Turret extends SubsystemBase {
             }
           }
         yield CurrentState.SHOOTING;
+      case TRENCH:
+        yield CurrentState.TRENCH;
     };
   }
 

@@ -19,12 +19,14 @@ public class Superstructure extends SubsystemBase {
   public enum WantedState {
     IDLE,
     SHOOTING,
+    TRENCH,
     EJECTING  
   }
 
   public enum CurrentState {
     IDLE,
     SHOOTING,
+    TRENCH,
     RESETTINGTURRET,
     EJECTING
   }
@@ -63,8 +65,12 @@ public class Superstructure extends SubsystemBase {
       case SHOOTING:
         if (turret.getResetting()) {
           yield CurrentState.RESETTINGTURRET;
+        } else if (turret.getCurrentState() == Turret.CurrentState.TRENCH) {
+          yield CurrentState.TRENCH;
         }
         yield CurrentState.SHOOTING;
+      case TRENCH:
+        yield CurrentState.TRENCH;
       case EJECTING:
         yield CurrentState.EJECTING;
     };
@@ -82,6 +88,9 @@ public class Superstructure extends SubsystemBase {
         turret.setWantedState(Turret.WantedState.SHOOTING);
         intake.setWantedState(Intake.WantedState.INTAKING);
         break;
+      case TRENCH:
+        turret.setWantedState(Turret.WantedState.TRENCH);
+        intake.setWantedState(Intake.WantedState.INTAKING);
       case RESETTINGTURRET:
         turret.setWantedState(Turret.WantedState.SHOOTING);
         intake.setWantedState(Intake.WantedState.RESETTING);
