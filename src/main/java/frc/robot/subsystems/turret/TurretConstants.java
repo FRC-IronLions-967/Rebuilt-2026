@@ -14,6 +14,8 @@ public class TurretConstants {
     public static final Translation2d hub = new Translation2d(4.625, 4);
     public static final Translation2d left = new Translation2d(1, 7);
     public static final Translation2d right = new Translation2d(1, 1);
+    public static final Translation2d[] trenches = {new Translation2d(4.66, .66), new Translation2d(4.66, 7.33), new Translation2d(11.925, 0.66), new Translation2d(11.925, 7.33)};
+    public static final double trenchTolerance = 1.0;
 
     public static final double turretGearRatio = 1.0;
 

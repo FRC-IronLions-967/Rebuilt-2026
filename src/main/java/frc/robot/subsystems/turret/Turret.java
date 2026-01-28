@@ -34,7 +34,8 @@ public class Turret extends SubsystemBase {
 
   public enum CurrentState {
     IDLE,
-    SHOOTING
+    SHOOTING,
+    TRENCH
   }
 
   private WantedState wantedState = WantedState.IDLE;
@@ -74,6 +75,11 @@ public class Turret extends SubsystemBase {
       case IDLE: 
         yield CurrentState.IDLE;
       case SHOOTING:
+        for (int i = 0; i < TurretConstants.trenches.length; i++) {
+            if (TurretConstants.trenches[i].getDistance(poseSupplier.get().getTranslation()) < TurretConstants.turretTolerance) {
+              yield CurrentState.TRENCH;
+            }
+          }
         yield CurrentState.SHOOTING;
     };
   }
@@ -107,6 +113,19 @@ public class Turret extends SubsystemBase {
           io.setTurretAngle(turretSetPoint);
         }
         break;
+      case TRENCH:
+        io.setFlyWheelSpeed(0);
+        io.setHoodAngle(TurretConstants.turretMinAngle);
+        if (poseSupplier.get().getX() < 4.5) {
+          calculationToTarget(TurretConstants.hub);
+          io.setTurretAngle(turretSetPoint);
+        } else if (poseSupplier.get().getY() < 4) {
+          calculationToTarget(TurretConstants.right);
+          io.setTurretAngle(turretSetPoint);
+        } else {
+          calculationToTarget(TurretConstants.left);
+          io.setTurretAngle(turretSetPoint);
+        }
       default:
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());

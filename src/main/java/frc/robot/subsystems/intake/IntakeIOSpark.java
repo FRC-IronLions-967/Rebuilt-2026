@@ -12,7 +12,6 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -65,8 +64,6 @@ public class IntakeIOSpark implements IntakeIO {
          armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
          armConfig
                  .absoluteEncoder
-                 .apply(new AbsoluteEncoderConfig())
-                 .positionConversionFactor(2 * Math.PI)
                  .zeroOffset(IntakeConstants.armZeroOffset);
          armConfig
                  .closedLoop
