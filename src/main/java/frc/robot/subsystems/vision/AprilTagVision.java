@@ -4,7 +4,11 @@
 
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.subsystems.vision.AprilTagIO.TargetInfo;
@@ -63,7 +67,13 @@ public class AprilTagVision extends SubsystemBase {
                 || obs.pose().getY() > VisionConstants.kTagLayout.getFieldWidth();
 
         if (rejectPose) continue;
-        consumer.accept(obs.pose().toPose2d(), obs.timestamp());
+
+        double stdFactor = Math.pow(obs.avgTagDistance(), 2) / obs.tagCount();
+        double linearStdDev = VisionConstants.linearStdDevBaseline * stdFactor;
+        double angularStdDev = VisionConstants.angularStdDevBaseline * stdFactor;
+
+
+        consumer.accept(obs.pose().toPose2d(), obs.timestamp(), VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
       }
     }
   }
@@ -72,7 +82,7 @@ public class AprilTagVision extends SubsystemBase {
   public static interface VisionConsumer {
     public void accept(
       Pose2d pose,
-      double timestamp
-    );    
+      double timestamp,
+      Matrix<N3, N1> visionMeasurementStdDevs);
   }
 }

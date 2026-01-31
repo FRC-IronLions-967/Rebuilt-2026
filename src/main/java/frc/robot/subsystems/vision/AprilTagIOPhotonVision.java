@@ -49,7 +49,19 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
             Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
             Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
-            poseObservations.add(new PoseObservation(multitagResult.estimatedPose.ambiguity, robotPose, result.getTimestampSeconds()));
+            double totalTagDistance = 0.0;
+            for (var target : result.targets) {
+              totalTagDistance += target.bestCameraToTarget.getTranslation().getNorm();
+            }
+
+            poseObservations.add(new PoseObservation(
+              multitagResult.estimatedPose.ambiguity, 
+              robotPose, 
+              result.getTimestampSeconds(), 
+              totalTagDistance/result.targets.size(), 
+              multitagResult.fiducialIDsUsed.size()
+            ));
+
           } else if (!result.targets.isEmpty()) {
             inputs.poseType = PoseTypes.SINGLE;
             var target = result.getTargets().get(0);
@@ -62,7 +74,14 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
               Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
               Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
-              poseObservations.add(new PoseObservation(target.poseAmbiguity, robotPose, result.getTimestampSeconds()));
+              poseObservations.add(new PoseObservation(
+                target.poseAmbiguity, 
+                robotPose, 
+                result.getTimestampSeconds(), 
+                cameraToTarget.getTranslation().getNorm(), 
+                1
+              ));
+
             }
           }
         inputs.targetInfo = new TargetInfo[targetInfos.size()];

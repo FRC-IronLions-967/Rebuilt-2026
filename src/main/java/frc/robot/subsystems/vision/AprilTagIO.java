@@ -26,7 +26,7 @@ public interface AprilTagIO {
   public static record TargetInfo(int tagID, double targetYaw, double targetPitch, double distanceToTarget) {}
 
   public static record PoseObservation(
-      double ambiguity, Pose3d pose, double timestamp) {}
+      double ambiguity, Pose3d pose, double timestamp, double avgTagDistance, int tagCount) {}
 
   public static record VisionPoseObs(Pose2d poseObs, boolean poseObsGood, double timestamp) {}
 
