@@ -16,8 +16,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -125,11 +123,12 @@ public class RobotContainer {
         turret = new Turret(new TurretIO() {}, drive::getPose, drive::getChassisSpeeds);
         intake = new Intake(new IntakeIO() {});
         break;
-
-        //Add Named Comands here
     }
 
     superstructure = new Superstructure(drive, aprilTagVision, turret, intake);
+
+    //Add Named Comands here
+    NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -172,6 +171,7 @@ public class RobotContainer {
     controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
     controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
     controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
+    controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
   }
 
   /**

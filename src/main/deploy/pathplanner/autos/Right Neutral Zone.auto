@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "start"
+          }
+        },
+        {
           "type": "wait",
           "data": {
             "waitTime": 3.0
