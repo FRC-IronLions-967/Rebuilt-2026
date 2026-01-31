@@ -23,7 +23,7 @@ public class VisionConstants {
         Units.inchesToMeters(new LoggedNetworkNumber("ATC1x", -11.75).get()),
         Units.inchesToMeters(new LoggedNetworkNumber("ATC1y", 11.75).get()), 
         Units.inchesToMeters(new LoggedNetworkNumber("ATC1z", 9).get()),
-        new Rotation3d(0, Units.degreesToRadians(30), Units.degreesToRadians(new LoggedNetworkNumber("ATC1yaw", -135).get())));
+        new Rotation3d(0, Units.degreesToRadians(30), Units.degreesToRadians(new LoggedNetworkNumber("ATC1yaw", -150).get())));
   public static final int AprilTagCamera1Index = 0;
 
   public static final String AprilTagCamera2Name = "April_Tag_2";
@@ -32,7 +32,7 @@ public class VisionConstants {
         Units.inchesToMeters(new LoggedNetworkNumber("ATC2x", -11.75).get()),
         Units.inchesToMeters(new LoggedNetworkNumber("ATC2y", -11.75).get()),
         Units.inchesToMeters(new LoggedNetworkNumber("ATC2z", 9).get()),
-        new Rotation3d(0, Units.degreesToRadians(30), new LoggedNetworkNumber("ATC2yaw", 135).get()));
+        new Rotation3d(0, Units.degreesToRadians(30), new LoggedNetworkNumber("ATC2yaw", -60).get()));
   public static final int AprilTagCamera2Index = 1;
 
   public static final AprilTagFieldLayout kTagLayout =
@@ -45,4 +45,8 @@ public class VisionConstants {
       new LoggedNetworkNumber("Tuning/Vision/maxZError", 0.75);
 
     public static final int hubAprilTag = DriverStation.getAlliance().get() == Alliance.Red ? 10 : 26;
+
+  public static final double linearStdDevBaseline = 0.02; // Meters
+  public static final double angularStdDevBaseline = 0.06; // Radians
+
 }
