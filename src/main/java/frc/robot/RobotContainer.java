@@ -14,7 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+// import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.Superstructure.WantedState;
+// import frc.robot.subsystems.Superstructure;
+// import frc.robot.subsystems.Superstructure.WantedState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
@@ -57,7 +57,7 @@ public class RobotContainer {
   @SuppressWarnings("unused")
   private final AprilTagVision aprilTagVision;
   private final Turret turret;
-  private final Superstructure superstructure;
+//   private final Superstructure superstructure;
   private final Intake intake;
 
   // Controller
@@ -125,10 +125,10 @@ public class RobotContainer {
         break;
     }
 
-    superstructure = new Superstructure(drive, aprilTagVision, turret, intake);
+    // superstructure = new Superstructure(drive, aprilTagVision, turret, intake);
 
-    //Add Named Comands here
-    NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
+    // //Add Named Comands here
+    // NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -168,10 +168,14 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
-    controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
-    controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
-    controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
-    controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
+    // controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
+    // controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
+    // controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
+    // controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
+    controller.rightTrigger().onTrue(intake.setWantedStateCommand(Intake.WantedState.INTAKING));
+    controller.rightBumper().onTrue(intake.setWantedStateCommand(Intake.WantedState.IDLE));
+    controller.leftTrigger().onTrue(turret.setWantedStateCommand(Turret.WantedState.SHOOTING));
+    controller.leftBumper().onTrue(turret.setWantedStateCommand(Turret.WantedState.IDLE));
   }
 
   /**
