@@ -13,8 +13,8 @@ public class TurretIOSim extends TurretIOSpark {
     public void updateInputs(TurretIOInputs inputs) {
         inputs.flywheelSpeed = flywheelSetSpeed;
         inputs.hoodAngle = hoodSetAngle;
-        inputs.turretAngle = turretSetAngle;
-        inputs.turretSetAngle = turretSetAngle;
+        // inputs.turretAngle = turretSetAngle;
+        // inputs.turretSetAngle = turretSetAngle;
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
         inputs.intakeSafe = 
             ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)

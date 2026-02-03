@@ -35,8 +35,8 @@ public class TurretConstants {
     public static final int hoodCurrentLimit = 20; 
     public static final int turretCurrentLimit = 30;
 
-    public static final double hoodMaxAngle = Math.PI/2;
-    public static final double hoodMinAngle = Math.PI/4;
+    public static final double hoodMaxAngle = 1;
+    public static final double hoodMinAngle = 0;
 
     public static final double turretMaxAngle = Math.PI-0.0872;
     public static final double turretMinAngle = -Math.PI+0.0872;

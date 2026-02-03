@@ -21,7 +21,7 @@ public class Turret extends SubsystemBase {
   public static final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
   public static final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
 
-  private TurretIO io;
+  public TurretIO io;
   private TurretIOInputsAutoLogged inputs;
 
   private Supplier<Pose2d> poseSupplier;
@@ -187,5 +187,9 @@ public class Turret extends SubsystemBase {
   }
   public boolean intakeSafe() {
     return inputs.intakeSafe;
+  }
+
+  public double getHoodAngle() {
+    return inputs.hoodAngle;
   }
 }
