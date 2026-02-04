@@ -67,8 +67,8 @@ public class Turret extends SubsystemBase {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
     Logger.processInputs("Turret", inputs);
-    currentState = updateState();
-    applyState();
+    // currentState = updateState();
+    // applyState();
   }
 
   private CurrentState updateState() {
