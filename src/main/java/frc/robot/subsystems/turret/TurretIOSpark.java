@@ -63,9 +63,12 @@ public class TurretIOSpark implements TurretIO{
 
         hood = new SparkFlex(11, MotorType.kBrushless);
         hoodConfig = new SparkFlexConfig();
-        hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kAbsoluteEncoder).outputRange(TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
+        hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).outputRange(TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
+        hoodConfig.encoder.positionConversionFactor(1/36);// gear ratio is 12:1 then <3 rotations from top to bottom
         hood.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
+
+        hood.getEncoder().setPosition(TurretConstants.hoodMinAngle);
 
         // turret = new SparkFlex(12, MotorType.kBrushless);
         // turretConfig = new SparkFlexConfig();
@@ -87,6 +90,7 @@ public class TurretIOSpark implements TurretIO{
         // }
 
         inputs.flywheelSpeed = flywheel.getEncoder().getVelocity();
+        inputs.flywheelSetSpeed = flywheelSetSpeed;
         inputs.hoodAngle = hood.getAbsoluteEncoder().getPosition();
         // inputs.turretAngle = turret.getEncoder().getPosition();
         // inputs.turretSetAngle = turretSetAngle;

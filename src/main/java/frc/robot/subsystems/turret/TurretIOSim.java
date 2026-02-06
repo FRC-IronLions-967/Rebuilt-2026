@@ -4,14 +4,30 @@
 
 package frc.robot.subsystems.turret;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.Robot;
+
 public class TurretIOSim extends TurretIOSpark {
+
+    private final FlywheelSim flywheelSim;
+    
     public TurretIOSim () {
         super();
+        flywheelSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.5, 2), DCMotor.getNeoVortex(2), 1);
     }
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        inputs.flywheelSpeed = flywheelSetSpeed;
+        flywheelSim.setInputVoltage(flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) * 12 + 0.9 * flywheelFeedforward.calculate(flywheelSetSpeed));
+        Logger.recordOutput("Flywheel Voltage", flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) * 12 + 0.9 * flywheelFeedforward.calculate(flywheelSetSpeed));
+        flywheelSim.update(Robot.defaultPeriodSecs);
+
+        inputs.flywheelSpeed = flywheelSim.getAngularVelocityRPM();
+        inputs.flywheelSetSpeed = flywheelSetSpeed;
         inputs.hoodAngle = hoodSetAngle;
         // inputs.turretAngle = turretSetAngle;
         // inputs.turretSetAngle = turretSetAngle;

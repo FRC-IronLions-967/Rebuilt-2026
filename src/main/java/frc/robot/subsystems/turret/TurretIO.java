@@ -11,6 +11,7 @@ public interface TurretIO {
     @AutoLog
     public static class TurretIOInputs {
         double flywheelSpeed;
+        double flywheelSetSpeed;
         double hoodAngle;
         double turretAngle;
         double turretSetAngle;
