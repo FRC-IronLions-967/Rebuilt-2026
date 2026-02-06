@@ -16,6 +16,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.controller.BangBangController;
+
 // import frc.robot.util.LimitSwitchManager;
 
 /** Add your docs here. */
@@ -23,7 +25,6 @@ public class TurretIOSpark implements TurretIO{
 
     protected SparkFlex flywheel;
     protected SparkFlexConfig flywheelConfig;
-    protected SparkClosedLoopController flywheelController;
 
     protected SparkFlex flywheelFollower;
     protected SparkFlexConfig flywheelFollowerConfig;
@@ -31,6 +32,8 @@ public class TurretIOSpark implements TurretIO{
     protected SparkFlex hood;
     protected SparkFlexConfig hoodConfig;
     protected SparkClosedLoopController hoodController;
+
+    protected BangBangController flyWheelBangBang;
 
     // protected SparkFlex turret;
     // protected SparkFlexConfig turretConfig;
@@ -48,7 +51,7 @@ public class TurretIOSpark implements TurretIO{
         flywheelConfig = new SparkFlexConfig();
         flywheelConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).closedLoop.pid(TurretConstants.flywheelP.get(), 0.0, TurretConstants.flywheelD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         flywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        flywheelController = flywheel.getClosedLoopController();
+        flyWheelBangBang = new BangBangController(TurretConstants.flywheelTolerance.get());
 
         flywheelFollower = new SparkFlex(10, MotorType.kBrushless);
         flywheelFollowerConfig = new SparkFlexConfig();
@@ -91,7 +94,7 @@ public class TurretIOSpark implements TurretIO{
         //     ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
         //     || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
         
-        flywheelController.setSetpoint(flywheelSetSpeed, ControlType.kVelocity);
+        flywheel.set(flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed));
         hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
         // turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }

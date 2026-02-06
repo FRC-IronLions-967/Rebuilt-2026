@@ -44,6 +44,7 @@ public class TurretConstants {
 
     public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 6784);
     public static final LoggedNetworkNumber flywheelShootingSpeed = new LoggedNetworkNumber("flywheelShootingSpeed", 6784);
+    public static final LoggedNetworkNumber flywheelTolerance = new LoggedNetworkNumber("flywheelTolerance", 250);
 
     public static final LoggedNetworkNumber hoodIDLEPosition = new LoggedNetworkNumber("hoodIDLEPosition", hoodMaxAngle);
     public static final LoggedNetworkNumber turretIDLEPosition1 = new LoggedNetworkNumber("turretIDLEPosition1", Math.PI/2);
