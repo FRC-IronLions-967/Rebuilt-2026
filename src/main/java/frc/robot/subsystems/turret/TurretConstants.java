@@ -19,8 +19,9 @@ public class TurretConstants {
 
     public static final double turretGearRatio = 1.0;
 
-    public static final LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("flywheelP", 1.0);
-    public static final LoggedNetworkNumber flywheelD = new LoggedNetworkNumber("flywheelD", 0.0);
+    public static final LoggedNetworkNumber flywheelkS = new LoggedNetworkNumber("flywheelks", 1.0);
+    public static final LoggedNetworkNumber flywheelkV = new LoggedNetworkNumber("flywheelkV", 0.08);
+    public static final LoggedNetworkNumber flywheelkA = new LoggedNetworkNumber("flywheelkA", 0.0);
 
     public static final LoggedNetworkNumber hoodP = new LoggedNetworkNumber("hoodP", 1.0);
     public static final LoggedNetworkNumber hoodD = new LoggedNetworkNumber("hoodD", 0.0);
