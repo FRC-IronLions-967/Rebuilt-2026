@@ -36,7 +36,6 @@ import frc.robot.subsystems.drive.ModuleIOSpark;
 // import frc.robot.subsystems.intake.IntakeIOSim;
 // import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretIOSpark;
@@ -162,7 +161,7 @@ public class RobotContainer {
 
     controller.a().onTrue(new InstantCommand(
         ()->{
-            turret.io.setFlyWheelSpeed(600);
+            turret.io.setFlyWheelSpeed(-600);
         }
     ));
     controller.a().onFalse(new InstantCommand(
@@ -171,10 +170,10 @@ public class RobotContainer {
         }
     ));
     controller.povUp().onTrue(new InstantCommand(()->{
-        turret.io.setHoodAngle(turret.getHoodAngle() + 0.05);
+        turret.io.setHoodAngle(turret.getHoodAngle() - 0.05);
     }));
     controller.povDown().onTrue(new InstantCommand(()->{
-        turret.io.setHoodAngle(turret.getHoodAngle() - 0.05);
+        turret.io.setHoodAngle(turret.getHoodAngle() + 0.05);
     }));
     
   }

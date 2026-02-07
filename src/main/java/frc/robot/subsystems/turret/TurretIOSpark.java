@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.turret;
 
-import org.littletonrobotics.junction.Logger;
-
 // import java.util.function.BooleanSupplier;
 
 import com.revrobotics.PersistMode;
@@ -18,9 +16,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.math.controller.BangBangController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-
 // import frc.robot.util.LimitSwitchManager;
 
 /** Add your docs here. */
@@ -28,6 +23,7 @@ public class TurretIOSpark implements TurretIO{
 
     protected SparkFlex flywheel;
     protected SparkFlexConfig flywheelConfig;
+    protected SparkClosedLoopController flywheelController;
 
     protected SparkFlex flywheelFollower;
     protected SparkFlexConfig flywheelFollowerConfig;
@@ -35,9 +31,6 @@ public class TurretIOSpark implements TurretIO{
     protected SparkFlex hood;
     protected SparkFlexConfig hoodConfig;
     protected SparkClosedLoopController hoodController;
-
-    protected BangBangController flyWheelBangBang;
-    protected SimpleMotorFeedforward flywheelFeedforward;
 
     // protected SparkFlex turret;
     // protected SparkFlexConfig turretConfig;
@@ -53,24 +46,25 @@ public class TurretIOSpark implements TurretIO{
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
         flywheelConfig = new SparkFlexConfig();
-        flywheelConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit);
+        flywheelConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).closedLoop.pid(TurretConstants.flywheelP, 0.0, TurretConstants.flywheelD);
+        // .feedForward.kS(0.1);
         flywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        flyWheelBangBang = new BangBangController();
-        flywheelFeedforward = new SimpleMotorFeedforward(TurretConstants.flywheelkS.get(), TurretConstants.flywheelkV.get(), TurretConstants.flywheelkA.get());
+        flywheelController = flywheel.getClosedLoopController();
 
         flywheelFollower = new SparkFlex(10, MotorType.kBrushless);
         flywheelFollowerConfig = new SparkFlexConfig();
-        flywheelFollowerConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit);
+        flywheelFollowerConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).follow(flywheel, true);
         flywheelFollower.configure(flywheelFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         hood = new SparkFlex(11, MotorType.kBrushless);
         hoodConfig = new SparkFlexConfig();
-        hoodConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).outputRange(TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
-        hoodConfig.encoder.positionConversionFactor(1/36);// gear ratio is 12:1 then <3 rotations from top to bottom
-        hood.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // hoodConfig.closedLoop.outputRange(-0.25, 0.25);
+        hoodConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder)/*.outputRange(TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle)*/.positionWrappingEnabled(false);
+        hoodConfig.encoder.positionConversionFactor(1.0/36.0);
+        hood.configure(hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
 
-        hood.getEncoder().setPosition(TurretConstants.hoodMaxAngle);
+        hood.getEncoder().setPosition(TurretConstants.hoodMaxAngle);//zero
 
         // turret = new SparkFlex(12, MotorType.kBrushless);
         // turretConfig = new SparkFlexConfig();
@@ -93,6 +87,7 @@ public class TurretIOSpark implements TurretIO{
 
         inputs.flywheelSpeed = flywheel.getEncoder().getVelocity();
         inputs.flywheelSetSpeed = flywheelSetSpeed;
+        inputs.flywheelCurrent = flywheel.getOutputCurrent()+flywheelFollower.getOutputCurrent();
         inputs.hoodAngle = hood.getEncoder().getPosition();
         inputs.hoodSetAngle = hoodSetAngle;
         // inputs.turretAngle = turret.getEncoder().getPosition();
@@ -103,21 +98,20 @@ public class TurretIOSpark implements TurretIO{
         // inputs.intakeSafe = 
         //     ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
         //     || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
-        
-        flywheel.set(flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed));
-        flywheelFollower.set(flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed));
-        hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
+
         // turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }
 
     @Override
     public void setFlyWheelSpeed(double speed) {
         flywheelSetSpeed = speed;
+        flywheelController.setSetpoint(speed, ControlType.kVelocity);
     }
 
     @Override
     public void setHoodAngle(double angle) {
         hoodSetAngle = angle;
+        hoodController.setSetpoint(angle, ControlType.kPosition);
     }
 
     // /**

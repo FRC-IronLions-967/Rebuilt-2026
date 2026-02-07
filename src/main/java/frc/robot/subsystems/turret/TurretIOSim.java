@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.turret;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -22,8 +20,6 @@ public class TurretIOSim extends TurretIOSpark {
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        flywheelSim.setInputVoltage(flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) * 12 + 0.9 * flywheelFeedforward.calculate(flywheelSetSpeed));
-        Logger.recordOutput("Flywheel Voltage", flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) * 12 + 0.9 * flywheelFeedforward.calculate(flywheelSetSpeed));
         flywheelSim.update(Robot.defaultPeriodSecs);
 
         inputs.flywheelSpeed = flywheelSim.getAngularVelocityRPM();

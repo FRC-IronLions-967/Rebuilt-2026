@@ -20,6 +20,8 @@ public interface TurretIO {
         boolean turretMaxLimitSwitch;
         boolean resetting;
         boolean intakeSafe;
+
+        double flywheelCurrent;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {}
