@@ -161,12 +161,12 @@ public class RobotContainer {
 
     controller.a().onTrue(new InstantCommand(
         ()->{
-            turret.io.setFlyWheelSpeed(-600);
+            turret.io.setFlyWheelSpeed(-3000);
         }
     ));
     controller.a().onFalse(new InstantCommand(
         ()->{
-            turret.io.setFlyWheelSpeed(0);
+            turret.io.setFlyWheelSpeed(0);;
         }
     ));
     controller.povUp().onTrue(new InstantCommand(()->{
@@ -175,7 +175,9 @@ public class RobotContainer {
     controller.povDown().onTrue(new InstantCommand(()->{
         turret.io.setHoodAngle(turret.getHoodAngle() + 0.05);
     }));
-    
+    controller.povRight().onTrue(new InstantCommand(()->{
+        turret.io.setHoodAngle(0.5);
+    }));
   }
 
   /**

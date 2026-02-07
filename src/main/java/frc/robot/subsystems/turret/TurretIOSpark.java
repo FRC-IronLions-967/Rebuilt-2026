@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.turret;
 
+import org.littletonrobotics.junction.Logger;
+
 // import java.util.function.BooleanSupplier;
 
 import com.revrobotics.PersistMode;
@@ -16,6 +18,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.controller.BangBangController;
+
 // import frc.robot.util.LimitSwitchManager;
 
 /** Add your docs here. */
@@ -27,6 +31,8 @@ public class TurretIOSpark implements TurretIO{
 
     protected SparkFlex flywheelFollower;
     protected SparkFlexConfig flywheelFollowerConfig;
+
+    protected BangBangController flywheelBangBang;
 
     protected SparkFlex hood;
     protected SparkFlexConfig hoodConfig;
@@ -56,14 +62,17 @@ public class TurretIOSpark implements TurretIO{
         flywheelFollowerConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).follow(flywheel, true);
         flywheelFollower.configure(flywheelFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+        flywheelBangBang = new BangBangController();
+
         hood = new SparkFlex(11, MotorType.kBrushless);
         hoodConfig = new SparkFlexConfig();
         // hoodConfig.closedLoop.outputRange(-0.25, 0.25);
-        hoodConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder)/*.outputRange(TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle)*/.positionWrappingEnabled(false);
+        hoodConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).positionWrappingEnabled(false);
         hoodConfig.encoder.positionConversionFactor(1.0/36.0);
         hood.configure(hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
 
+    
         hood.getEncoder().setPosition(TurretConstants.hoodMaxAngle);//zero
 
         // turret = new SparkFlex(12, MotorType.kBrushless);
@@ -85,11 +94,12 @@ public class TurretIOSpark implements TurretIO{
         //     turret.getEncoder().setPosition(TurretConstants.turretMaxAngle);
         // }
 
-        inputs.flywheelSpeed = flywheel.getEncoder().getVelocity();
+        inputs.flywheelSpeed = Math.abs(flywheel.getEncoder().getVelocity());
         inputs.flywheelSetSpeed = flywheelSetSpeed;
         inputs.flywheelCurrent = flywheel.getOutputCurrent()+flywheelFollower.getOutputCurrent();
         inputs.hoodAngle = hood.getEncoder().getPosition();
         inputs.hoodSetAngle = hoodSetAngle;
+        inputs.hoodCurrent = hood.getOutputCurrent();
         // inputs.turretAngle = turret.getEncoder().getPosition();
         // inputs.turretSetAngle = turretSetAngle;
         // inputs.turretMinLimitSwitch = turretMinLimitSwitch.getAsBoolean();
@@ -99,19 +109,29 @@ public class TurretIOSpark implements TurretIO{
         //     ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
         //     || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
 
+        hoodController.setSetpoint((TurretConstants.hoodMinAngle> hoodSetAngle) ? TurretConstants.hoodMinAngle: (TurretConstants.hoodMaxAngle< hoodSetAngle) ? TurretConstants.hoodMaxAngle:hoodSetAngle, ControlType.kPosition);
         // turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }
 
     @Override
     public void setFlyWheelSpeed(double speed) {
         flywheelSetSpeed = speed;
-        flywheelController.setSetpoint(speed, ControlType.kVelocity);
+    }
+
+    @Override
+    public void stopFlywheel() {
+        flywheel.set(0);
     }
 
     @Override
     public void setHoodAngle(double angle) {
         hoodSetAngle = angle;
         hoodController.setSetpoint(angle, ControlType.kPosition);
+    }
+
+    @Override
+    public void testHood(double speed) {
+        hood.set(speed);
     }
 
     // /**

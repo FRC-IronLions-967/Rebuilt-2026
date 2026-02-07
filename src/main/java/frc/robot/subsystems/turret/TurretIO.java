@@ -22,13 +22,18 @@ public interface TurretIO {
         boolean intakeSafe;
 
         double flywheelCurrent;
+        double hoodCurrent;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {}
 
     public default void setFlyWheelSpeed(double speed) {}
 
+    public default void stopFlywheel() {}
+
     public default void setHoodAngle(double angle) {}
+
+    public default void testHood(double speed) {}
 
     public default void setTurretAngle(double angle) {}
 }
