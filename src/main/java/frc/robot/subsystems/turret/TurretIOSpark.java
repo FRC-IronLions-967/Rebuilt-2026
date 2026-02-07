@@ -116,6 +116,7 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setFlyWheelSpeed(double speed) {
         flywheelSetSpeed = speed;
+        flywheelController.setSetpoint(speed, ControlType.kVelocity);
     }
 
     @Override
@@ -126,7 +127,6 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setHoodAngle(double angle) {
         hoodSetAngle = angle;
-        hoodController.setSetpoint(angle, ControlType.kPosition);
     }
 
     @Override
