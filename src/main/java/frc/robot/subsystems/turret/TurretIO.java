@@ -13,6 +13,7 @@ public interface TurretIO {
         double flywheelSpeed;
         double flywheelSetSpeed;
         double hoodAngle;
+        double hoodSetAngle;
         double turretAngle;
         double turretSetAngle;
         boolean turretMinLimitSwitch;

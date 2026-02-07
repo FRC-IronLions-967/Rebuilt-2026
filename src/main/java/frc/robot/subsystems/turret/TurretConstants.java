@@ -23,7 +23,7 @@ public class TurretConstants {
     public static final LoggedNetworkNumber flywheelkV = new LoggedNetworkNumber("flywheelkV", 0.08);
     public static final LoggedNetworkNumber flywheelkA = new LoggedNetworkNumber("flywheelkA", 0.0);
 
-    public static final LoggedNetworkNumber hoodP = new LoggedNetworkNumber("hoodP", 1.0);
+    public static final LoggedNetworkNumber hoodP = new LoggedNetworkNumber("hoodP", 10);
     public static final LoggedNetworkNumber hoodD = new LoggedNetworkNumber("hoodD", 0.0);
 
     public static final LoggedNetworkNumber turretP = new LoggedNetworkNumber("turretP", 1.0);
@@ -36,7 +36,7 @@ public class TurretConstants {
     public static final int hoodCurrentLimit = 20; 
     public static final int turretCurrentLimit = 30;
 
-    public static final double hoodMaxAngle = 1;
+    public static final double hoodMaxAngle = 5;
     public static final double hoodMinAngle = 0;
 
     public static final double turretMaxAngle = Math.PI-0.0872;

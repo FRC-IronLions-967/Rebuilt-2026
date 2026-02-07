@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.turret;
 
+import org.littletonrobotics.junction.Logger;
+
 // import java.util.function.BooleanSupplier;
 
 import com.revrobotics.PersistMode;
@@ -53,22 +55,22 @@ public class TurretIOSpark implements TurretIO{
         flywheelConfig = new SparkFlexConfig();
         flywheelConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit);
         flywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        flyWheelBangBang = new BangBangController(TurretConstants.flywheelTolerance.get());
+        flyWheelBangBang = new BangBangController();
         flywheelFeedforward = new SimpleMotorFeedforward(TurretConstants.flywheelkS.get(), TurretConstants.flywheelkV.get(), TurretConstants.flywheelkA.get());
 
         flywheelFollower = new SparkFlex(10, MotorType.kBrushless);
         flywheelFollowerConfig = new SparkFlexConfig();
-        flywheelFollowerConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).follow(flywheel);
+        flywheelFollowerConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit);
         flywheelFollower.configure(flywheelFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         hood = new SparkFlex(11, MotorType.kBrushless);
         hoodConfig = new SparkFlexConfig();
-        hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).outputRange(TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
+        hoodConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).outputRange(TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
         hoodConfig.encoder.positionConversionFactor(1/36);// gear ratio is 12:1 then <3 rotations from top to bottom
         hood.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
 
-        hood.getEncoder().setPosition(TurretConstants.hoodMinAngle);
+        hood.getEncoder().setPosition(TurretConstants.hoodMaxAngle);
 
         // turret = new SparkFlex(12, MotorType.kBrushless);
         // turretConfig = new SparkFlexConfig();
@@ -91,7 +93,8 @@ public class TurretIOSpark implements TurretIO{
 
         inputs.flywheelSpeed = flywheel.getEncoder().getVelocity();
         inputs.flywheelSetSpeed = flywheelSetSpeed;
-        inputs.hoodAngle = hood.getAbsoluteEncoder().getPosition();
+        inputs.hoodAngle = hood.getEncoder().getPosition();
+        inputs.hoodSetAngle = hoodSetAngle;
         // inputs.turretAngle = turret.getEncoder().getPosition();
         // inputs.turretSetAngle = turretSetAngle;
         // inputs.turretMinLimitSwitch = turretMinLimitSwitch.getAsBoolean();
@@ -101,7 +104,8 @@ public class TurretIOSpark implements TurretIO{
         //     ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
         //     || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
         
-        flywheel.setVoltage(flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) * 12 + 0.9 * flywheelFeedforward.calculate(flywheelSetSpeed));
+        flywheel.set(flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed));
+        flywheelFollower.set(flyWheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed));
         hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
         // turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }

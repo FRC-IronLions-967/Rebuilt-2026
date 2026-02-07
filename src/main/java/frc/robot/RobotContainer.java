@@ -162,7 +162,7 @@ public class RobotContainer {
 
     controller.a().onTrue(new InstantCommand(
         ()->{
-            turret.io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
+            turret.io.setFlyWheelSpeed(600);
         }
     ));
     controller.a().onFalse(new InstantCommand(
