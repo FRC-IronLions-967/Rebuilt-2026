@@ -19,6 +19,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 // import frc.robot.util.LimitSwitchManager;
 
@@ -27,12 +28,13 @@ public class TurretIOSpark implements TurretIO{
 
     protected SparkFlex flywheel;
     protected SparkFlexConfig flywheelConfig;
-    protected SparkClosedLoopController flywheelController;
+    // protected SparkClosedLoopController flywheelController;
 
     protected SparkFlex flywheelFollower;
     protected SparkFlexConfig flywheelFollowerConfig;
 
     protected BangBangController flywheelBangBang;
+    protected SimpleMotorFeedforward flywheelFeedforward;
 
     protected SparkFlex hood;
     protected SparkFlexConfig hoodConfig;
@@ -42,7 +44,7 @@ public class TurretIOSpark implements TurretIO{
     // protected SparkFlexConfig turretConfig;
     // protected SparkClosedLoopController turretController;
 
-    protected double flywheelSetSpeed;
+    protected double flywheelSetSpeed = 0.0;
     protected double hoodSetAngle;
     // protected double turretSetAngle;
 
@@ -52,10 +54,10 @@ public class TurretIOSpark implements TurretIO{
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
         flywheelConfig = new SparkFlexConfig();
-        flywheelConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).closedLoop.pid(TurretConstants.flywheelP, 0.0, TurretConstants.flywheelD);
+        flywheelConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).inverted(true);//so we have positive values
         // .feedForward.kS(0.1);
         flywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        flywheelController = flywheel.getClosedLoopController();
+        // flywheelController = flywheel.getClosedLoopController();
 
         flywheelFollower = new SparkFlex(10, MotorType.kBrushless);
         flywheelFollowerConfig = new SparkFlexConfig();
@@ -63,6 +65,7 @@ public class TurretIOSpark implements TurretIO{
         flywheelFollower.configure(flywheelFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         flywheelBangBang = new BangBangController();
+        flywheelFeedforward = new SimpleMotorFeedforward(TurretConstants.flywheelkS, TurretConstants.flywheelkV, TurretConstants.flywheelkA);
 
         hood = new SparkFlex(11, MotorType.kBrushless);
         hoodConfig = new SparkFlexConfig();
@@ -94,7 +97,7 @@ public class TurretIOSpark implements TurretIO{
         //     turret.getEncoder().setPosition(TurretConstants.turretMaxAngle);
         // }
 
-        inputs.flywheelSpeed = Math.abs(flywheel.getEncoder().getVelocity());
+        inputs.flywheelSpeed = flywheel.getEncoder().getVelocity();
         inputs.flywheelSetSpeed = flywheelSetSpeed;
         inputs.flywheelCurrent = flywheel.getOutputCurrent()+flywheelFollower.getOutputCurrent();
         inputs.hoodAngle = hood.getEncoder().getPosition();
@@ -113,15 +116,21 @@ public class TurretIOSpark implements TurretIO{
         // turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }
 
+    /**
+     * speed should be positive because bang bang doesn't like negatives.
+     */
     @Override
     public void setFlyWheelSpeed(double speed) {
         flywheelSetSpeed = speed;
-        flywheelController.setSetpoint(speed, ControlType.kVelocity);
-    }
-
-    @Override
-    public void stopFlywheel() {
-        flywheel.set(0);
+        // flywheelController.setSetpoint(speed, ControlType.kVelocity);
+        /*
+         * How to tune:
+         * comment out bang bang. Tune feedforward kV until it goes to the set point. kS and kA aren't needed for flywheel
+         * If we need/have overshoot/undershoot shoose undershoot because bang bang doesn't ajust backwards. 
+         * Put bang bang back in.
+         */
+        //negatives because our flywheels shooting is negative and bang bang doesn't like negatives in calculations
+        flywheel.setVoltage(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed));
     }
 
     @Override

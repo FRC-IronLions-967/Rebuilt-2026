@@ -15,14 +15,16 @@ public class TurretIOSim extends TurretIOSpark {
     
     public TurretIOSim () {
         super();
-        flywheelSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.5, 2), DCMotor.getNeoVortex(2), 1);
+        flywheelSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.0009, 0.7), DCMotor.getNeoVortex(2));
     }
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
+        inputs.flywheelSpeed = flywheelSim.getAngularVelocityRPM();
+        flywheelSim.setInputVoltage(12 * flywheelBangBang.calculate(flywheelSim.getAngularVelocityRPM(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed));
+
         flywheelSim.update(Robot.defaultPeriodSecs);
 
-        inputs.flywheelSpeed = flywheelSim.getAngularVelocityRPM();
         inputs.flywheelSetSpeed = flywheelSetSpeed;
         inputs.hoodAngle = hoodSetAngle;
         // inputs.turretAngle = turretSetAngle;
@@ -31,5 +33,10 @@ public class TurretIOSim extends TurretIOSpark {
         inputs.intakeSafe = 
             ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
             || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
+    }
+
+    @Override
+    public void setFlyWheelSpeed(double speed) {
+        flywheelSetSpeed = speed;
     }
 }
