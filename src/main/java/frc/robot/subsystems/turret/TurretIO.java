@@ -33,7 +33,5 @@ public interface TurretIO {
 
     public default void setHoodAngle(double angle) {}
 
-    public default void testHood(double speed) {}
-
     public default void setTurretAngle(double angle) {}
 }

@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.turret;
 
-import org.littletonrobotics.junction.Logger;
-
 // import java.util.function.BooleanSupplier;
 
 import com.revrobotics.PersistMode;
@@ -54,14 +52,19 @@ public class TurretIOSpark implements TurretIO{
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
         flywheelConfig = new SparkFlexConfig();
-        flywheelConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).inverted(true);//so we have positive values
-        // .feedForward.kS(0.1);
+        flywheelConfig
+            .idleMode(IdleMode.kCoast)
+            .smartCurrentLimit(TurretConstants.flywheelCurrentLimit)
+            .inverted(true);//so we have positive values
         flywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         // flywheelController = flywheel.getClosedLoopController();
 
         flywheelFollower = new SparkFlex(10, MotorType.kBrushless);
         flywheelFollowerConfig = new SparkFlexConfig();
-        flywheelFollowerConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.flywheelCurrentLimit).follow(flywheel, true);
+        flywheelFollowerConfig
+            .idleMode(IdleMode.kCoast)
+            .smartCurrentLimit(TurretConstants.flywheelCurrentLimit)
+            .follow(flywheel, true);
         flywheelFollower.configure(flywheelFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         flywheelBangBang = new BangBangController();
@@ -70,7 +73,15 @@ public class TurretIOSpark implements TurretIO{
         hood = new SparkFlex(11, MotorType.kBrushless);
         hoodConfig = new SparkFlexConfig();
         // hoodConfig.closedLoop.outputRange(-0.25, 0.25);
-        hoodConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(TurretConstants.hoodCurrentLimit).closedLoop.pid(TurretConstants.hoodP.get(), 0.0, TurretConstants.hoodD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).positionWrappingEnabled(false);
+        hoodConfig
+            .idleMode(IdleMode.kCoast)
+            .smartCurrentLimit(TurretConstants.hoodCurrentLimit)
+            .closedLoop
+                .pid(TurretConstants.hoodP, 0.0, TurretConstants.hoodD)
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .positionWrappingEnabled(false)
+                .feedForward
+                    .kS(flywheelSetSpeed);
         hoodConfig.encoder.positionConversionFactor(1.0/36.0);
         hood.configure(hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
@@ -112,7 +123,6 @@ public class TurretIOSpark implements TurretIO{
         //     ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
         //     || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
 
-        hoodController.setSetpoint((TurretConstants.hoodMinAngle> hoodSetAngle) ? TurretConstants.hoodMinAngle: (TurretConstants.hoodMaxAngle< hoodSetAngle) ? TurretConstants.hoodMaxAngle:hoodSetAngle, ControlType.kPosition);
         // turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }
 
@@ -126,7 +136,7 @@ public class TurretIOSpark implements TurretIO{
         /*
          * How to tune:
          * comment out bang bang. Tune feedforward kV until it goes to the set point. kS and kA aren't needed for flywheel
-         * If we need/have overshoot/undershoot shoose undershoot because bang bang doesn't ajust backwards. 
+         * If we need/have overshoot/undershoot choose undershoot because bang bang doesn't ajust backwards. 
          * Put bang bang back in.
          */
         //negatives because our flywheels shooting is negative and bang bang doesn't like negatives in calculations
@@ -136,11 +146,7 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setHoodAngle(double angle) {
         hoodSetAngle = angle;
-    }
-
-    @Override
-    public void testHood(double speed) {
-        hood.set(speed);
+        hoodController.setSetpoint((TurretConstants.hoodMinAngle> hoodSetAngle) ? TurretConstants.hoodMinAngle: (TurretConstants.hoodMaxAngle< hoodSetAngle) ? TurretConstants.hoodMaxAngle:hoodSetAngle, ControlType.kPosition);
     }
 
     // /**
