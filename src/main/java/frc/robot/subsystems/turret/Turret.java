@@ -57,6 +57,7 @@ public class Turret extends SubsystemBase {
 
   private double turretSetPoint = TurretConstants.turretMinAngle;
   private double hoodSetPoint = TurretConstants.hoodMinAngle;
+  private double flywheelSetPoint = 0.0;
 
   double closestSafeAngle;
 
@@ -82,8 +83,8 @@ public class Turret extends SubsystemBase {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
     Logger.processInputs("Turret", inputs);
-    // currentState = updateState();
-    // applyState();
+    currentState = updateState();
+    applyState();
   }
 
   private CurrentState updateState() {
@@ -115,10 +116,10 @@ public class Turret extends SubsystemBase {
         break;
       case SHOOTING:
         if (poseSupplier.get().getX() < 4.5) {
-          io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
           calculationToTarget(TurretConstants.hub());
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
+          io.setFlyWheelSpeed(flywheelSetPoint);
         } else if (poseSupplier.get().getY() < 4) {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           calculationToTarget(TurretConstants.right());
@@ -176,7 +177,7 @@ public class Turret extends SubsystemBase {
     double previousTOF = 0;
     for (int i = 0; i < 3; i++) {
       previousTOF = TOF;
-      TOF = timeOfFlightMap.get(target.getDistance(target));
+      TOF = timeOfFlightMap.get(target.getDistance(poseSupplier.get().getTranslation()));
       target = new Translation2d(
         target.getX() - speedsSupplier.get().vxMetersPerSecond * (TOF - previousTOF),
         target.getY() - speedsSupplier.get().vyMetersPerSecond * (TOF - previousTOF));
@@ -190,12 +191,15 @@ public class Turret extends SubsystemBase {
    */
   private void calculationToTarget(Translation2d target) {
     Translation2d robotToTarget = considerChassisSpeeds(target).minus(poseSupplier.get().getTranslation());
+    double distanceToTarget = robotToTarget.getNorm();
     Rotation2d turretToTargetAngle = robotToTarget.getAngle().minus(poseSupplier.get().getRotation());
     turretSetPoint = turretToTargetAngle.getRadians();
     Logger.recordOutput("Calculations/target", considerChassisSpeeds(target));
     Logger.recordOutput("Calculations/robotToTarget", robotToTarget);
     Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);
     //calculate hood angle based off distance
+    hoodSetPoint = shooterMap.get(distanceToTarget).hoodAngle;
+    flywheelSetPoint = shooterMap.get(distanceToTarget).rpm;
   }
 
   public CurrentState getCurrentState() {
