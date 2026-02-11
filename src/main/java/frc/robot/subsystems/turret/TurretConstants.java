@@ -7,20 +7,20 @@ package frc.robot.subsystems.turret;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.subsystems.vision.VisionConstants;
+// import edu.wpi.first.wpilibj.DriverStation;
+// import edu.wpi.first.wpilibj.DriverStation.Alliance;
+// import frc.robot.subsystems.vision.VisionConstants;
 
 /** Add your docs here. */
 public class TurretConstants {
 
     public static Translation2d flipForRed(Translation2d bluePose) {
-        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            return new Translation2d(
-                VisionConstants.kTagLayout.getFieldLength() - bluePose.getX(),
-                VisionConstants.kTagLayout.getFieldWidth()  - bluePose.getY()
-            );
-        }
+        // if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+        //     return new Translation2d(
+        //         VisionConstants.kTagLayout.getFieldLength() - bluePose.getX(),
+        //         VisionConstants.kTagLayout.getFieldWidth()  - bluePose.getY()
+        //     );
+        // }
         return bluePose;
     }
 

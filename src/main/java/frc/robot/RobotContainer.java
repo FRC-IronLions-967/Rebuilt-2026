@@ -21,28 +21,28 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.Superstructure.WantedState;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIONavX;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOSpark;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOSpark;
+// import frc.robot.commands.DriveCommands;
+// import frc.robot.subsystems.Superstructure;
+// import frc.robot.subsystems.Superstructure.WantedState;
+// import frc.robot.subsystems.drive.Drive;
+// import frc.robot.subsystems.drive.GyroIO;
+// import frc.robot.subsystems.drive.GyroIONavX;
+// import frc.robot.subsystems.drive.ModuleIO;
+// import frc.robot.subsystems.drive.ModuleIOSim;
+// import frc.robot.subsystems.drive.ModuleIOSpark;
+// import frc.robot.subsystems.intake.Intake;
+// import frc.robot.subsystems.intake.IntakeIO;
+// import frc.robot.subsystems.intake.IntakeIOSim;
+// import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretIOSpark;
-import frc.robot.subsystems.vision.AprilTagIO;
-import frc.robot.subsystems.vision.AprilTagIOPhotonVision;
-import frc.robot.subsystems.vision.AprilTagIOSim;
-import frc.robot.subsystems.vision.AprilTagVision;
-import frc.robot.subsystems.vision.VisionConstants;
+// import frc.robot.subsystems.vision.AprilTagIO;
+// import frc.robot.subsystems.vision.AprilTagIOPhotonVision;
+// import frc.robot.subsystems.vision.AprilTagIOSim;
+// import frc.robot.subsystems.vision.AprilTagVision;
+// import frc.robot.subsystems.vision.VisionConstants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -53,12 +53,12 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
-  @SuppressWarnings("unused")
-  private final AprilTagVision aprilTagVision;
+//   private final Drive drive;
+//   @SuppressWarnings("unused")
+//   private final AprilTagVision aprilTagVision;
   private final Turret turret;
-  private final Superstructure superstructure;
-  private final Intake intake;
+//   private final Superstructure superstructure;
+//   private final Intake intake;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -71,83 +71,83 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIONavX(),
-                new ModuleIOSpark(0),
-                new ModuleIOSpark(1),
-                new ModuleIOSpark(2),
-                new ModuleIOSpark(3));
-        aprilTagVision = 
-            new AprilTagVision(drive::addVisionMeasurement,
-            new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), 
-            new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform));
-        turret = new Turret(new TurretIOSpark(), drive::getPose, drive::getChassisSpeeds);
-        intake = new Intake(new IntakeIOSpark());
+        // drive =
+        //     new Drive(
+        //         new GyroIONavX(),
+        //         new ModuleIOSpark(0),
+        //         new ModuleIOSpark(1),
+        //         new ModuleIOSpark(2),
+        //         new ModuleIOSpark(3));
+        // aprilTagVision = 
+        //     new AprilTagVision(drive::addVisionMeasurement,
+        //     new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), 
+        //     new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform));
+        turret = new Turret(new TurretIOSpark() /*drive::getPose, drive::getChassisSpeeds*/);
+        // intake = new Intake(new IntakeIOSpark());
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        aprilTagVision =
-            new AprilTagVision(
-                drive::addVisionMeasurement,
-                new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform, drive::getPose),
-                new AprilTagIOSim(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform, drive::getPose)
-            );
-        turret = new Turret(new TurretIOSim(), drive::getPose, drive::getChassisSpeeds);
-        intake = new Intake(new IntakeIOSim());
+        // drive =
+        //     new Drive(
+        //         new GyroIO() {},
+        //         new ModuleIOSim(),
+        //         new ModuleIOSim(),
+        //         new ModuleIOSim(),
+        //         new ModuleIOSim());
+        // aprilTagVision =
+        //     new AprilTagVision(
+        //         drive::addVisionMeasurement,
+        //         new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform, drive::getPose),
+        //         new AprilTagIOSim(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform, drive::getPose)
+        //  );
+        turret = new Turret(new TurretIOSim() /*drive::getPose, drive::getChassisSpeeds*/);
+        // intake = new Intake(new IntakeIOSim());
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        aprilTagVision = 
-            new AprilTagVision(
-                drive::addVisionMeasurement,
-                new AprilTagIO() {},
-                new AprilTagIO() {}
-            );
-        turret = new Turret(new TurretIO() {}, drive::getPose, drive::getChassisSpeeds);
-        intake = new Intake(new IntakeIO() {});
+        // drive =
+        //     new Drive(
+        //         new GyroIO() {},
+        //         new ModuleIO() {},
+        //         new ModuleIO() {},
+        //         new ModuleIO() {},
+        //         new ModuleIO() {});
+        // aprilTagVision = 
+        //     new AprilTagVision(
+        //         drive::addVisionMeasurement,
+        //         new AprilTagIO() {},
+        //         new AprilTagIO() {}
+        //     );
+        turret = new Turret(new TurretIO() {} /*drive::getPose, drive::getChassisSpeeds*/);
+        // intake = new Intake(new IntakeIO() {});
         break;
     }
 
-    superstructure = new Superstructure(drive, aprilTagVision, turret, intake);
+    // superstructure = new Superstructure(drive, aprilTagVision, turret, intake);
 
     //Add Named Comands here
-    NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
+    // NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -161,17 +161,17 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+    // drive.setDefaultCommand(
+    //     DriveCommands.joystickDrive(
+    //         drive,
+    //         () -> -controller.getLeftY(),
+    //         () -> -controller.getLeftX(),
+    //         () -> -controller.getRightX()));
 
-    controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
-    controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
-    controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
-    controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
+    // controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
+    // controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
+    // controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
+    // controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
   }
 
   /**

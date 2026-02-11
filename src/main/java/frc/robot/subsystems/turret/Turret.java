@@ -75,11 +75,25 @@ public class Turret extends SubsystemBase {
     timeOfFlightMap.put(2.0, 2.0);
   }
 
+  public Turret(TurretIO io) {
+    new Turret(io, new Supplier<Pose2d>() {
+      @Override
+      public Pose2d get() {
+          return new Pose2d();
+      }
+    }, new Supplier<ChassisSpeeds>() {
+      @Override
+      public ChassisSpeeds get() {
+          return new ChassisSpeeds();
+      }
+    });
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    currentState = updateState();
-    applyState();
+    // currentState = updateState();
+    // applyState();
     io.updateInputs(inputs);
     Logger.processInputs("Turret", inputs);
   }
