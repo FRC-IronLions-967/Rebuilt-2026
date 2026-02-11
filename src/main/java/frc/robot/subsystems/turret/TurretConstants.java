@@ -50,7 +50,7 @@ public class TurretConstants {
     public static final double flywheelD = 1.0e-6;
 
     public static final double flywheelkS = 0.0;
-    public static final double flywheelkV = 1.22e-3;
+    public static final double flywheelkV = 1.89e-3;
     public static final double flywheelkA = 0.0;
 
     public static final double hoodP = 1.0;

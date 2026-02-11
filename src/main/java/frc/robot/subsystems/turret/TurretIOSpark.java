@@ -79,9 +79,7 @@ public class TurretIOSpark implements TurretIO{
             .closedLoop
                 .pid(TurretConstants.hoodP, 0.0, TurretConstants.hoodD)
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .positionWrappingEnabled(false)
-                .feedForward
-                    .kS(flywheelSetSpeed);
+                .positionWrappingEnabled(false);
         hoodConfig.encoder.positionConversionFactor(1.0/36.0);
         hood.configure(hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
@@ -124,6 +122,7 @@ public class TurretIOSpark implements TurretIO{
         //     || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
 
         // turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
+        flywheel.setVoltage(12 * flywheelBangBang.calculate(flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed));
     }
 
     /**
@@ -132,15 +131,6 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setFlyWheelSpeed(double speed) {
         flywheelSetSpeed = speed;
-        // flywheelController.setSetpoint(speed, ControlType.kVelocity);
-        /*
-         * How to tune:
-         * comment out bang bang. Tune feedforward kV until it goes to the set point. kS and kA aren't needed for flywheel
-         * If we need/have overshoot/undershoot choose undershoot because bang bang doesn't ajust backwards. 
-         * Put bang bang back in.
-         */
-        //negatives because our flywheels shooting is negative and bang bang doesn't like negatives in calculations
-        flywheel.setVoltage(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed));
     }
 
     @Override
