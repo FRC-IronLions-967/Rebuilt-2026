@@ -1,4 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
+// Copyright() (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -12,16 +12,27 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class Turret extends SubsystemBase {
   
-  public static final InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
+  public static final InterpolatingTreeMap<Double, ShooterSetpoint> shooterMap = new InterpolatingTreeMap<>(
+    InverseInterpolator.forDouble(), 
+    (start, end, t) ->
+        new ShooterSetpoint(
+            start.rpm + (end.rpm - start.rpm) * t,
+            start.hoodAngle + (end.hoodAngle - start.hoodAngle) * t
+        )
+
+  );
+
   public static final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
 
-  private TurretIO io;
+  public TurretIO io;
   private TurretIOInputsAutoLogged inputs;
 
   private Supplier<Pose2d> poseSupplier;
@@ -54,8 +65,10 @@ public class Turret extends SubsystemBase {
     this.speedsSupplier = speedsSupplier;
     inputs = new TurretIOInputsAutoLogged();
 
-    // hoodMap.put(null, null); to add hood made shots
-    // timeOfFlightMap.put(null, null); add time of flight mesurments
+    shooterMap.put(4.0, new ShooterSetpoint(5000, 9));
+    shooterMap.put(3.0, new ShooterSetpoint(4000, 11));
+    shooterMap.put(2.0, new ShooterSetpoint(3000, 13));
+    shooterMap.put(1.0, new ShooterSetpoint(2000, 15));
 
     //sim entrys for testing DELETE
     timeOfFlightMap.put(1.0, 1.0);
@@ -65,10 +78,10 @@ public class Turret extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    io.updateInputs(inputs);
-    Logger.processInputs("Turret", inputs);
     currentState = updateState();
     applyState();
+    io.updateInputs(inputs);
+    Logger.processInputs("Turret", inputs);
   }
 
   private CurrentState updateState() {
@@ -101,17 +114,17 @@ public class Turret extends SubsystemBase {
       case SHOOTING:
         if (poseSupplier.get().getX() < 4.5) {
           io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
-          calculationToTarget(TurretConstants.hub);
+          calculationToTarget(TurretConstants.hub());
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
         } else if (poseSupplier.get().getY() < 4) {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-          calculationToTarget(TurretConstants.right);
+          calculationToTarget(TurretConstants.right());
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
         } else {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-          calculationToTarget(TurretConstants.left);
+          calculationToTarget(TurretConstants.left());
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
         }
@@ -120,13 +133,13 @@ public class Turret extends SubsystemBase {
         io.setFlyWheelSpeed(0);
         io.setHoodAngle(TurretConstants.turretMinAngle);
         if (poseSupplier.get().getX() < 4.5) {
-          calculationToTarget(TurretConstants.hub);
+          calculationToTarget(TurretConstants.hub());
           io.setTurretAngle(turretSetPoint);
         } else if (poseSupplier.get().getY() < 4) {
-          calculationToTarget(TurretConstants.right);
+          calculationToTarget(TurretConstants.right());
           io.setTurretAngle(turretSetPoint);
         } else {
-          calculationToTarget(TurretConstants.left);
+          calculationToTarget(TurretConstants.left());
           io.setTurretAngle(turretSetPoint);
         }
       default:
@@ -187,5 +200,9 @@ public class Turret extends SubsystemBase {
   }
   public boolean intakeSafe() {
     return inputs.intakeSafe;
+  }
+
+  public double getHoodAngle() {
+    return inputs.hoodAngle;
   }
 }

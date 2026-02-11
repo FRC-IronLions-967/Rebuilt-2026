@@ -10,19 +10,26 @@ import org.littletonrobotics.junction.AutoLog;
 public interface TurretIO {
     @AutoLog
     public static class TurretIOInputs {
-        double flywheelSpeed;
-        double hoodAngle;
-        double turretAngle;
-        double turretSetAngle;
-        boolean turretMinLimitSwitch;
-        boolean turretMaxLimitSwitch;
-        boolean resetting;
-        boolean intakeSafe;
+        public double flywheelSpeed;
+        public double flywheelSetSpeed;
+        public double hoodAngle;
+        public double hoodSetAngle;
+        public double turretAngle;
+        public double turretSetAngle;
+        public boolean turretMinLimitSwitch;
+        public boolean turretMaxLimitSwitch;
+        public boolean resetting;
+        public boolean intakeSafe;
+
+        public double flywheelCurrent;
+        public double hoodCurrent;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {}
 
     public default void setFlyWheelSpeed(double speed) {}
+
+    public default void stopFlywheel() {}
 
     public default void setHoodAngle(double angle) {}
 
