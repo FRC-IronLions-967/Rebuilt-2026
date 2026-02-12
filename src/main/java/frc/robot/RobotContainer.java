@@ -19,11 +19,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.Superstructure.WantedState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
@@ -34,10 +33,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSpark;
-import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TurretIO;
-import frc.robot.subsystems.turret.TurretIOSim;
-import frc.robot.subsystems.turret.TurretIOSpark;
 import frc.robot.subsystems.vision.AprilTagIO;
 import frc.robot.subsystems.vision.AprilTagIOPhotonVision;
 import frc.robot.subsystems.vision.AprilTagIOSim;
@@ -56,8 +51,6 @@ public class RobotContainer {
   private final Drive drive;
   @SuppressWarnings("unused")
   private final AprilTagVision aprilTagVision;
-  private final Turret turret;
-  private final Superstructure superstructure;
   private final Intake intake;
 
   // Controller
@@ -82,8 +75,7 @@ public class RobotContainer {
             new AprilTagVision(drive::addVisionMeasurement,
             new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), 
             new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform));
-        turret = new Turret(new TurretIOSpark(), drive::getPose, drive::getChassisSpeeds);
-        intake = new Intake(new IntakeIOSpark());
+        intake = new Intake(new IntakeIOSpark()/*get turret resetting*/);
         break;
 
       case SIM:
@@ -101,7 +93,6 @@ public class RobotContainer {
                 new AprilTagIOSim(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform, drive::getPose),
                 new AprilTagIOSim(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform, drive::getPose)
             );
-        turret = new Turret(new TurretIOSim(), drive::getPose, drive::getChassisSpeeds);
         intake = new Intake(new IntakeIOSim());
         break;
 
@@ -120,15 +111,12 @@ public class RobotContainer {
                 new AprilTagIO() {},
                 new AprilTagIO() {}
             );
-        turret = new Turret(new TurretIO() {}, drive::getPose, drive::getChassisSpeeds);
         intake = new Intake(new IntakeIO() {});
         break;
     }
 
-    superstructure = new Superstructure(drive, aprilTagVision, turret, intake);
-
     //Add Named Comands here
-    NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
+    // NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -168,10 +156,16 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
-    controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
-    controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
-    controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
-    controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
+    // controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
+    // controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
+    // controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
+    // controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
+    controller.a().onTrue(new InstantCommand(()->{
+        intake.setWantedState(Intake.WantedState.INTAKING);
+    }));
+    controller.a().onFalse(new InstantCommand(()->{
+        intake.setWantedState(Intake.WantedState.IDLE);
+    }));
   }
 
   /**

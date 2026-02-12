@@ -12,18 +12,23 @@ public interface IntakeIO {
     public static class IntakeIOInputs{
         public double armAngle;
         public double armSetAngle;
+        public double armCurrent;
 
         public double intakeSpeed; 
         public double intakeSetSpeed;
+        public double intakeCurrent;
 
         public double feederSpeed;
         public double feederSetSpeed;
+        public double feederCurrent;
 
-        public double horizontalMotor1Speed;
-        public double horizontalMotor1SetSpeed;
+        public double horizontal1Speed;
+        public double horizontal1SetSpeed;
+        public double horizontal1Current;
 
-        public double horizontalMotor2Speed;
-        public double horizontalMotor2SetSpeed;
+        public double horizontal2Speed;
+        public double horizontal2SetSpeed;
+        public double horizontal2Current;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}
@@ -34,7 +39,7 @@ public interface IntakeIO {
 
     public default void setFeederSpeed(double speed) {}
 
-    public default void setHorizontalMotor1Speed(double speed) {}    
+    public default void setHorizontal1Speed(double speed) {}    
 
-    public default void setHorizontalMotor2Speed(double speed) {}    
+    public default void setHorizontal2Speed(double speed) {}    
 }
