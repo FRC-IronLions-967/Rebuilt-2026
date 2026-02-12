@@ -19,6 +19,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 // import frc.robot.commands.DriveCommands;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 // import frc.robot.subsystems.intake.IntakeIOSim;
 // import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretIOSpark;
@@ -64,7 +66,7 @@ public class RobotContainer {
   private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+  // private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -131,7 +133,7 @@ public class RobotContainer {
     // NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
 
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     // autoChooser.addOption(
@@ -172,6 +174,19 @@ public class RobotContainer {
     // controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
     // controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
     // controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
+
+    controller.rightBumper().onTrue(new InstantCommand(()->{
+      turret.io.setTurretAngle(turret.getTurretAngle() + 0.5);
+    }));
+    controller.leftBumper().onTrue(new InstantCommand(()->{
+      turret.io.setTurretAngle(turret.getTurretAngle()-0.5);
+    }));
+    controller.a().onTrue(new InstantCommand(()->{
+      turret.io.setTurretAngle(TurretConstants.turretMaxAngle);
+    }));
+    controller.b().onTrue(new InstantCommand(()->{
+      turret.io.setTurretAngle(TurretConstants.turretMinAngle);
+    }));
   }
 
   /**
@@ -179,7 +194,7 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
-  }
+  // public Command getAutonomousCommand() {
+  //   return autoChooser.get();
+  // }
 }

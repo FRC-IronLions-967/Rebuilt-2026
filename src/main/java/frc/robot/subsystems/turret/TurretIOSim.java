@@ -4,18 +4,43 @@
 
 package frc.robot.subsystems.turret;
 
-// import edu.wpi.first.math.system.plant.DCMotor;
-// import edu.wpi.first.math.system.plant.LinearSystemId;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 // import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-// import frc.robot.Robot;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.Robot;
 
 public class TurretIOSim extends TurretIOSpark {
 
     // private final FlywheelSim flywheelSim;
+    private SingleJointedArmSim turretSim;
+
+    private final PIDController turretSimPID =
+        new PIDController(TurretConstants.turretP, 0.0, TurretConstants.turretD);
+
+    private SimpleMotorFeedforward turretSimFeeedforward = new SimpleMotorFeedforward(TurretConstants.turretkS, 0.0);
+    private LoggedNetworkNumber volts = new LoggedNetworkNumber("volts", 0.0);
     
     public TurretIOSim () {
         super();
         // flywheelSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.0009, 0.7), DCMotor.getNeoVortex(2));
+        turretSim = new SingleJointedArmSim(
+            DCMotor.getNeoVortex(1), 
+            1/TurretConstants.turretGearRatio, 
+            0.022, 
+            .2, 
+            TurretConstants.turretMinAngle, 
+            TurretConstants.turretMaxAngle, 
+            false, 
+            0.0
+        );
     }
 
     @Override
@@ -27,16 +52,16 @@ public class TurretIOSim extends TurretIOSpark {
 
         // inputs.flywheelSetSpeed = flywheelSetSpeed;
         // inputs.hoodAngle = hoodSetAngle;
-        inputs.turretAngle = turretSetAngle;
+        inputs.turretAngle = turretSim.getAngleRads();
         inputs.turretSetAngle = turretSetAngle;
+
+        turretSim.setInputVoltage(MathUtil.clamp(turretSimPID.calculate(inputs.turretAngle, turretSetAngle) + turretSimFeeedforward.calculate(turretSetAngle), -12, 12));
+        // turretSim.setInputVoltage(volts.get());
+        turretSim.update(Robot.defaultPeriodSecs);
+
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
         inputs.intakeSafe = 
             ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
             || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
     }
-
-    // @Override
-    // public void setFlyWheelSpeed(double speed) {
-    //     flywheelSetSpeed = speed;
-    // }
 }

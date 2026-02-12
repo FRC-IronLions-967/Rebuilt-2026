@@ -76,17 +76,10 @@ public class Turret extends SubsystemBase {
   }
 
   public Turret(TurretIO io) {
-    new Turret(io, new Supplier<Pose2d>() {
-      @Override
-      public Pose2d get() {
-          return new Pose2d();
-      }
-    }, new Supplier<ChassisSpeeds>() {
-      @Override
-      public ChassisSpeeds get() {
-          return new ChassisSpeeds();
-      }
-    });
+    this(io, 
+        () -> new Pose2d(), 
+        () -> new ChassisSpeeds()
+    );
   }
 
   @Override
@@ -156,6 +149,7 @@ public class Turret extends SubsystemBase {
           calculationToTarget(TurretConstants.left());
           io.setTurretAngle(turretSetPoint);
         }
+        break;
       default:
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
@@ -183,7 +177,7 @@ public class Turret extends SubsystemBase {
     double previousTOF = 0;
     for (int i = 0; i < 3; i++) {
       previousTOF = TOF;
-      TOF = timeOfFlightMap.get(target.getDistance(target));
+      TOF = timeOfFlightMap.get(target.getDistance(poseSupplier.get().getTranslation()));
       target = new Translation2d(
         target.getX() - speedsSupplier.get().vxMetersPerSecond * (TOF - previousTOF),
         target.getY() - speedsSupplier.get().vyMetersPerSecond * (TOF - previousTOF));
@@ -218,5 +212,9 @@ public class Turret extends SubsystemBase {
 
   public double getHoodAngle() {
     return inputs.hoodAngle;
+  }
+
+  public double getTurretAngle() {
+    return inputs.turretAngle;
   }
 }

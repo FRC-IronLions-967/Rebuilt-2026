@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -91,8 +92,17 @@ public class TurretIOSpark implements TurretIO{
 
         turret = new SparkFlex(12, MotorType.kBrushless);
         turretConfig = new SparkFlexConfig();
-        turretConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(TurretConstants.turretCurrentLimit).closedLoop.pid(TurretConstants.turretP.get(), 0, TurretConstants.turretD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).outputRange(TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle).positionWrappingEnabled(false);
-        turretConfig.encoder.positionConversionFactor(2*Math.PI * TurretConstants.turretGearRatio);
+        turretConfig
+            .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(TurretConstants.turretCurrentLimit)
+                .closedLoop
+                    .pid(TurretConstants.turretP, 0, TurretConstants.turretD)
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    .positionWrappingEnabled(false)
+                    .feedForward
+                        .kS(TurretConstants.turretkS);
+        turretConfig.encoder.positionConversionFactor(2*Math.PI / TurretConstants.turretGearRatio);
+        turretConfig.closedLoop.outputRange(TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
         turret.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretController = turret.getClosedLoopController();
 
@@ -143,8 +153,8 @@ public class TurretIOSpark implements TurretIO{
 
     @Override
     public void setTurretAngle(double angle) {
-        while (angle - turretSetAngle > Math.PI) angle -= 2 * Math.PI;
-        while (angle - turretSetAngle < -Math.PI) angle += 2 * Math.PI;
+        while (angle > Math.PI) angle -= 2 * Math.PI;
+        while (angle < -Math.PI) angle += 2 * Math.PI;
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
 

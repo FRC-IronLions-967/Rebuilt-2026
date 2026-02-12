@@ -44,24 +44,20 @@ public class TurretConstants {
     public static final Translation2d[] trenches = {new Translation2d(4.66, .66), new Translation2d(4.66, 7.33), new Translation2d(11.925, 0.66), new Translation2d(11.925, 7.33)};
     public static final double trenchTolerance = 1.0;
 
-    public static final double turretGearRatio = 1.0;
+    public static final double turretGearRatio = 900/*motor revs*//11/*turret revs */;
 
     public static final double flywheelP = 1.0e-3;
     public static final double flywheelD = 1.0e-6;
 
-    public static final double flywheelkS = 0.0;
     public static final double flywheelkV = 1.89e-3;
-    public static final double flywheelkA = 0.0;
 
     public static final double hoodP = 1.0;
     public static final double hoodD = 0.0;
     public static final double hoodkS = 1.0;
 
-    public static final LoggedNetworkNumber turretP = new LoggedNetworkNumber("turretP", 1.0);
-    public static final LoggedNetworkNumber turretD = new LoggedNetworkNumber("turretD", 0.0);
-
-    public static final LoggedNetworkNumber turretControllerP = new LoggedNetworkNumber("turretControllerP", 1.0e-5);
-    public static final LoggedNetworkNumber turretControllerD = new LoggedNetworkNumber("turretControllerD", 0.0);
+    public static final double turretP = 0.05;
+    public static final double turretD = 0.0;
+    public static final double turretkS = 1.0e-5;
 
     public static final int flywheelCurrentLimit = 40;
     public static final int hoodCurrentLimit = 40; 
