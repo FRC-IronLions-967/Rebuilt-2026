@@ -83,7 +83,7 @@ public class RobotContainer {
             new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera1Name, VisionConstants.AprilTagCamera1Transform), 
             new AprilTagIOPhotonVision(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform));
         turret = new Turret(new TurretIOSpark(), drive::getPose, drive::getChassisSpeeds);
-        intake = new Intake(new IntakeIOSpark());
+        intake = new Intake(new IntakeIOSpark(), turret::getResetting);
         break;
 
       case SIM:
@@ -102,7 +102,7 @@ public class RobotContainer {
                 new AprilTagIOSim(VisionConstants.AprilTagCamera2Name, VisionConstants.AprilTagCamera2Transform, drive::getPose)
             );
         turret = new Turret(new TurretIOSim(), drive::getPose, drive::getChassisSpeeds);
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIOSim(), turret::getResetting);
         break;
 
       default:
@@ -121,7 +121,7 @@ public class RobotContainer {
                 new AprilTagIO() {}
             );
         turret = new Turret(new TurretIO() {}, drive::getPose, drive::getChassisSpeeds);
-        intake = new Intake(new IntakeIO() {});
+        intake = new Intake(new IntakeIO() {}, turret::getResetting);
         break;
     }
 
@@ -171,7 +171,6 @@ public class RobotContainer {
     controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
     controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
     controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
-    controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.TRENCH));
   }
 
   /**

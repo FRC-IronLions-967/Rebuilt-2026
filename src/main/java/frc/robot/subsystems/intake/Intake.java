@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.intake;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,28 +13,40 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
   private IntakeIO io;
   private IntakeIOInputsAutoLogged inputs;
+  private BooleanSupplier turretResetting;
 
   public enum WantedState {
     IDLE,
     INTAKING,
-    RESETTING,
     REVERSING
   }
 
   public enum CurrentState {
     IDLE,
     INTAKING,
-    RESETTING,
     REVERSING
   }
 
   private WantedState wantedState = WantedState.IDLE;
   private CurrentState currentState = CurrentState.IDLE;
 
-  public Intake(IntakeIO io) {
+  public Intake(IntakeIO io, BooleanSupplier turretResetting) {
     this.io = io;
     inputs = new IntakeIOInputsAutoLogged();
-    }
+    this.turretResetting = turretResetting;
+  }
+
+  public Intake(IntakeIO io) {
+    this(
+      io,
+      new BooleanSupplier() {
+        @Override
+        public boolean getAsBoolean() {
+            return false;
+        }
+      }
+    );
+  }
 
   @Override
   public void periodic() {
@@ -48,8 +62,6 @@ public class Intake extends SubsystemBase {
         yield CurrentState.IDLE;
       case INTAKING:
         yield CurrentState.INTAKING;
-      case RESETTING:
-        yield CurrentState.RESETTING;
       case REVERSING:
         yield CurrentState.REVERSING;
     };
@@ -58,41 +70,42 @@ public class Intake extends SubsystemBase {
   private void applyState() {
     switch (currentState) {
       case IDLE:
-        io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
-        io.setIntakeSpeed(0.0);
-        io.setFeederSpeed(0.0);
-        io.setHorizontalMotor1Speed(0.0);
-        io.setHorizontalMotor2Speed(0.0);
+        stopAll();
         break;
       case INTAKING:
-        io.setIntakeArmAngle(IntakeConstants.intakePosition);
-        io.setIntakeSpeed(IntakeConstants.intakeIntakingSpeed);
-        io.setFeederSpeed(IntakeConstants.feederSpeed);
-        io.setHorizontalMotor1Speed(IntakeConstants.horizontal1Speed);
-        io.setHorizontalMotor2Speed(IntakeConstants.horizontal2Speed);
+        intake(turretResetting.getAsBoolean());
         break;
       case REVERSING:
-        io.setIntakeArmAngle(IntakeConstants.intakePosition);
-        io.setIntakeSpeed(-IntakeConstants.intakeIntakingSpeed);
-        io.setFeederSpeed(-IntakeConstants.feederSpeed);
-        io.setHorizontalMotor1Speed(-IntakeConstants.horizontal1Speed);
-        io.setHorizontalMotor2Speed(-IntakeConstants.horizontal2Speed);
+        reverse();
         break;
-      case RESETTING:
-        //stop feeding but keep intaking
-        io.setIntakeArmAngle(IntakeConstants.intakePosition);
-        io.setIntakeSpeed(-IntakeConstants.intakeIntakingSpeed);
-        io.setFeederSpeed(0);
-        io.setHorizontalMotor1Speed(-IntakeConstants.horizontal1Speed);
-        io.setHorizontalMotor2Speed(-IntakeConstants.horizontal2Speed);
       default:
-        io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
-        io.setIntakeSpeed(0.0);
-        io.setFeederSpeed(0.0);
-        io.setHorizontalMotor1Speed(0.0);
-        io.setHorizontalMotor2Speed(0.0);
+        stopAll();
         break;
     }
+  }
+
+  private void stopAll() {
+    io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
+    io.setIntakeSpeed(0.0);
+    io.setFeederSpeed(0.0);
+    io.setHorizontal1Speed(0.0);
+    io.setHorizontal2Speed(0.0);
+  }
+
+  private void intake(boolean resetting) {
+    io.setIntakeArmAngle(IntakeConstants.intakePosition);
+    io.setIntakeSpeed(IntakeConstants.intakeIntakingSpeed);
+    io.setFeederSpeed(resetting ? 0 : IntakeConstants.feederSpeed);
+    io.setHorizontal1Speed(IntakeConstants.horizontal1Speed);
+    io.setHorizontal2Speed(IntakeConstants.horizontal2Speed);
+  }
+
+  private void reverse() {
+    io.setIntakeArmAngle(IntakeConstants.intakePosition);
+    io.setIntakeSpeed(-IntakeConstants.intakeIntakingSpeed);
+    io.setFeederSpeed(-IntakeConstants.feederSpeed);
+    io.setHorizontal1Speed(-IntakeConstants.horizontal1Speed);
+    io.setHorizontal2Speed(-IntakeConstants.horizontal2Speed);
   }
 
   public void setWantedState(WantedState wantedState) {

@@ -88,14 +88,11 @@ public class TurretIOSpark implements TurretIO{
         hood.configure(hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
 
-    
-        hood.getEncoder().setPosition(TurretConstants.hoodMaxAngle);//zero
-
         turret = new SparkFlex(12, MotorType.kBrushless);
         turretConfig = new SparkFlexConfig();
         turretConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(TurretConstants.turretCurrentLimit).closedLoop.pid(TurretConstants.turretP.get(), 0, TurretConstants.turretD.get()).feedbackSensor(FeedbackSensor.kPrimaryEncoder).outputRange(TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle).positionWrappingEnabled(false);
         turretConfig.encoder.positionConversionFactor(2*Math.PI * TurretConstants.turretGearRatio);
-        turret.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        turret.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretController = turret.getClosedLoopController();
 
         turretMinLimitSwitch = LimitSwitchManager.getSwitch(0);
@@ -139,14 +136,13 @@ public class TurretIOSpark implements TurretIO{
 
     @Override
     public void setHoodAngle(double angle) {
-        hoodSetAngle = angle;
-        hoodController.setSetpoint((TurretConstants.hoodMinAngle> hoodSetAngle) ? TurretConstants.hoodMinAngle: (TurretConstants.hoodMaxAngle< hoodSetAngle) ? TurretConstants.hoodMaxAngle:hoodSetAngle, ControlType.kPosition);
+        hoodSetAngle = MathUtil.clamp(angle, TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
+        hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
     }
 
     @Override
     public void setTurretAngle(double angle) {
-        while (angle - turretSetAngle > Math.PI) angle -= 2 * Math.PI;
-        while (angle - turretSetAngle < -Math.PI) angle += 2 * Math.PI;
+        angle = Math.IEEEremainder(angle, 2*Math.PI);
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
 

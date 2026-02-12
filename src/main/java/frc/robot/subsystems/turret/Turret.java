@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -40,14 +41,12 @@ public class Turret extends SubsystemBase {
 
   public enum WantedState {
     IDLE,
-    SHOOTING,
-    TRENCH
+    SHOOTING
   }
 
   public enum CurrentState {
     IDLE,
-    SHOOTING,
-    TRENCH
+    SHOOTING
   }
 
   private WantedState wantedState = WantedState.IDLE;
@@ -55,6 +54,7 @@ public class Turret extends SubsystemBase {
 
   private double turretSetPoint = TurretConstants.turretMinAngle;
   private double hoodSetPoint = TurretConstants.hoodMinAngle;
+  private double flywheelSetPoint = 0.0;
 
   double closestSafeAngle;
 
@@ -89,14 +89,7 @@ public class Turret extends SubsystemBase {
       case IDLE: 
         yield CurrentState.IDLE;
       case SHOOTING:
-        for (int i = 0; i < TurretConstants.trenches.length; i++) {
-            if (TurretConstants.trenches[i].getDistance(poseSupplier.get().getTranslation()) < TurretConstants.turretTolerance) {
-              yield CurrentState.TRENCH;
-            }
-          }
         yield CurrentState.SHOOTING;
-      case TRENCH:
-        yield CurrentState.TRENCH;
     };
   }
 
@@ -113,8 +106,8 @@ public class Turret extends SubsystemBase {
         break;
       case SHOOTING:
         if (poseSupplier.get().getX() < 4.5) {
-          io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
           calculationToTarget(TurretConstants.hub());
+          io.setFlyWheelSpeed(flywheelSetPoint);
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
         } else if (poseSupplier.get().getY() < 4) {
@@ -129,19 +122,6 @@ public class Turret extends SubsystemBase {
           io.setTurretAngle(turretSetPoint);
         }
         break;
-      case TRENCH:
-        io.setFlyWheelSpeed(0);
-        io.setHoodAngle(TurretConstants.turretMinAngle);
-        if (poseSupplier.get().getX() < 4.5) {
-          calculationToTarget(TurretConstants.hub());
-          io.setTurretAngle(turretSetPoint);
-        } else if (poseSupplier.get().getY() < 4) {
-          calculationToTarget(TurretConstants.right());
-          io.setTurretAngle(turretSetPoint);
-        } else {
-          calculationToTarget(TurretConstants.left());
-          io.setTurretAngle(turretSetPoint);
-        }
       default:
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
@@ -182,13 +162,18 @@ public class Turret extends SubsystemBase {
    * @param target where the turret should be aimed at hood and turret
    */
   private void calculationToTarget(Translation2d target) {
-    Translation2d robotToTarget = considerChassisSpeeds(target).minus(poseSupplier.get().getTranslation());
+    Translation2d adjustedTarget = considerChassisSpeeds(target);
+    Translation2d robotToTarget = adjustedTarget.minus(poseSupplier.get().getTranslation());
     Rotation2d turretToTargetAngle = robotToTarget.getAngle().minus(poseSupplier.get().getRotation());
     turretSetPoint = turretToTargetAngle.getRadians();
-    Logger.recordOutput("Calculations/target", considerChassisSpeeds(target));
+    Logger.recordOutput("Calculations/target", adjustedTarget);
     Logger.recordOutput("Calculations/robotToTarget", robotToTarget);
     Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);
     //calculate hood angle based off distance
+    double distance = robotToTarget.getNorm();
+    ShooterSetpoint setpoint = shooterMap.get(distance);
+    hoodSetPoint = MathUtil.clamp(setpoint.hoodAngle, TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
+    flywheelSetPoint = MathUtil.clamp(setpoint.rpm, 0, 6758);
   }
 
   public CurrentState getCurrentState() {

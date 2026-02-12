@@ -14,7 +14,7 @@ public class IntakeIOSim extends IntakeIOSpark {
         inputs.armAngle = armSetAngle;
          inputs.intakeSpeed = intakeSetSpeed;
          inputs.feederSpeed = feederSetSpeed;
-         inputs.horizontalMotor1Speed = horizontalMotor1SetSpeed;
-         inputs.horizontalMotor2Speed = horizontalMotor2SetSpeed;
+         inputs.horizontal1Speed = horizontal1SetSpeed;
+         inputs.horizontal2Speed = horizontal2SetSpeed;
     }
 }

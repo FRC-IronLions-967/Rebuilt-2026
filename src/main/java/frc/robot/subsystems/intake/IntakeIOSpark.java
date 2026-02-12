@@ -16,123 +16,124 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.MathUtil;
+
 public class IntakeIOSpark implements IntakeIO {
 
-  protected SparkMax horizontalMotor1;
-  protected SparkMaxConfig horizontalMotor1Config;
-  protected SparkClosedLoopController horizontalMotor1Controller;
+protected SparkMax horizontal1;
+protected SparkMaxConfig horizontal1Config;
 
-  protected double horizontalMotor1SetSpeed;
+protected double horizontal1SetSpeed;
 
-  protected SparkMax horizontalMotor2;
-  protected SparkMaxConfig horizontalMotor2Config;
-  protected SparkClosedLoopController horizontalMotor2Controller;
+protected SparkMax horizontal2;
+protected SparkMaxConfig horizontal2Config;
 
-  protected double horizontalMotor2SetSpeed;
+protected double horizontal2SetSpeed;
 
-  protected SparkFlex feeder;
-  protected SparkFlexConfig feederConfig;
-  protected SparkClosedLoopController feederController;
+protected SparkFlex feeder;
+protected SparkFlexConfig feederConfig;
 
-  protected double feederSetSpeed;
+protected double feederSetSpeed;
 
-  protected SparkFlex intake;
-  protected SparkFlexConfig intakeConfig;
-  protected SparkClosedLoopController intakeController;
+protected SparkFlex intake;
+protected SparkFlexConfig intakeConfig;
 
-  protected double intakeSetSpeed;
+protected double intakeSetSpeed;
 
-  protected SparkFlex arm;
-  protected SparkFlexConfig armConfig;
-  protected SparkClosedLoopController armController;
+protected SparkFlex arm;
+protected SparkFlexConfig armConfig;
+protected SparkClosedLoopController armController;
 
-  protected double armSetAngle;
+protected double armSetAngle;
 
-  public IntakeIOSpark() {
-         intake = new SparkFlex(13, MotorType.kBrushless);
-         intakeConfig = new SparkFlexConfig();
-         intakeController = intake.getClosedLoopController();
+   public IntakeIOSpark() {
+      intake = new SparkFlex(13, MotorType.kBrushless);
+      intakeConfig = new SparkFlexConfig();
 
-         intakeConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40);
-         intakeConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(IntakeConstants.intakeP, IntakeConstants.intakeI, IntakeConstants.intakeD);
-         intake.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      intakeConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40);
+      intake.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-         arm = new SparkFlex(14, MotorType.kBrushless);
-         armConfig = new SparkFlexConfig();
-         armController = arm.getClosedLoopController();
+      arm = new SparkFlex(14, MotorType.kBrushless);
+      armConfig = new SparkFlexConfig();
+      armController = arm.getClosedLoopController();
 
-         armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-         armConfig
-                 .absoluteEncoder
-                 .zeroOffset(IntakeConstants.armZeroOffset);
-         armConfig
-                 .closedLoop
-                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-                 .pid(IntakeConstants.armP, IntakeConstants.armI, IntakeConstants.armD);
-         arm.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        
-         feeder = new SparkFlex(15, MotorType.kBrushless);
-         feederConfig = new SparkFlexConfig();
-         feederController = feeder.getClosedLoopController();
+      armConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      armConfig
+               .absoluteEncoder
+               .zeroOffset(IntakeConstants.armZeroOffset);
+      armConfig
+               .closedLoop
+               .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+               .pid(IntakeConstants.armP, 0.0, IntakeConstants.armD);
+      arm.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      
+      feeder = new SparkFlex(15, MotorType.kBrushless);
+      feederConfig = new SparkFlexConfig();
 
-         feederConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-         feederConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(IntakeConstants.feederP, IntakeConstants.feederI, IntakeConstants.feederD);
-         feeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      feederConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      feeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-         horizontalMotor1 = new SparkMax(16, MotorType.kBrushless);
-         horizontalMotor1Config = new SparkMaxConfig();
-         horizontalMotor1Controller = horizontalMotor1.getClosedLoopController();
+      horizontal1 = new SparkMax(16, MotorType.kBrushless);
+      horizontal1Config = new SparkMaxConfig();
 
-         horizontalMotor1Config.idleMode(IdleMode.kCoast).smartCurrentLimit(40);
-         horizontalMotor1Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(IntakeConstants.horizontalMotor1P, IntakeConstants.horizontalMotor1I, IntakeConstants.horizontalMotor1D);
-         horizontalMotor1.configure(horizontalMotor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      horizontal1Config.idleMode(IdleMode.kCoast).smartCurrentLimit(40);
+      horizontal1.configure(horizontal1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-         horizontalMotor2 = new SparkMax(17, MotorType.kBrushless);
-         horizontalMotor2Config = new SparkMaxConfig();
-         horizontalMotor2Controller = horizontalMotor2.getClosedLoopController();
+      horizontal2 = new SparkMax(17, MotorType.kBrushless);
+      horizontal2Config = new SparkMaxConfig();
 
-         horizontalMotor2Config.idleMode(IdleMode.kCoast).smartCurrentLimit(40);
-         horizontalMotor2Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(IntakeConstants.horizontalMotor2P, IntakeConstants.horizontalMotor2I, IntakeConstants.horizontalMotor2D);
-         horizontalMotor2.configure(horizontalMotor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-       }
+      horizontal2Config.idleMode(IdleMode.kCoast).smartCurrentLimit(40);
+      horizontal2.configure(horizontal2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+   }
 
-       @Override
-       public void updateInputs(IntakeIOInputs inputs) {
-         inputs.armAngle = arm.getAbsoluteEncoder().getPosition();
-         inputs.intakeSpeed = intake.getEncoder().getVelocity();
-         inputs.feederSpeed = feeder.getEncoder().getVelocity();
-         inputs.horizontalMotor1Speed = horizontalMotor1.getEncoder().getVelocity();
-         inputs.horizontalMotor2Speed = horizontalMotor2.getEncoder().getVelocity();
+   @Override
+   public void updateInputs(IntakeIOInputs inputs) {
+      inputs.armAngle = arm.getAbsoluteEncoder().getPosition();
+      inputs.intakeSpeed = intake.getEncoder().getVelocity();
+      inputs.feederSpeed = feeder.getEncoder().getVelocity();
+      inputs.horizontal1Speed = horizontal1.getEncoder().getVelocity();
+      inputs.horizontal2Speed = horizontal2.getEncoder().getVelocity();
 
-         armController.setSetpoint(armSetAngle, ControlType.kPosition);
-         intakeController.setSetpoint(intakeSetSpeed, ControlType.kVelocity);
-         feederController.setSetpoint(feederSetSpeed, ControlType.kVelocity);
-         horizontalMotor1Controller.setSetpoint(horizontalMotor1SetSpeed, ControlType.kVelocity);
-         horizontalMotor2Controller.setSetpoint(horizontalMotor1SetSpeed, ControlType.kVelocity);
-       }
+      inputs.armSetAngle = armSetAngle;
+      inputs.intakeSetSpeed = intakeSetSpeed;
+      inputs.feederSetSpeed = feederSetSpeed;
+      inputs.horizontal1SetSpeed = horizontal1SetSpeed;
+      inputs.horizontal2SetSpeed = horizontal2SetSpeed;
+      
+      inputs.armCurrent = arm.getOutputCurrent();
+      inputs.intakeCurrent = intake.getOutputCurrent();
+      inputs.feederCurrent = feeder.getOutputCurrent();
+      inputs.horizontal1Current = horizontal1.getOutputCurrent();
+      inputs.horizontal2Current = horizontal2.getOutputCurrent();
+   }
 
-       @Override
-       public void setIntakeArmAngle(double angle) {
-          armSetAngle = angle;
-       }
+   @Override
+   public void setIntakeArmAngle(double angle) {
+      armSetAngle = MathUtil.clamp(angle, IntakeConstants.armMinPosition, IntakeConstants.armMaxPosition);
+      armController.setSetpoint(armSetAngle, ControlType.kPosition);
+   }
 
-       @Override
-       public void setIntakeSpeed(double speed) {
-          intakeSetSpeed = speed;
-       }
+   @Override
+   public void setIntakeSpeed(double speed) {
+      intakeSetSpeed = speed;
+      intake.set(speed);
+   }
 
-       @Override
-       public void setFeederSpeed(double speed) {
-          feederSetSpeed = speed;
-       }
+   @Override
+   public void setFeederSpeed(double speed) {
+      feederSetSpeed = speed;
+      feeder.set(speed);
+   }
 
-       @Override
-       public void setHorizontalMotor1Speed(double speed) {
-          horizontalMotor1SetSpeed = speed;
-       }
+   @Override
+   public void setHorizontal1Speed(double speed) {
+      horizontal1SetSpeed = speed;
+      horizontal1.set(speed);
+   }
 
-       @Override
-       public void setHorizontalMotor2Speed(double speed) {
-          horizontalMotor2SetSpeed = speed;
-       }
+   @Override
+   public void setHorizontal2Speed(double speed) {
+      horizontal2SetSpeed = speed;
+      horizontal2.set(speed);
+   }
 }
