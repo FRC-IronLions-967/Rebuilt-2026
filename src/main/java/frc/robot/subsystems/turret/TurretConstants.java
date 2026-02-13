@@ -73,6 +73,7 @@ public class TurretConstants {
     public static final double turretMaxAngle = Math.PI-0.0872;
     public static final double turretMinAngle = -Math.PI+0.0872;
     public static final double turretTolerance = 0.0872; //5 degrees
+    public static final LoggedNetworkNumber turretHomingSpeed = new LoggedNetworkNumber("Turret Homing Speed", 0.1);
 
     public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 6784);
     public static final LoggedNetworkNumber flywheelShootingSpeed = new LoggedNetworkNumber("flywheelShootingSpeed", 4000);//speed not velocity for bang bang

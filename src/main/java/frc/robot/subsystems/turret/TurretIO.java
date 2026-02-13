@@ -34,4 +34,6 @@ public interface TurretIO {
     public default void setHoodAngle(double angle) {}
 
     public default void setTurretAngle(double angle) {}
+
+    public default boolean home() {return false;}
 }

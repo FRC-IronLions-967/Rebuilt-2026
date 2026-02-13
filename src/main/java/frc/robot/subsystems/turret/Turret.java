@@ -46,7 +46,8 @@ public class Turret extends SubsystemBase {
 
   public enum CurrentState {
     IDLE,
-    SHOOTING
+    SHOOTING,
+    HOMING
   }
 
   private WantedState wantedState = WantedState.IDLE;
@@ -55,6 +56,7 @@ public class Turret extends SubsystemBase {
   private double turretSetPoint = TurretConstants.turretMinAngle;
   private double hoodSetPoint = TurretConstants.hoodMinAngle;
   private double flywheelSetPoint = 0.0;
+  private boolean homed = false;
 
   double closestSafeAngle;
 
@@ -86,10 +88,16 @@ public class Turret extends SubsystemBase {
 
   private CurrentState updateState() {
     return switch(wantedState) {
-      case IDLE: 
-        yield CurrentState.IDLE;
+      case IDLE:
+        if (homed) {
+          yield CurrentState.IDLE;
+        }
+        yield CurrentState.HOMING;
       case SHOOTING:
+      if (homed) {
         yield CurrentState.SHOOTING;
+      }
+      yield CurrentState.HOMING;
     };
   }
 
@@ -121,6 +129,9 @@ public class Turret extends SubsystemBase {
           io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
           io.setTurretAngle(turretSetPoint);
         }
+        break;
+      case HOMING:
+        homed = io.home();
         break;
       default:
         io.setFlyWheelSpeed(0.0);
