@@ -142,7 +142,7 @@ public class TurretIOSpark implements TurretIO{
 
     @Override
     public void setTurretAngle(double angle) {
-        angle = Math.IEEEremainder(angle, 2*Math.PI);
+        angle = MathUtil.angleModulus(angle);
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
 

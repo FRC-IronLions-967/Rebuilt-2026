@@ -113,12 +113,12 @@ public class Turret extends SubsystemBase {
         } else if (poseSupplier.get().getY() < 4) {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           calculationToTarget(TurretConstants.right());
-          io.setHoodAngle(hoodSetPoint);
+          io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
           io.setTurretAngle(turretSetPoint);
         } else {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           calculationToTarget(TurretConstants.left());
-          io.setHoodAngle(hoodSetPoint);
+          io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
           io.setTurretAngle(turretSetPoint);
         }
         break;
@@ -149,7 +149,7 @@ public class Turret extends SubsystemBase {
     double previousTOF = 0;
     for (int i = 0; i < 3; i++) {
       previousTOF = TOF;
-      TOF = timeOfFlightMap.get(target.getDistance(target));
+      TOF = timeOfFlightMap.get(target.getDistance(poseSupplier.get().getTranslation()));
       target = new Translation2d(
         target.getX() - speedsSupplier.get().vxMetersPerSecond * (TOF - previousTOF),
         target.getY() - speedsSupplier.get().vyMetersPerSecond * (TOF - previousTOF));
@@ -165,7 +165,7 @@ public class Turret extends SubsystemBase {
     Translation2d adjustedTarget = considerChassisSpeeds(target);
     Translation2d robotToTarget = adjustedTarget.minus(poseSupplier.get().getTranslation());
     Rotation2d turretToTargetAngle = robotToTarget.getAngle().minus(poseSupplier.get().getRotation());
-    turretSetPoint = turretToTargetAngle.getRadians();
+    turretSetPoint = MathUtil.angleModulus(turretToTargetAngle.getRadians());
     Logger.recordOutput("Calculations/target", adjustedTarget);
     Logger.recordOutput("Calculations/robotToTarget", robotToTarget);
     Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);
