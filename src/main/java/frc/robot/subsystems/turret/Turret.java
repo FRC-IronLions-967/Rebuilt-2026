@@ -56,7 +56,7 @@ public class Turret extends SubsystemBase {
   private double turretSetPoint = TurretConstants.turretMinAngle;
   private double hoodSetPoint = TurretConstants.hoodMinAngle;
   private double flywheelSetPoint = 0.0;
-  private boolean homed = false;
+  private boolean homed = true;
 
   double closestSafeAngle;
 
@@ -84,6 +84,7 @@ public class Turret extends SubsystemBase {
     applyState();
     io.updateInputs(inputs);
     Logger.processInputs("Turret", inputs);
+    Logger.recordOutput("Turret State", currentState);
   }
 
   private CurrentState updateState() {
@@ -115,7 +116,7 @@ public class Turret extends SubsystemBase {
       case SHOOTING:
         if (poseSupplier.get().getX() < 4.5) {
           calculationToTarget(TurretConstants.hub());
-          io.setFlyWheelSpeed(flywheelSetPoint);
+          io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
         } else if (poseSupplier.get().getY() < 4) {

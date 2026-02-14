@@ -44,7 +44,7 @@ public class IntakeIOSpark implements IntakeIO {
    protected SparkFlexConfig armConfig;
    protected SparkClosedLoopController armController;
 
-   protected double armSetAngle = IntakeConstants.armRestingPosition;
+   protected double armSetAngle = IntakeConstants.intakePosition;
 
    public IntakeIOSpark() {
       intake = new SparkFlex(13, MotorType.kBrushless);
@@ -118,7 +118,7 @@ public class IntakeIOSpark implements IntakeIO {
    @Override
    public void setIntakeArmAngle(double angle) {
       armSetAngle = MathUtil.clamp(angle, IntakeConstants.armMinPosition, IntakeConstants.armMaxPosition);
-      armController.setSetpoint(armSetAngle, ControlType.kPosition);
+      // armController.setSetpoint(armSetAngle, ControlType.kPosition);
    }
 
    @Override
