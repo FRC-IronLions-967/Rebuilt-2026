@@ -11,7 +11,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-  private IntakeIO io;
+  public IntakeIO io;
   private IntakeIOInputsAutoLogged inputs;
   private BooleanSupplier turretResetting;
 
@@ -37,15 +37,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Intake(IntakeIO io) {
-    this(
-      io,
-      new BooleanSupplier() {
-        @Override
-        public boolean getAsBoolean() {
-            return false;
-        }
-      }
-    );
+    this(io, ()-> false);
   }
 
   @Override

@@ -28,8 +28,8 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class DriveConstants {
   public static final double maxSpeedMetersPerSec = 4.2;
   public static final double odometryFrequency = 100.0; // Hz
-  public static final double trackWidth = Units.inchesToMeters(24);
-  public static final double wheelBase = Units.inchesToMeters(24);
+  public static final double trackWidth = Units.inchesToMeters(20);
+  public static final double wheelBase = Units.inchesToMeters(20);
   public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
   public static final Translation2d[] moduleTranslations =
       new Translation2d[] {
@@ -40,10 +40,10 @@ public class DriveConstants {
       };
 
   // Zeroed rotation values for each module, see setup instructions
-  public static final Rotation2d frontLeftZeroRotation = new Rotation2d(-0.0105);
-  public static final Rotation2d frontRightZeroRotation = new Rotation2d(-0.0143);
-  public static final Rotation2d backLeftZeroRotation = new Rotation2d(0.00306);
-  public static final Rotation2d backRightZeroRotation = new Rotation2d(-0.0354);
+  public static final Rotation2d frontLeftZeroRotation = new Rotation2d(1.62);
+  public static final Rotation2d frontRightZeroRotation = new Rotation2d(1.6);
+  public static final Rotation2d backLeftZeroRotation = new Rotation2d(3.11);
+  public static final Rotation2d backRightZeroRotation = new Rotation2d(-1.559);
 
   // Device CAN IDs
   public static final int frontLeftDriveCanId = 1;
@@ -58,7 +58,7 @@ public class DriveConstants {
 
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 48;
-  public static final double wheelRadiusMeters = Units.inchesToMeters(1.91);
+  public static final double wheelRadiusMeters = Units.inchesToMeters(2.669);
   public static final double driveMotorReduction = 5.9;
   public static final DCMotor driveGearbox = DCMotor.getNEO(1);
 
@@ -74,9 +74,9 @@ public class DriveConstants {
   public static final LoggedNetworkNumber driveKd =
       new LoggedNetworkNumber("Tuning/Drive/Drive/PID/Kd", 0.005);
   public static final LoggedNetworkNumber driveKs =
-      new LoggedNetworkNumber("Tuning/Drive/Drive/PID/Ks", 0.13854);
+      new LoggedNetworkNumber("Tuning/Drive/Drive/PID/Ks", 0.12349);
   public static final LoggedNetworkNumber driveKv =
-      new LoggedNetworkNumber("Tuning/Drive/Drive/PID/Kv", 0.12326);
+      new LoggedNetworkNumber("Tuning/Drive/Drive/PID/Kv", 0.12293);
   public static final LoggedNetworkNumber driveSimP =
       new LoggedNetworkNumber("Tuning/Drive/Drive/PID/SimP", 0.12326);
   public static final LoggedNetworkNumber driveSimD =

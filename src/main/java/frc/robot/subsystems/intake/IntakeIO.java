@@ -41,5 +41,7 @@ public interface IntakeIO {
 
     public default void setHorizontal1Speed(double speed) {}    
 
-    public default void setHorizontal2Speed(double speed) {}    
+    public default void setHorizontal2Speed(double speed) {}  
+    
+    public default void testArm(double speed) {}
 }
