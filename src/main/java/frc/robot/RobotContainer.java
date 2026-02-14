@@ -166,12 +166,12 @@ public class RobotContainer {
     controller.a().onFalse(new InstantCommand(()->{
         intake.setWantedState(Intake.WantedState.IDLE);
     }));
-    controller.b().onTrue(new InstantCommand(()->{
-        intake.io.testArm(-2.0);
-    }));
-    controller.b().onFalse(new InstantCommand(()->{
-        intake.io.testArm(0);
-    }));
+    // controller.b().onTrue(new InstantCommand(()->{
+    //     intake.io.testArm(-2.0);
+    // }));
+    // controller.b().onFalse(new InstantCommand(()->{
+    //     intake.io.testArm(0);
+    // }));
   }
 
   /**

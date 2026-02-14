@@ -44,7 +44,7 @@ public class IntakeIOSpark implements IntakeIO {
    protected SparkFlexConfig armConfig;
    protected SparkClosedLoopController armController;
 
-   protected double armSetAngle;
+   protected double armSetAngle = IntakeConstants.armRestingPosition;
 
    public IntakeIOSpark() {
       intake = new SparkFlex(13, MotorType.kBrushless);
@@ -68,6 +68,8 @@ public class IntakeIOSpark implements IntakeIO {
             .closedLoop
             .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
             .pid(IntakeConstants.armP, 0.0, IntakeConstants.armD);
+            // .feedForward
+               // .kS(IntakeConstants.armkS);
       arm.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    
       feeder = new SparkFlex(15, MotorType.kBrushless);
@@ -115,7 +117,7 @@ public class IntakeIOSpark implements IntakeIO {
    @Override
    public void setIntakeArmAngle(double angle) {
       armSetAngle = MathUtil.clamp(angle, IntakeConstants.armMinPosition, IntakeConstants.armMaxPosition);
-      // armController.setSetpoint(armSetAngle, ControlType.kPosition);
+      armController.setSetpoint(armSetAngle, ControlType.kPosition);
    }
 
    @Override
@@ -144,7 +146,7 @@ public class IntakeIOSpark implements IntakeIO {
 
    @Override
    public void testArm(double speed) {
-       arm.setVoltage(speed);
+      //  arm.setVoltage(speed);
    }
 }
 //jamming next (delete after lunch)
