@@ -154,7 +154,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> controller.getRightX()));
 
     // controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
     // controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
@@ -165,6 +165,12 @@ public class RobotContainer {
     }));
     controller.a().onFalse(new InstantCommand(()->{
         intake.setWantedState(Intake.WantedState.IDLE);
+    }));
+    controller.b().onTrue(new InstantCommand(()->{
+        intake.io.testArm(-2.0);
+    }));
+    controller.b().onFalse(new InstantCommand(()->{
+        intake.io.testArm(0);
     }));
   }
 

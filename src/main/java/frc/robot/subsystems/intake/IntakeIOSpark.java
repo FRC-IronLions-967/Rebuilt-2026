@@ -60,8 +60,7 @@ public class IntakeIOSpark implements IntakeIO {
       armController = arm.getClosedLoopController();
 
       armConfig
-         .idleMode(IdleMode.kBrake)
-         .smartCurrentLimit(40);
+         .idleMode(IdleMode.kBrake);
       armConfig
             .absoluteEncoder
             .zeroOffset(IntakeConstants.armZeroOffset);
@@ -75,8 +74,9 @@ public class IntakeIOSpark implements IntakeIO {
       feederConfig = new SparkFlexConfig();
 
       feederConfig
-         .idleMode(IdleMode.kBrake)
-         .smartCurrentLimit(40);
+         .idleMode(IdleMode.kCoast)
+         .smartCurrentLimit(40)
+         .inverted(true);
       feeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
       horizontal1 = new SparkMax(16, MotorType.kBrushless);
@@ -92,7 +92,8 @@ public class IntakeIOSpark implements IntakeIO {
 
       horizontal2Config
          .idleMode(IdleMode.kCoast)
-         .smartCurrentLimit(40);
+         .smartCurrentLimit(40)
+         .inverted(true);
       horizontal2.configure(horizontal2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    }
 
@@ -114,7 +115,7 @@ public class IntakeIOSpark implements IntakeIO {
    @Override
    public void setIntakeArmAngle(double angle) {
       armSetAngle = MathUtil.clamp(angle, IntakeConstants.armMinPosition, IntakeConstants.armMaxPosition);
-      armController.setSetpoint(armSetAngle, ControlType.kPosition);
+      // armController.setSetpoint(armSetAngle, ControlType.kPosition);
    }
 
    @Override
@@ -139,6 +140,11 @@ public class IntakeIOSpark implements IntakeIO {
    public void setHorizontal2Speed(double speed) {
       horizontal2SetSpeed = speed;
       horizontal2.set(horizontal2SetSpeed);
+   }
+
+   @Override
+   public void testArm(double speed) {
+       arm.setVoltage(speed);
    }
 }
 //jamming next (delete after lunch)
