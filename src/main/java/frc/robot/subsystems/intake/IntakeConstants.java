@@ -11,17 +11,19 @@ public class IntakeConstants{
   public static final double armD = 0.0;
   public static final double armkS = 2.0;
 
-  public static final double armMinPosition = 0.2;//0.176
-  public static final double armMaxPosition = 0.9;//0.5
+  public static final double armMinPosition = 0.05;//0.176
+  public static final double armMaxPosition = 0.7;//0.5
 
-  public static final double armZeroOffset = 0.75;
+  public static final double armZeroOffset = 0.45;
 
-  public static final double intakePosition = 0.8;
-  public static final double armRestingPosition = 0.25;
+  public static final double intakePosition = 0.7;
+  public static final double armRestingPosition = 0.1;
 
   public static final double intakeIntakingSpeed = 0.75;
   public static final double feederSpeed = 0.75;
   public static final double horizontal1Speed = 0.75;
   public static final double horizontal2Speed = 0.75;
+
+  public static final double armMaxOutput = 0.1;
 }
 

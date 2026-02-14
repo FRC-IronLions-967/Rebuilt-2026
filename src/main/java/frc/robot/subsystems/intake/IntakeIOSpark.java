@@ -66,6 +66,7 @@ public class IntakeIOSpark implements IntakeIO {
             .zeroOffset(IntakeConstants.armZeroOffset);
       armConfig
             .closedLoop
+            .outputRange(-IntakeConstants.armMaxOutput, IntakeConstants.armMaxOutput)
             .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
             .pid(IntakeConstants.armP, 0.0, IntakeConstants.armD);
             // .feedForward
