@@ -110,7 +110,7 @@ protected double armSetAngle;
    @Override
    public void setIntakeArmAngle(double angle) {
       armSetAngle = MathUtil.clamp(angle, IntakeConstants.armMinPosition, IntakeConstants.armMaxPosition);
-      armController.setSetpoint(armSetAngle, ControlType.kPosition);
+      // armController.setSetpoint(armSetAngle, ControlType.kPosition);
    }
 
    @Override
