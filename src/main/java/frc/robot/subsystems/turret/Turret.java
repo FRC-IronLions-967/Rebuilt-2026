@@ -195,8 +195,13 @@ public class Turret extends SubsystemBase {
   public boolean getResetting() {
     return inputs.resetting;
   }
+
   public boolean intakeSafe() {
     return inputs.intakeSafe;
+  }
+
+  public boolean shooterSpedUp() {
+    return inputs.flywheelSpeed > TurretConstants.flywheelMinRunningSpeed.get();
   }
 
   public double getHoodAngle() {

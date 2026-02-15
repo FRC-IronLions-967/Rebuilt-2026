@@ -14,6 +14,7 @@ public class Intake extends SubsystemBase {
   public IntakeIO io;
   private IntakeIOInputsAutoLogged inputs;
   private BooleanSupplier turretResetting;
+  private BooleanSupplier flyWheelSpedUp;
 
   public enum WantedState {
     IDLE,
@@ -30,14 +31,15 @@ public class Intake extends SubsystemBase {
   private WantedState wantedState = WantedState.IDLE;
   private CurrentState currentState = CurrentState.IDLE;
 
-  public Intake(IntakeIO io, BooleanSupplier turretResetting) {
+  public Intake(IntakeIO io, BooleanSupplier turretResetting, BooleanSupplier flyWheelSpedUp) {
     this.io = io;
     inputs = new IntakeIOInputsAutoLogged();
     this.turretResetting = turretResetting;
+    this.flyWheelSpedUp = flyWheelSpedUp;
   }
 
   public Intake(IntakeIO io) {
-    this(io, ()-> false);
+    this(io, ()-> false, ()-> true);
   }
 
   @Override
@@ -65,7 +67,7 @@ public class Intake extends SubsystemBase {
         stopAll();
         break;
       case INTAKING:
-        intake(turretResetting.getAsBoolean());
+        intake(turretResetting.getAsBoolean(), flyWheelSpedUp.getAsBoolean());
         break;
       case REVERSING:
         reverse();
@@ -84,10 +86,10 @@ public class Intake extends SubsystemBase {
     io.setHorizontal2Speed(0.0);
   }
 
-  private void intake(boolean resetting) {
+  private void intake(boolean resetting, boolean flywheelSpedUp) {
     io.setIntakeArmAngle(IntakeConstants.intakePosition);
     io.setIntakeSpeed(IntakeConstants.intakeIntakingSpeed);
-    io.setFeederSpeed(resetting ? 0 : IntakeConstants.feederSpeed);
+    io.setFeederSpeed(resetting || !flywheelSpedUp ? 0 : IntakeConstants.feederSpeed);
     io.setHorizontal1Speed(IntakeConstants.horizontal1Speed);
     io.setHorizontal2Speed(IntakeConstants.horizontal2Speed);
   }
