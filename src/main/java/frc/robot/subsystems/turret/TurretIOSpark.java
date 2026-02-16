@@ -42,20 +42,20 @@ public class TurretIOSpark implements TurretIO{
     protected SparkFlexConfig hoodConfig;
     protected SparkClosedLoopController hoodController;
 
-    // protected SparkFlex turret;
-    // protected SparkFlexConfig turretConfig;
-    // protected SparkClosedLoopController turretController;
+    protected SparkFlex turret;
+    protected SparkFlexConfig turretConfig;
+    protected SparkClosedLoopController turretController;
 
     protected double flywheelSetSpeed = 0.0;
     protected double hoodSetAngle;
-    // protected double turretSetAngle;
+    protected double turretSetAngle;
 
-    // protected boolean homed;
+    protected boolean homed;
 
-    // protected BooleanSupplier turretMinLimitSwitch;
-    // protected BooleanSupplier turretMaxLimitSwitch;
-    // protected boolean lastMaxLimitSwitch;
-    // protected boolean lastMinLimitSwitch;
+    protected BooleanSupplier turretMinLimitSwitch;
+    protected BooleanSupplier turretMaxLimitSwitch;
+    protected boolean lastMaxLimitSwitch;
+    protected boolean lastMinLimitSwitch;
 
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
@@ -92,30 +92,36 @@ public class TurretIOSpark implements TurretIO{
         hood.configure(hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodController = hood.getClosedLoopController();
 
-        // turret = new SparkFlex(12, MotorType.kBrushless);
-        // turretConfig = new SparkFlexConfig();
-        // turretConfig
-        //     .idleMode(IdleMode.kBrake)
-        //     .smartCurrentLimit(TurretConstants.turretCurrentLimit)
-        //     .closedLoop
-        //         .pid(TurretConstants.turretP.get(), 0, TurretConstants.turretD.get())
-        //         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        //         .positionWrappingEnabled(false);
-        // turretConfig.encoder.positionConversionFactor(2*Math.PI * TurretConstants.turretGearRatio);
-        // turret.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // turretController = turret.getClosedLoopController();
+        turret = new SparkFlex(12, MotorType.kBrushless);
+        turretConfig = new SparkFlexConfig();
+        turretConfig
+            .idleMode(IdleMode.kBrake)
+            .smartCurrentLimit(TurretConstants.turretCurrentLimit)
+            .closedLoop
+                .pid(TurretConstants.turretP.get(), 0, TurretConstants.turretD.get())
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .positionWrappingEnabled(false);
+        turretConfig.encoder.positionConversionFactor(2*Math.PI / TurretConstants.turretGearRatio);
+        turretConfig
+            .softLimit
+                .forwardSoftLimit(TurretConstants.turretMaxAngle)
+                .forwardSoftLimitEnabled(true)
+                .reverseSoftLimit(TurretConstants.turretMinAngle)
+                .reverseSoftLimitEnabled(true);
+        turret.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        turretController = turret.getClosedLoopController();
 
-        // turretMinLimitSwitch = LimitSwitchManager.getSwitch(0);
-        // turretMaxLimitSwitch = LimitSwitchManager.getSwitch(1);
+        turretMinLimitSwitch = LimitSwitchManager.getSwitch(0);
+        turretMaxLimitSwitch = LimitSwitchManager.getSwitch(1);
     }
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        // if (turretMinLimitSwitch.getAsBoolean() && !lastMinLimitSwitch) {
-        //     turret.getEncoder().setPosition(TurretConstants.turretMinAngle);
-        // } else if (turretMaxLimitSwitch.getAsBoolean() && !lastMaxLimitSwitch) {
-        //     turret.getEncoder().setPosition(TurretConstants.turretMaxAngle);
-        // }
+        if (turretMinLimitSwitch.getAsBoolean() && !lastMinLimitSwitch) {
+            turret.getEncoder().setPosition(TurretConstants.turretMinAngle);
+        } else if (turretMaxLimitSwitch.getAsBoolean() && !lastMaxLimitSwitch) {
+            turret.getEncoder().setPosition(TurretConstants.turretMaxAngle);
+        }
 
         inputs.flywheelSpeed = flywheel.getEncoder().getVelocity();
         inputs.flywheelSetSpeed = flywheelSetSpeed;
@@ -123,27 +129,21 @@ public class TurretIOSpark implements TurretIO{
         inputs.hoodAngle = hood.getEncoder().getPosition();
         inputs.hoodSetAngle = hoodSetAngle;
         inputs.hoodCurrent = hood.getOutputCurrent();
-        // inputs.turretAngle = turret.getEncoder().getPosition();
-        // inputs.turretSetAngle = turretSetAngle;
-        // inputs.turretMinLimitSwitch = turretMinLimitSwitch.getAsBoolean();
-        // inputs.turretMaxLimitSwitch = turretMaxLimitSwitch.getAsBoolean();
+        inputs.turretAngle = turret.getEncoder().getPosition();
+        inputs.turretSetAngle = turretSetAngle;
+        inputs.turretMinLimitSwitch = turretMinLimitSwitch.getAsBoolean();
+        inputs.turretMaxLimitSwitch = turretMaxLimitSwitch.getAsBoolean();
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
         inputs.intakeSafe = 
             ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
             || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
 
-        // if (homed) {
-        //     turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
-        // }
-        flywheel.setVoltage(12 * flywheelBangBang.calculate(flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed));
+        flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
 
-        // lastMaxLimitSwitch = inputs.turretMaxLimitSwitch;
-        // lastMinLimitSwitch = inputs.turretMinLimitSwitch;
+        lastMaxLimitSwitch = inputs.turretMaxLimitSwitch;
+        lastMinLimitSwitch = inputs.turretMinLimitSwitch;
     }
 
-    /**
-     * speed should be positive because bang bang doesn't like negatives.
-     */
     @Override
     public void setFlyWheelSpeed(double speed) {
         flywheelSetSpeed = speed;
@@ -152,26 +152,27 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setHoodAngle(double angle) {
         hoodSetAngle = MathUtil.clamp(angle, TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
-        // hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
+        hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
     }
 
-    // @Override
-    // public void setTurretAngle(double angle) {
-    //     angle = MathUtil.angleModulus(angle);
+    @Override
+    public void setTurretAngle(double angle) {
+        angle = MathUtil.angleModulus(angle);
 
-    //     turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
-
-    //     turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
-    // }
-
-    // @Override
-    // public boolean home() {
-    //     homed = turretMaxLimitSwitch.getAsBoolean() || turretMinLimitSwitch.getAsBoolean();
-    //     if (!homed) {
-    //         turret.set(TurretConstants.turretHomingSpeed.get());
-    //     } else {
-    //         turret.set(0);
-    //     }
-    //     return homed;
-    // }
+        turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
+        if (homed) {
+            turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
+        }
+    }
+    
+    @Override
+    public boolean home() {
+        homed = turretMaxLimitSwitch.getAsBoolean() || turretMinLimitSwitch.getAsBoolean();
+        if (!homed) {
+            turret.set(TurretConstants.turretHomingSpeed.get());
+        } else {
+            turret.set(0);
+        }
+        return homed;
+    }
 }

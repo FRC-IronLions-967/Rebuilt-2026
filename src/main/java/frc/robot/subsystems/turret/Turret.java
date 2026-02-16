@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Turret extends SubsystemBase {
   
-  public static final InterpolatingTreeMap<Double, ShooterSetpoint> shooterMap = new InterpolatingTreeMap<>(
+  public final InterpolatingTreeMap<Double, ShooterSetpoint> shooterMap = new InterpolatingTreeMap<>(
     InverseInterpolator.forDouble(), 
     (start, end, t) ->
         new ShooterSetpoint(
@@ -31,7 +31,13 @@ public class Turret extends SubsystemBase {
 
   );
 
-  public static final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
+  public final double shooterSetpointMinDistance = 0.0;//first key
+  public final double shooterSetpointMaxDistance = 10.0;//max key
+
+  public final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
+
+  public final double TOFMinDistance = 0.0;//first key
+  public final double TOFMaxDistance = 10.0;//max key
 
   public TurretIO io;
   private TurretIOInputsAutoLogged inputs;
@@ -87,6 +93,15 @@ public class Turret extends SubsystemBase {
     Logger.recordOutput("Turret State", currentState);
   }
 
+  
+  /**
+   * Updates the turret's current state based on the wanted state and homing status.
+   *
+   * <p>If the turret is homed, it matches the wanted state (IDLE or SHOOTING).
+   * Otherwise, the turret transitions to HOMING until homed.
+   *
+   * @return the turret's current state.
+   */
   private CurrentState updateState() {
     return switch(wantedState) {
       case IDLE:
@@ -102,6 +117,14 @@ public class Turret extends SubsystemBase {
     };
   }
 
+  /**
+   * Applies actions based on the turret's current state.
+   *
+   * <p>IDLE: Stops the flywheel, sets the hood to idle, and moves turret to the closest safe idle angle.
+   * SHOOTING: Calculates target and sets flywheel, hood, and turret angles depending on robot position.
+   * HOMING: Moves the turret until limit switches indicate it is homed.
+   * DEFAULT: Stops flywheel, sets hood to idle, and keeps turret at current angle.
+   */
   private void applyState() {
     switch (currentState) {
       case IDLE:
@@ -109,14 +132,14 @@ public class Turret extends SubsystemBase {
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
         closestSafeAngle = 
           Math.abs(TurretConstants.turretIDLEPosition2.get() - inputs.turretAngle) < Math.abs(TurretConstants.turretIDLEPosition1.get() - inputs.turretAngle) 
-          ? TurretConstants.turretIDLEPosition1.get() 
-          : TurretConstants.turretIDLEPosition2.get();
+          ? TurretConstants.turretIDLEPosition2.get() 
+          : TurretConstants.turretIDLEPosition1.get();
         io.setTurretAngle(closestSafeAngle);
         break;
       case SHOOTING:
         if (poseSupplier.get().getX() < 4.5) {
           calculationToTarget(TurretConstants.hub());
-          io.setFlyWheelSpeed(TurretConstants.flywheelShootingSpeed.get());
+          io.setFlyWheelSpeed(flywheelSetPoint);
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
         } else if (poseSupplier.get().getY() < 4) {
@@ -143,35 +166,40 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   * Sets the turret's state
-   * @param wantedState what state to set to.
-  */
+   * Sets the desired turret state.
+   *
+   * @param wantedState the state to transition to
+   */
   public void setWantedState(WantedState wantedState) {
     this.wantedState = wantedState;
   }
 
   /**
-   * Use this method to account for the robot's velocity
-   * Loops through TOF times a couple times to account for the fact that we are changing the target so the TOF will change
-   * @param target origional wanted position
-   * @return the target modified to account for the robot's velocity
-   */
+   * Adjusts a target position to compensate for the robot's motion.
+   * Iteratively accounts for changes in time-of-flight (TOF) caused by the robot moving.
+   *
+   * @param target the original target position
+   * @return the adjusted target position considering robot velocity
+   */ 
   public Translation2d considerChassisSpeeds(Translation2d target) {
     double TOF = 0;
     double previousTOF = 0;
+    ChassisSpeeds speeds = speedsSupplier.get();
     for (int i = 0; i < 3; i++) {
       previousTOF = TOF;
-      TOF = timeOfFlightMap.get(target.getDistance(poseSupplier.get().getTranslation()));
+      TOF = timeOfFlightMap.get(MathUtil.clamp(target.getDistance(poseSupplier.get().getTranslation()), TOFMinDistance, TOFMaxDistance));
       target = new Translation2d(
-        target.getX() - speedsSupplier.get().vxMetersPerSecond * (TOF - previousTOF),
-        target.getY() - speedsSupplier.get().vyMetersPerSecond * (TOF - previousTOF));
+        target.getX() - speeds.vxMetersPerSecond * (TOF - previousTOF),
+        target.getY() - speeds.vyMetersPerSecond * (TOF - previousTOF));
     }
     return target;
   }
 
   /**
-   * 
-   * @param target where the turret should be aimed at hood and turret
+   * Calculates and sets the turret and hood setpoints to aim at a given target.
+   * Considers the robot's motion and interpolates shooter settings based on distance.
+   *
+   * @param target the position to aim at
    */
   private void calculationToTarget(Translation2d target) {
     Translation2d adjustedTarget = considerChassisSpeeds(target);
@@ -183,27 +211,52 @@ public class Turret extends SubsystemBase {
     Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);
     //calculate hood angle based off distance
     double distance = robotToTarget.getNorm();
-    ShooterSetpoint setpoint = shooterMap.get(distance);
+    ShooterSetpoint setpoint = shooterMap.get(MathUtil.clamp(distance, shooterSetpointMinDistance, shooterSetpointMaxDistance));
     hoodSetPoint = MathUtil.clamp(setpoint.hoodAngle, TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
     flywheelSetPoint = MathUtil.clamp(setpoint.rpm, 0, 6758);
   }
 
+  /**
+   * Returns the current state of the turret.
+   *
+   * @return the turret's current state
+   */
   public CurrentState getCurrentState() {
     return currentState;
   }
 
+  /**
+   * Checks if the turret is currently resetting (moving across a large angle).
+   *
+   * @return true if the turret is resetting, false otherwise
+   */
   public boolean getResetting() {
     return inputs.resetting;
   }
 
+  /**
+   * Checks if the turret is in a safe position for the intake to operate.
+   *
+   * @return true if intake operation is safe, false otherwise
+   */
   public boolean intakeSafe() {
     return inputs.intakeSafe;
   }
 
+  /**
+   * Checks if the flywheel has reached a speed high enough for shooting.
+   *
+   * @return true if the flywheel speed exceeds the minimum running speed, false otherwise
+   */
   public boolean shooterSpedUp() {
     return inputs.flywheelSpeed > TurretConstants.flywheelMinRunningSpeed.get();
   }
 
+  /**
+   * Returns the current angle of the hood.
+   *
+   * @return the hood angle in radians
+   */
   public double getHoodAngle() {
     return inputs.hoodAngle;
   }

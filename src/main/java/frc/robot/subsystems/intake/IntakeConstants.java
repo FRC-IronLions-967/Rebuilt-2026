@@ -13,6 +13,7 @@ public class IntakeConstants{
 
   public static final double armMinPosition = 0.05;//0.176
   public static final double armMaxPosition = 0.7;//0.5
+  public static final double armOutThreshold = 0.5;
 
   public static final double armZeroOffset = 0.45;
 

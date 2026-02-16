@@ -50,6 +50,11 @@ public class Intake extends SubsystemBase {
     applyState();
   }
 
+  /**
+   * Determines the current state of the intake subsystem based on the wanted state.
+   *
+   * @return the corresponding CurrentState
+   */
   private CurrentState updateState() {
     return switch(wantedState) {
       case IDLE:
@@ -61,6 +66,10 @@ public class Intake extends SubsystemBase {
     };
   }
 
+  /**
+   * Executes actions based on the current intake state.
+   * Stops motors when IDLE, runs intake when INTAKING, and reverses when REVERSING.
+   */
   private void applyState() {
     switch (currentState) {
       case IDLE:
@@ -78,6 +87,9 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  /**
+   * Stops all intake-related motors and moves the arm to its resting position.
+   */
   private void stopAll() {
     io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
     io.setIntakeSpeed(0.0);
@@ -86,6 +98,12 @@ public class Intake extends SubsystemBase {
     io.setHorizontal2Speed(0.0);
   }
 
+  /**
+   * Runs the intake system to collect game pieces.
+   * 
+   * @param resetting true if the turret is resetting, in which case the feeder is stopped
+   * @param flywheelSpedUp true if the flywheel is at speed, allowing the feeder to run
+   */
   private void intake(boolean resetting, boolean flywheelSpedUp) {
     io.setIntakeArmAngle(IntakeConstants.intakePosition);
     io.setIntakeSpeed(IntakeConstants.intakeIntakingSpeed);
@@ -94,6 +112,9 @@ public class Intake extends SubsystemBase {
     io.setHorizontal2Speed(IntakeConstants.horizontal2Speed);
   }
 
+  /**
+   * Runs the intake system in reverse to eject game pieces.
+   */
   private void reverse() {
     io.setIntakeArmAngle(IntakeConstants.intakePosition);
     io.setIntakeSpeed(-IntakeConstants.intakeIntakingSpeed);
@@ -102,10 +123,20 @@ public class Intake extends SubsystemBase {
     io.setHorizontal2Speed(-IntakeConstants.horizontal2Speed);
   }
 
+  /** 
+   * Sets the desired state of the intake subsystem.
+   *
+   * @param wantedState the state to transition to
+   */
   public void setWantedState(WantedState wantedState) {
     this.wantedState = wantedState;
   }
 
+  /**
+   * Returns the current state of the intake subsystem.
+   *
+   * @return the current state
+   */
   public CurrentState getCurrentState() {
     return currentState;
   }

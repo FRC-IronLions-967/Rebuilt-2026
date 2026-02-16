@@ -55,6 +55,12 @@ public class Superstructure extends SubsystemBase {
     Logger.recordOutput("CurrentState", getCurrentState());
   }
 
+  /**
+   * Maps a desired (wanted) state to the corresponding current state.
+   *
+   * @param wantedState the desired subsystem state
+   * @return the corresponding current state
+   */
   private CurrentState updateState(WantedState wantedState) {
     return switch (wantedState) {
       case IDLE:
@@ -66,6 +72,10 @@ public class Superstructure extends SubsystemBase {
     };
   }
 
+  /**
+   * Applies actions to the turret and intake subsystems based on the current state.
+   * Updates the wanted state of each subsystem depending on the overall system state.
+   */
   private void applyState() {
     switch (currentState) {
       case IDLE:
@@ -89,14 +99,30 @@ public class Superstructure extends SubsystemBase {
     }
   }
 
+  /**
+   * Returns the current state of the superstructure.
+   *
+   * @return the current state
+   */
   public CurrentState getCurrentState() {
     return currentState;
   }
 
+  /**
+   * Sets the desired state for the subsystem.
+   *
+   * @param wantedState the state to set
+   */
   public void setWantedState(WantedState wantedState) {
     this.wantedState = wantedState;
   }
 
+  /**
+   * Returns a command that sets the subsystem's wanted state instantly.
+   *
+   * @param wantedState the state to set
+   * @return an InstantCommand that sets the wanted state
+   */
   public Command setWantedStateCommand(WantedState wantedState) {
     return new InstantCommand(() -> setWantedState(wantedState));
   }
