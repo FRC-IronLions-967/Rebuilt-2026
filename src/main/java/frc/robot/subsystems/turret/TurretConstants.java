@@ -41,10 +41,7 @@ public class TurretConstants {
         return flipForRed(right);
     }
 
-    public static final Translation2d[] trenches = {new Translation2d(4.66, .66), new Translation2d(4.66, 7.33), new Translation2d(11.925, 0.66), new Translation2d(11.925, 7.33)};
-    public static final double trenchTolerance = 1.0;
-
-    public static final double turretGearRatio = 1.0;
+    public static final double turretGearRatio = 46.02;//got from cad 2/16
 
     public static final double flywheelP = 1.0e-3;
     public static final double flywheelD = 1.0e-6;
@@ -72,7 +69,6 @@ public class TurretConstants {
 
     public static final double turretMaxAngle = Math.PI-0.0872;
     public static final double turretMinAngle = -Math.PI+0.0872;
-    public static final double turretTolerance = 0.0872; //5 degrees
     public static final LoggedNetworkNumber turretHomingSpeed = new LoggedNetworkNumber("Turret Homing Speed", 0.1);
 
     public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 1500);
