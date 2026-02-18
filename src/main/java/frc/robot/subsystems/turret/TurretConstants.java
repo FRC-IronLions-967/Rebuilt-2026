@@ -27,6 +27,8 @@ public class TurretConstants {
     private static final Translation2d hub = new Translation2d(4.625, 4);
     private static final Translation2d left = new Translation2d(1, 7);
     private static final Translation2d right = new Translation2d(1, 1);
+    public static final double allianceZoneEnd = 4.5;
+    public static final double center = 4.0;
 
     //methods for getting the correct translation based on alliance color: (THIS IS WHY OUR DATA FROM 2/7 WAS BAD)
     public static Translation2d hub() {
@@ -41,16 +43,23 @@ public class TurretConstants {
         return flipForRed(right);
     }
 
+    public static double allianceZoneEnd() {
+        return VisionConstants.kTagLayout.getFieldLength() - allianceZoneEnd;
+    }
+    public static double center() {
+        return VisionConstants.kTagLayout.getFieldWidth() - center;
+    }
+
     public static final double turretGearRatio = 46.02;//got from cad 2/16
 
     public static final double flywheelP = 1.0e-3;
     public static final double flywheelD = 1.0e-6;
 
     public static final double flywheelkS = 0.0;
-    public static final double flywheelkV = 1.89e-3;
+    public static final double flywheelkV = 1.84e-3;
     public static final double flywheelkA = 0.0;
 
-    public static final double hoodP = 1.0;
+    public static final double hoodP = 5.0;
     public static final double hoodD = 0.0;
     public static final double hoodkS = 1.0;
 
@@ -64,18 +73,18 @@ public class TurretConstants {
     public static final int hoodCurrentLimit = 40; 
     public static final int turretCurrentLimit = 30;
 
-    public static final double hoodMaxAngle = 0.9;
-    public static final double hoodMinAngle = 0.5;
+    public static final double hoodMaxAngle = 0.576;
+    public static final double hoodMinAngle = 0.199;
 
     public static final double turretMaxAngle = Math.PI-0.0872;
     public static final double turretMinAngle = -Math.PI+0.0872;
     public static final LoggedNetworkNumber turretHomingSpeed = new LoggedNetworkNumber("Turret Homing Speed", 0.1);
 
-    public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 1500);
-    public static final LoggedNetworkNumber flywheelShootingSpeed = new LoggedNetworkNumber("flywheelShootingSpeed", 1500);//speed not velocity for bang bang
+    public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 2500);
+    public static final LoggedNetworkNumber flywheelShootingSpeed = new LoggedNetworkNumber("flywheelShootingSpeed", 2500);//speed not velocity for bang bang
     public static final LoggedNetworkNumber flywheelMinRunningSpeed = new LoggedNetworkNumber("Flywheel Running Min Speed", 1000);
     public static final LoggedNetworkNumber flywheelTolerance = new LoggedNetworkNumber("flywheelTolerance", 250);
-    public static final LoggedNetworkNumber hoodPassingAngle = new LoggedNetworkNumber("Hood Passing Angle", 0.9);
+    public static final LoggedNetworkNumber hoodPassingAngle = new LoggedNetworkNumber("Hood Passing Angle", 0.3);
 
     public static final LoggedNetworkNumber hoodIDLEPosition = new LoggedNetworkNumber("hoodIDLEPosition", hoodMaxAngle);
     public static final LoggedNetworkNumber turretIDLEPosition1 = new LoggedNetworkNumber("turretIDLEPosition1", Math.PI/2);

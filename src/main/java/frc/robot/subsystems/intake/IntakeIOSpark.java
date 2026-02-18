@@ -122,11 +122,11 @@ public class IntakeIOSpark implements IntakeIO {
 
       inputs.subsystemCurrent = inputs.armCurrent + inputs.intakeCurrent+inputs.feederCurrent+inputs.horizontal1Current+inputs.horizontal2Current;
 
-      if(inputs.armAngle>IntakeConstants.armOutThreshold && inputs.armSetAngle > IntakeConstants.armOutThreshold) {
-         arm.set(0);
-      } else {
-         armController.setSetpoint(armSetAngle, ControlType.kPosition);
-      }
+      // if(inputs.armAngle>IntakeConstants.armOutThreshold && inputs.armSetAngle > IntakeConstants.armOutThreshold) {
+      //    arm.set(0);
+      // } else {
+      armController.setSetpoint(armSetAngle, ControlType.kPosition);
+      // }
    }
 
    @Override

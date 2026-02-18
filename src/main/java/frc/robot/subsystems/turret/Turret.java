@@ -16,6 +16,8 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -63,6 +65,7 @@ public class Turret extends SubsystemBase {
   private double hoodSetPoint = TurretConstants.hoodMinAngle;
   private double flywheelSetPoint = 0.0;
   private boolean homed = true;
+  private boolean passing;
 
   double closestSafeAngle;
 
@@ -91,6 +94,8 @@ public class Turret extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Turret", inputs);
     Logger.recordOutput("Turret State", currentState);
+
+    Logger.recordOutput("Passing?", passing);
   }
 
   
@@ -135,32 +140,38 @@ public class Turret extends SubsystemBase {
           ? TurretConstants.turretIDLEPosition2.get() 
           : TurretConstants.turretIDLEPosition1.get();
         io.setTurretAngle(closestSafeAngle);
+        passing = false;
         break;
       case SHOOTING:
-        if (poseSupplier.get().getX() < 4.5) {
+        if (false/*getPassingState(poseSupplier.get().getX(), TurretConstants.allianceZoneEnd())*/) {
           calculationToTarget(TurretConstants.hub());
           io.setFlyWheelSpeed(flywheelSetPoint);
           io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
-        } else if (poseSupplier.get().getY() < 4) {
+          passing = false;
+        } else if (getPassingState(poseSupplier.get().getY(), TurretConstants.center())) {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           calculationToTarget(TurretConstants.right());
           io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
           io.setTurretAngle(turretSetPoint);
+          passing = true;
         } else {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           calculationToTarget(TurretConstants.left());
           io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
           io.setTurretAngle(turretSetPoint);
+          passing = true;
         }
         break;
       case HOMING:
         homed = io.home();
+        passing = false;
         break;
       default:
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
         io.setTurretAngle(inputs.turretAngle);
+        passing = false;
         break;
     }
   }
@@ -216,6 +227,13 @@ public class Turret extends SubsystemBase {
     flywheelSetPoint = MathUtil.clamp(setpoint.rpm, 0, 6758);
   }
 
+  private boolean getPassingState(double test, double line) {
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      return test < line;
+    }
+    return line < test;
+  }
+
   /**
    * Returns the current state of the turret.
    *
@@ -240,7 +258,8 @@ public class Turret extends SubsystemBase {
    * @return true if intake operation is safe, false otherwise
    */
   public boolean intakeSafe() {
-    return inputs.intakeSafe;
+    // return inputs.intakeSafe;
+    return true;
   }
 
   /**

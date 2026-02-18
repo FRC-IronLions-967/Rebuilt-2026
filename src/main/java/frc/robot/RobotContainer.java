@@ -19,6 +19,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -166,11 +167,12 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> controller.getRightX()));
 
     controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
     controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
     controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
+    controller.povUp().onTrue(new InstantCommand(()->{turret.io.setHoodAngle(0.35);}));
   }
 
   /**
