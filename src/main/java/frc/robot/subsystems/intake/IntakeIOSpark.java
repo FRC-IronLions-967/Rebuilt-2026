@@ -125,7 +125,7 @@ public class IntakeIOSpark implements IntakeIO {
       // if(inputs.armAngle>IntakeConstants.armOutThreshold && inputs.armSetAngle > IntakeConstants.armOutThreshold) {
       //    arm.set(0);
       // } else {
-      armController.setSetpoint(armSetAngle, ControlType.kPosition);
+      armController.setSetpoint(/*armSetAngle*/ IntakeConstants.intakePosition, ControlType.kPosition);
       // }
    }
 

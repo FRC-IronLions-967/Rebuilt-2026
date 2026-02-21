@@ -164,7 +164,7 @@ public class Turret extends SubsystemBase {
         }
         break;
       case HOMING:
-        homed = io.home();
+        homed = true;
         passing = false;
         break;
       default:
@@ -278,5 +278,9 @@ public class Turret extends SubsystemBase {
    */
   public double getHoodAngle() {
     return inputs.hoodAngle;
+  }
+
+  public double getTurretAngle() {
+    return inputs.turretAngle;
   }
 }

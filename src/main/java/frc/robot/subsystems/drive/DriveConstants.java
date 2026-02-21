@@ -149,13 +149,4 @@ public class DriveConstants {
       new LoggedNetworkNumber("Tuning/Drive/AutoPID/WheelRadiusMaxVelocity", 0.25); // Rad/Sec
   public static final LoggedNetworkNumber WHEEL_RADIUS_RAMP_RATE =
       new LoggedNetworkNumber("Tuning/Drive/AutoPID/WheelRadiusRampRate", 0.05); // Rad/Sec^2
-
-  public static final List<Pose2d> sidesOfTheReef =
-      Arrays.asList(
-          new Pose2d(3.82, 5.122, new Rotation2d(Units.degreesToRadians(-60))),
-          new Pose2d(3.223, 4.035, new Rotation2d(Units.degreesToRadians(0))),
-          new Pose2d(3.839, 2.919, new Rotation2d(Units.degreesToRadians(60))),
-          new Pose2d(5.09, 2.909, new Rotation2d(Units.degreesToRadians(120))),
-          new Pose2d(5.75, 4.025, new Rotation2d(Units.degreesToRadians(180))),
-          new Pose2d(5.148, 5.131, new Rotation2d(Units.degreesToRadians(-120))));
 }

@@ -36,6 +36,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretIOSpark;
@@ -172,8 +173,9 @@ public class RobotContainer {
     controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
     controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
     controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
-    controller.povUp().onTrue(new InstantCommand(()->{turret.io.setHoodAngle(0.35);}));
-    controller.povRight().onTrue(new InstantCommand(()->{turret.io.testTurret();}));
+    // controller.povUp().onTrue(new InstantCommand(()->{turret.io.setHoodAngle(0.35);}));
+    // controller.rightBumper().onTrue(new InstantCommand(()->{turret.io.testTurret(turret.getTurretAngle()-0.1);}));
+    // controller.leftBumper().onTrue(new InstantCommand(()->{turret.io.testTurret(turret.getTurretAngle()+0.1);}));
   }
 
   /**

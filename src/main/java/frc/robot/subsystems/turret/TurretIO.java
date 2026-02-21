@@ -16,8 +16,7 @@ public interface TurretIO {
         public double hoodSetAngle;
         public double turretAngle;
         public double turretSetAngle;
-        public boolean turretMinLimitSwitch;
-        public boolean turretMaxLimitSwitch;
+        public boolean turretLimitSwitch;
         public boolean resetting;
         public boolean intakeSafe;
 
@@ -78,5 +77,5 @@ public interface TurretIO {
      */
     public default boolean home() {return false;}
 
-    public default void testTurret() {}
+    public default void testTurret(double speed) {}
 }

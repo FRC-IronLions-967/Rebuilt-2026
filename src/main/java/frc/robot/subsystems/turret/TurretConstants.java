@@ -76,8 +76,9 @@ public class TurretConstants {
     public static final double hoodMaxAngle = 0.576;
     public static final double hoodMinAngle = 0.199;
 
-    public static final double turretMaxAngle = Math.PI-0.0872;
-    public static final double turretMinAngle = -Math.PI+0.0872;
+    public static final double turretMaxAngle = 1.6;
+    public static final double turretMinAngle = -2.60;
+    public static final double turretStartingAngle = -1.6;
     public static final LoggedNetworkNumber turretHomingSpeed = new LoggedNetworkNumber("Turret Homing Speed", 0.1);
 
     public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 2500);

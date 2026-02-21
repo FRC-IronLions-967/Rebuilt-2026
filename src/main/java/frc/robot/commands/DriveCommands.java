@@ -86,8 +86,8 @@ public class DriveCommands {
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   omega * drive.getMaxAngularSpeedRadPerSec());
 
-          boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-
+          boolean isFlipped = !DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+          // boolean isFlipped = false;
           drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
         },
         drive);
@@ -144,23 +144,6 @@ public class DriveCommands {
 
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
-  }
-
-  /**
-   * Used to go to a specific pose with the added complexity of pp
-   *
-   * @param drive drive subsystem we get the current pose off this
-   * @return path that drive will follow
-   */
-  public static Command goToPoseWithPP(Drive drive) {
-    return new InstantCommand(
-        () -> {
-          AutoBuilder.pathfindToPose(
-                  drive.getPose().nearest(DriveConstants.sidesOfTheReef),
-                  DriveConstants.pathConstraints)
-              .schedule();
-        },
-        drive);
   }
 
   /**
