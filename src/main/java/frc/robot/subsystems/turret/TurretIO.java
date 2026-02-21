@@ -77,4 +77,6 @@ public interface TurretIO {
      * @return true if the turret is homed, false otherwise.
      */
     public default boolean home() {return false;}
+
+    public default void testTurret() {}
 }
