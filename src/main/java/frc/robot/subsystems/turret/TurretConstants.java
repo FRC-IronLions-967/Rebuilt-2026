@@ -69,7 +69,7 @@ public class TurretConstants {
     public static final LoggedNetworkNumber turretControllerP = new LoggedNetworkNumber("turretControllerP", 1.0e-5);
     public static final LoggedNetworkNumber turretControllerD = new LoggedNetworkNumber("turretControllerD", 0.0);
 
-    public static final int flywheelCurrentLimit = 40;
+    public static final int flywheelCurrentLimit = 50;
     public static final int hoodCurrentLimit = 40; 
     public static final int turretCurrentLimit = 30;
 

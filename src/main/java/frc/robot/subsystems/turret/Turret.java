@@ -76,14 +76,13 @@ public class Turret extends SubsystemBase {
     this.speedsSupplier = speedsSupplier;
     inputs = new TurretIOInputsAutoLogged();
 
-    shooterMap.put(4.0, new ShooterSetpoint(5000, 9));
-    shooterMap.put(3.0, new ShooterSetpoint(4000, 11));
-    shooterMap.put(2.0, new ShooterSetpoint(3000, 13));
-    shooterMap.put(1.0, new ShooterSetpoint(2000, 15));
+    shooterMap.put(3.28, new ShooterSetpoint(2750, 0.5));
+    shooterMap.put(1.225, new ShooterSetpoint(2200, 0.573));
+    shooterMap.put(4.91, new ShooterSetpoint(3000, 0.377));
+    shooterMap.put(1.869, new ShooterSetpoint(2250, 0.573));
 
     //sim entrys for testing DELETE
-    timeOfFlightMap.put(1.0, 1.0);
-    timeOfFlightMap.put(2.0, 2.0);
+    timeOfFlightMap.put(0.0, 0.0);
   }
 
   @Override
@@ -94,7 +93,7 @@ public class Turret extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Turret", inputs);
     Logger.recordOutput("Turret State", currentState);
-
+    Logger.recordOutput("DistanceToHub", poseSupplier.get().getTranslation().getDistance(TurretConstants.hub()));
     Logger.recordOutput("Passing?", passing);
   }
 
@@ -134,7 +133,7 @@ public class Turret extends SubsystemBase {
     switch (currentState) {
       case IDLE:
         io.setFlyWheelSpeed(0.0);
-        io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
+        // io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
         closestSafeAngle = 
           Math.abs(TurretConstants.turretIDLEPosition2.get() - inputs.turretAngle) < Math.abs(TurretConstants.turretIDLEPosition1.get() - inputs.turretAngle) 
           ? TurretConstants.turretIDLEPosition2.get() 
@@ -143,22 +142,22 @@ public class Turret extends SubsystemBase {
         passing = false;
         break;
       case SHOOTING:
-        if (false/*getPassingState(poseSupplier.get().getX(), TurretConstants.allianceZoneEnd())*/) {
+        if (false || getPassingState(poseSupplier.get().getX(), TurretConstants.allianceZoneEnd())) {
           calculationToTarget(TurretConstants.hub());
           io.setFlyWheelSpeed(flywheelSetPoint);
-          io.setHoodAngle(hoodSetPoint);
+          // io.setHoodAngle(hoodSetPoint);
           io.setTurretAngle(turretSetPoint);
           passing = false;
         } else if (getPassingState(poseSupplier.get().getY(), TurretConstants.center())) {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           calculationToTarget(TurretConstants.right());
-          io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
+          // io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
           io.setTurretAngle(turretSetPoint);
           passing = true;
         } else {
           io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
           calculationToTarget(TurretConstants.left());
-          io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
+          // io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
           io.setTurretAngle(turretSetPoint);
           passing = true;
         }
@@ -169,7 +168,7 @@ public class Turret extends SubsystemBase {
         break;
       default:
         io.setFlyWheelSpeed(0.0);
-        io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
+        // io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
         io.setTurretAngle(inputs.turretAngle);
         passing = false;
         break;
@@ -231,7 +230,7 @@ public class Turret extends SubsystemBase {
     if (DriverStation.getAlliance().get() == Alliance.Blue) {
       return test < line;
     }
-    return line < test;
+    return line > test;
   }
 
   /**
