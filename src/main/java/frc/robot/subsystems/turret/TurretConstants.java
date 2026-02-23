@@ -110,6 +110,6 @@ public class TurretConstants {
     public static final LoggedNetworkNumber hoodFullFieldAngle = new LoggedNetworkNumber("Hood FullField Angle", 0.25);
 
     public static final LoggedNetworkNumber hoodIDLEPosition = new LoggedNetworkNumber("hoodIDLEPosition", hoodMaxAngle);
-    public static final LoggedNetworkNumber turretIDLEPosition1 = new LoggedNetworkNumber("turretIDLEPosition1", Math.PI/2);
-    public static final LoggedNetworkNumber turretIDLEPosition2 = new LoggedNetworkNumber("turretIDLEPosition2", -Math.PI/2);
+    public static final double turretIDLEPosition = -1.6;
+    public static final double turretTolerance = 0.1;
 }

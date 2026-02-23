@@ -139,12 +139,8 @@ public class Turret extends SubsystemBase {
     switch (currentState) {
       case IDLE:
         io.setFlyWheelSpeed(0.0);
-        // io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
-        closestSafeAngle = 
-          Math.abs(TurretConstants.turretIDLEPosition2.get() - inputs.turretAngle) < Math.abs(TurretConstants.turretIDLEPosition1.get() - inputs.turretAngle) 
-          ? TurretConstants.turretIDLEPosition2.get() 
-          : TurretConstants.turretIDLEPosition1.get();
-        io.setTurretAngle(closestSafeAngle);
+        io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
+        io.setTurretAngle(TurretConstants.turretIDLEPosition);
         break;
       case SHOOTING:
         calculationToTarget(TurretConstants.hub());
@@ -169,7 +165,7 @@ public class Turret extends SubsystemBase {
         break;
       default:
         io.setFlyWheelSpeed(0.0);
-        // io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
+        io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
         io.setTurretAngle(inputs.turretAngle);
         break;
     }
