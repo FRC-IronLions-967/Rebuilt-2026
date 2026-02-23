@@ -55,6 +55,8 @@ public class Turret extends SubsystemBase {
   public enum CurrentState {
     IDLE,
     SHOOTING,
+    PASSING,
+    FULLFIELD,
     HOMING
   }
 
@@ -65,7 +67,7 @@ public class Turret extends SubsystemBase {
   private double hoodSetPoint = TurretConstants.hoodMinAngle;
   private double flywheelSetPoint = 0.0;
   private boolean homed = true;
-  private boolean passing;
+  private Pose2d pose;
 
   double closestSafeAngle;
 
@@ -76,10 +78,10 @@ public class Turret extends SubsystemBase {
     this.speedsSupplier = speedsSupplier;
     inputs = new TurretIOInputsAutoLogged();
 
-    shooterMap.put(3.28, new ShooterSetpoint(2750, 0.5));
     shooterMap.put(1.225, new ShooterSetpoint(2200, 0.573));
-    shooterMap.put(4.91, new ShooterSetpoint(3000, 0.377));
     shooterMap.put(1.869, new ShooterSetpoint(2250, 0.573));
+    shooterMap.put(3.28, new ShooterSetpoint(2750, 0.5));
+    shooterMap.put(4.91, new ShooterSetpoint(3000, 0.377));
 
     //sim entrys for testing DELETE
     timeOfFlightMap.put(0.0, 0.0);
@@ -88,13 +90,13 @@ public class Turret extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    pose = poseSupplier.get();
     currentState = updateState();
     applyState();
     io.updateInputs(inputs);
     Logger.processInputs("Turret", inputs);
     Logger.recordOutput("Turret State", currentState);
-    Logger.recordOutput("DistanceToHub", poseSupplier.get().getTranslation().getDistance(TurretConstants.hub()));
-    Logger.recordOutput("Passing?", passing);
+    Logger.recordOutput("DistanceToHub", pose.getTranslation().getDistance(TurretConstants.hub()));
   }
 
   
@@ -114,10 +116,14 @@ public class Turret extends SubsystemBase {
         }
         yield CurrentState.HOMING;
       case SHOOTING:
-      if (homed) {
-        yield CurrentState.SHOOTING;
-      }
-      yield CurrentState.HOMING;
+        if (!homed) {
+          yield CurrentState.HOMING;
+        } else if(isPastLine(pose.getX(), TurretConstants.allianceZoneEnd())) {
+          yield CurrentState.SHOOTING;
+        } else if(isPastLine(pose.getX(), TurretConstants.oppositeAllianceEnd())) {
+          yield CurrentState.PASSING;
+        }
+        yield CurrentState.FULLFIELD;
     };
   }
 
@@ -139,38 +145,32 @@ public class Turret extends SubsystemBase {
           ? TurretConstants.turretIDLEPosition2.get() 
           : TurretConstants.turretIDLEPosition1.get();
         io.setTurretAngle(closestSafeAngle);
-        passing = false;
         break;
       case SHOOTING:
-        if (false || getPassingState(poseSupplier.get().getX(), TurretConstants.allianceZoneEnd())) {
-          calculationToTarget(TurretConstants.hub());
-          io.setFlyWheelSpeed(flywheelSetPoint);
-          // io.setHoodAngle(hoodSetPoint);
-          io.setTurretAngle(turretSetPoint);
-          passing = false;
-        } else if (getPassingState(poseSupplier.get().getY(), TurretConstants.center())) {
-          io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-          calculationToTarget(TurretConstants.right());
-          // io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
-          io.setTurretAngle(turretSetPoint);
-          passing = true;
-        } else {
-          io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-          calculationToTarget(TurretConstants.left());
-          // io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
-          io.setTurretAngle(turretSetPoint);
-          passing = true;
-        }
+        calculationToTarget(TurretConstants.hub());
+        io.setFlyWheelSpeed(flywheelSetPoint);
+        io.setHoodAngle(hoodSetPoint);
+        io.setTurretAngle(turretSetPoint);
+        break;
+      case PASSING:
+        calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
+        io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
+        io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
+        io.setTurretAngle(turretSetPoint);
+        break;
+      case FULLFIELD:
+        calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
+        io.setFlyWheelSpeed(TurretConstants.flywheelFullFieldSpeed.get());
+        io.setHoodAngle(TurretConstants.hoodFullFieldAngle.get());
+        io.setTurretAngle(turretSetPoint);
         break;
       case HOMING:
         homed = true;
-        passing = false;
         break;
       default:
         io.setFlyWheelSpeed(0.0);
         // io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
         io.setTurretAngle(inputs.turretAngle);
-        passing = false;
         break;
     }
   }
@@ -197,7 +197,7 @@ public class Turret extends SubsystemBase {
     ChassisSpeeds speeds = speedsSupplier.get();
     for (int i = 0; i < 3; i++) {
       previousTOF = TOF;
-      TOF = timeOfFlightMap.get(MathUtil.clamp(target.getDistance(poseSupplier.get().getTranslation()), TOFMinDistance, TOFMaxDistance));
+      TOF = timeOfFlightMap.get(MathUtil.clamp(target.getDistance(pose.getTranslation()), TOFMinDistance, TOFMaxDistance));
       target = new Translation2d(
         target.getX() - speeds.vxMetersPerSecond * (TOF - previousTOF),
         target.getY() - speeds.vyMetersPerSecond * (TOF - previousTOF));
@@ -213,8 +213,8 @@ public class Turret extends SubsystemBase {
    */
   private void calculationToTarget(Translation2d target) {
     Translation2d adjustedTarget = considerChassisSpeeds(target);
-    Translation2d robotToTarget = adjustedTarget.minus(poseSupplier.get().getTranslation());
-    Rotation2d turretToTargetAngle = robotToTarget.getAngle().minus(poseSupplier.get().getRotation());
+    Translation2d robotToTarget = adjustedTarget.minus(pose.getTranslation());
+    Rotation2d turretToTargetAngle = robotToTarget.getAngle().minus(pose.getRotation());
     turretSetPoint = MathUtil.angleModulus(turretToTargetAngle.getRadians());
     Logger.recordOutput("Calculations/target", adjustedTarget);
     Logger.recordOutput("Calculations/robotToTarget", robotToTarget);
@@ -226,11 +226,24 @@ public class Turret extends SubsystemBase {
     flywheelSetPoint = MathUtil.clamp(setpoint.rpm, 0, 6758);
   }
 
-  private boolean getPassingState(double test, double line) {
-    if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      return test < line;
+  private boolean isPastLine(double robotX, double lineX) {
+    boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+    if (isRed) {
+        // For Red, the field is mirrored along X, so we consider "past" if robotX > lineX
+        return robotX > lineX;
+    } else {
+        // For Blue, "past" if robotX < lineX
+        return robotX < lineX;
     }
-    return line > test;
+  }
+
+  private Translation2d chooseTargetBasedOnY(Translation2d pose, Translation2d left, Translation2d right, double centerY) {
+    // All targets are already flipped for Red in TurretConstants, so no need to adjust further
+    if (pose.getY() > centerY && right.getY() > centerY) {
+        return right;
+    } else {
+        return left;
+    }
   }
 
   /**
