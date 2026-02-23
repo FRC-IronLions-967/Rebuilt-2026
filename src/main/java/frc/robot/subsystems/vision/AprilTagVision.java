@@ -68,7 +68,7 @@ public class AprilTagVision extends SubsystemBase {
 
         if (rejectPose) continue;
 
-        double stdFactor = Math.pow(obs.avgTagDistance(), 2) / obs.tagCount();
+        double stdFactor = obs.avgTagDistance() / obs.tagCount();
         double linearStdDev = VisionConstants.linearStdDevBaseline * stdFactor;
         double angularStdDev = VisionConstants.angularStdDevBaseline * stdFactor;
 

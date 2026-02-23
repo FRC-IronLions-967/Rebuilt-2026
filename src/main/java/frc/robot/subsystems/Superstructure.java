@@ -53,6 +53,7 @@ public class Superstructure extends SubsystemBase {
     
     Logger.recordOutput("Wanted State", wantedState);
     Logger.recordOutput("CurrentState", getCurrentState());
+    Logger.recordOutput("FieldBasedTurret", turret.getTurretAngle()+drive.getPose().getRotation().getRadians());
   }
 
   /**

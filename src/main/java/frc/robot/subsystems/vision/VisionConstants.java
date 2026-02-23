@@ -38,13 +38,13 @@ public class VisionConstants {
 
   // Tuning constants
   public static final LoggedNetworkNumber maxAmbiguity =
-      new LoggedNetworkNumber("Tuning/Vision/maxAmb", 0.3);
+      new LoggedNetworkNumber("Tuning/Vision/maxAmb", 0.2);
   public static final LoggedNetworkNumber maxZError =
       new LoggedNetworkNumber("Tuning/Vision/maxZError", 0.75);
 
     // public static final int hubAprilTag = DriverStation.getAlliance().get() == Alliance.Red ? 10 : 26;
 
-  public static final double linearStdDevBaseline = 0.02; // Meters
-  public static final double angularStdDevBaseline = 0.06; // Radians
+  public static final double linearStdDevBaseline = 0.08; // Meters
+  public static final double angularStdDevBaseline = 0.15; // Radians
 
 }
