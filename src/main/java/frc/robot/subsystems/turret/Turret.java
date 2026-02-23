@@ -215,7 +215,7 @@ public class Turret extends SubsystemBase {
     Translation2d adjustedTarget = considerChassisSpeeds(target);
     Translation2d robotToTarget = adjustedTarget.minus(pose.getTranslation());
     Rotation2d turretToTargetAngle = robotToTarget.getAngle().minus(pose.getRotation());
-    turretSetPoint = MathUtil.angleModulus(turretToTargetAngle.getRadians());
+    turretSetPoint = -MathUtil.angleModulus(turretToTargetAngle.getRadians());
     Logger.recordOutput("Calculations/target", adjustedTarget);
     Logger.recordOutput("Calculations/robotToTarget", robotToTarget);
     Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);

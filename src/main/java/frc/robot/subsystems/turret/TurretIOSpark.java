@@ -6,6 +6,8 @@ package frc.robot.subsystems.turret;
 
 import java.util.function.BooleanSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 // import java.util.function.BooleanSupplier;
 
 import com.revrobotics.PersistMode;
@@ -101,7 +103,7 @@ public class TurretIOSpark implements TurretIO{
                 .forwardSoftLimitEnabled(true)
                 .reverseSoftLimit(TurretConstants.turretMinAngle)
                 .reverseSoftLimitEnabled(true);
-        // turretConfig.closedLoop.outputRange(-0.25, 0.25);
+        turretConfig.closedLoop.outputRange(-0.25, 0.25);
         turret.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretController = turret.getClosedLoopController();
 
@@ -124,7 +126,7 @@ public class TurretIOSpark implements TurretIO{
             ((TurretConstants.turretIDLEPosition1.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition1.get() + Math.PI/4)
             || ((TurretConstants.turretIDLEPosition2.get() - Math.PI/4 < inputs.turretAngle) && (inputs.turretAngle < TurretConstants.turretIDLEPosition2.get() + Math.PI/4)));
 
-        flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
+        // flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
     }
 
     @Override
@@ -135,14 +137,16 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setHoodAngle(double angle) {
         hoodSetAngle = MathUtil.clamp(angle, TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
-        hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
+        // hoodController.setSetpoint(hoodSetAngle, ControlType.kPosition);
     }
 
     @Override
     public void setTurretAngle(double angle) {
-        angle = MathUtil.angleModulus(angle);
+        Logger.recordOutput("angleInTurret", angle);
+        angle = MathUtil.inputModulus(angle, -Math.PI, Math.PI);
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
+        turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }
     
     // @Override
