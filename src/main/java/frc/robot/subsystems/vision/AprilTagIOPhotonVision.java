@@ -18,6 +18,15 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
   protected PhotonCamera camera;
   protected Transform3d robotToCamera = null;
 
+  //variables for periodic
+  protected List<PoseObservation> poseObservations = new LinkedList<>();
+  protected List<TargetInfo> targetInfos = new LinkedList<>();
+  protected Transform3d fieldToCamera;
+  protected Transform3d fieldToRobot;
+  protected Pose3d robotPose;
+  protected Transform3d fieldToTarget;
+  protected Transform3d cameraToTarget;
+
   public AprilTagIOPhotonVision(String cameraName, Transform3d robotToCamera) {
     camera = new PhotonCamera(cameraName);
     this.robotToCamera = robotToCamera;
@@ -28,9 +37,11 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
     inputs.isTrying = true;
     inputs.isConnected = camera.isConnected();
     if (inputs.isConnected) {
-      List<PoseObservation> poseObservations = new LinkedList<>();
-      List<TargetInfo> targetInfos = new LinkedList<>();
-      for (var result : camera.getAllUnreadResults()) {
+      poseObservations.clear();
+      targetInfos.clear();
+      var results = camera.getAllUnreadResults();
+      if (!results.isEmpty()) {
+        var result = results.get(results.size() - 1);
         inputs.hasTarget = result.hasTargets();
         // update inputs
         if (inputs.hasTarget) {
@@ -45,9 +56,9 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
 
             var multitagResult = result.getMultiTagResult().get();
 
-            Transform3d fieldToCamera = multitagResult.estimatedPose.best;
-            Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
-            Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
+            fieldToCamera = multitagResult.estimatedPose.best;
+            fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
+            robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
             double totalTagDistance = 0.0;
             for (var target : result.targets) {
@@ -68,11 +79,11 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
 
             var tagPose = VisionConstants.kTagLayout.getTagPose(target.fiducialId);
             if (tagPose.isPresent()) {
-              Transform3d fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
-              Transform3d cameraToTarget = target.bestCameraToTarget;
-              Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
-              Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
-              Pose3d robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
+              fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
+              cameraToTarget = target.bestCameraToTarget;
+              fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
+              fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
+              robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
               poseObservations.add(new PoseObservation(
                 target.poseAmbiguity, 
@@ -84,17 +95,17 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
 
             }
           }
-        inputs.targetInfo = new TargetInfo[targetInfos.size()];
-        for (int i = 0; i < targetInfos.size(); i++) {
-          inputs.targetInfo[i] = targetInfos.get(i);
+          inputs.targetInfo = new TargetInfo[targetInfos.size()];
+          for (int i = 0; i < targetInfos.size(); i++) {
+            inputs.targetInfo[i] = targetInfos.get(i);
+          }
+          inputs.poseObservations = new PoseObservation[poseObservations.size()];
+          for (int i = 0; i < poseObservations.size(); i++) {
+            inputs.poseObservations[i] = poseObservations.get(i);
+          }
         }
-        inputs.poseObservations = new PoseObservation[poseObservations.size()];
-        for (int i = 0; i < poseObservations.size(); i++) {
-          inputs.poseObservations[i] = poseObservations.get(i);
-        }
-        } else {
-          inputs.hasTarget = false;
-        }
+      } else {
+        inputs.hasTarget = false;
       } 
     }
   }

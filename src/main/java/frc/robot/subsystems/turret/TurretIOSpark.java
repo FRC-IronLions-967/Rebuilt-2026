@@ -124,7 +124,7 @@ public class TurretIOSpark implements TurretIO{
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) > TurretConstants.turretTolerance;
 
-        // flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
+        flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
     }
 
     @Override

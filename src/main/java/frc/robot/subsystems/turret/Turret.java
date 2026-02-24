@@ -71,6 +71,13 @@ public class Turret extends SubsystemBase {
 
   double closestSafeAngle;
 
+  //Optimization variables to decrease runtime
+  private Translation2d adjustedTarget;
+  private Translation2d robotToTarget;
+  private Rotation2d turretToTargetAngle;
+  private ShooterSetpoint setpoint;
+  private ChassisSpeeds speeds;
+
   /** Creates a new Turret. */
   public Turret(TurretIO io, Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> speedsSupplier) {
     this.io = io;
@@ -190,7 +197,7 @@ public class Turret extends SubsystemBase {
   public Translation2d considerChassisSpeeds(Translation2d target) {
     double TOF = 0;
     double previousTOF = 0;
-    ChassisSpeeds speeds = speedsSupplier.get();
+    speeds = speedsSupplier.get();
     for (int i = 0; i < 3; i++) {
       previousTOF = TOF;
       TOF = timeOfFlightMap.get(MathUtil.clamp(target.getDistance(pose.getTranslation()), TOFMinDistance, TOFMaxDistance));
@@ -208,16 +215,16 @@ public class Turret extends SubsystemBase {
    * @param target the position to aim at
    */
   private void calculationToTarget(Translation2d target) {
-    Translation2d adjustedTarget = considerChassisSpeeds(target);
-    Translation2d robotToTarget = adjustedTarget.minus(pose.getTranslation());
-    Rotation2d turretToTargetAngle = robotToTarget.getAngle().minus(pose.getRotation());
+    adjustedTarget = considerChassisSpeeds(target);
+    robotToTarget = adjustedTarget.minus(pose.getTranslation());
+    turretToTargetAngle = robotToTarget.getAngle().minus(pose.getRotation());
     turretSetPoint = -MathUtil.angleModulus(turretToTargetAngle.getRadians());
     Logger.recordOutput("Calculations/target", adjustedTarget);
-    Logger.recordOutput("Calculations/robotToTarget", robotToTarget);
-    Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);
+    // Logger.recordOutput("Calculations/robotToTarget", robotToTarget);
+    // Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);
     //calculate hood angle based off distance
     double distance = robotToTarget.getNorm();
-    ShooterSetpoint setpoint = shooterMap.get(MathUtil.clamp(distance, shooterSetpointMinDistance, shooterSetpointMaxDistance));
+    setpoint = shooterMap.get(MathUtil.clamp(distance, shooterSetpointMinDistance, shooterSetpointMaxDistance));
     hoodSetPoint = MathUtil.clamp(setpoint.hoodAngle, TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
     flywheelSetPoint = MathUtil.clamp(setpoint.rpm, 0, 6758);
   }

@@ -7,11 +7,15 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.subsystems.vision.AprilTagIO.TargetInfo;
+
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 public class AprilTagVision extends SubsystemBase {
@@ -20,13 +24,17 @@ public class AprilTagVision extends SubsystemBase {
   private final AprilTagIOInputsAutoLogged[] inputs;
 
   private final VisionConsumer consumer;
+  private final Supplier<ChassisSpeeds> speedsSupplier;
 
   private boolean rejectPose;
 
+  private ChassisSpeeds speeds;
+
   /** Creates a new AprilTagVision. */
-  public AprilTagVision(VisionConsumer consumer, AprilTagIO... io) {
+  public AprilTagVision(VisionConsumer consumer, Supplier<ChassisSpeeds> speedsSupplier, AprilTagIO... io) {
     this.io = io;
     this.consumer = consumer;
+    this.speedsSupplier = speedsSupplier;
     this.inputs = new AprilTagIOInputsAutoLogged[io.length];
     for (int i = 0; i < inputs.length; i++) {
       inputs[i] = new AprilTagIOInputsAutoLogged();
@@ -54,30 +62,48 @@ public class AprilTagVision extends SubsystemBase {
       io[i].updateInputs(inputs[i]);
       Logger.processInputs("Vision/AprilTag/Camera" + Integer.toString(i), inputs[i]);
     }
+
+    //update speed supplier here for better runtime
+    speeds = speedsSupplier.get();
     // Update Pose
     for (int cameraIndex = 0; cameraIndex < inputs.length; cameraIndex++) {
       for (var obs : inputs[cameraIndex].poseObservations) {
         // filtering
         rejectPose =
             obs.ambiguity() > VisionConstants.maxAmbiguity.get()
-                || obs.pose().getZ() > VisionConstants.maxZError.get()
-                || obs.pose().getX() < 0
-                || obs.pose().getY() < 0
-                || obs.pose().getX() > VisionConstants.kTagLayout.getFieldLength()
-                || obs.pose().getY() > VisionConstants.kTagLayout.getFieldWidth();
+            || obs.pose().getZ() > VisionConstants.maxZError.get()
+            || obs.pose().getX() < 0
+            || obs.pose().getY() < 0
+            || obs.pose().getX() > VisionConstants.kTagLayout.getFieldLength()
+            || obs.pose().getY() > VisionConstants.kTagLayout.getFieldWidth() 
+            || Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond) > VisionConstants.maxSpeed.get()
+            || Math.abs(speeds.omegaRadiansPerSecond) > VisionConstants.maxAngularSpeed.get();
 
         if (rejectPose) continue;
 
+        /*
+         * If you have/are taken AP Stat this can make sense. 
+         * The base line is in radians/meters and is how far of you think the pose is 68% of the time.
+         * Then we can modify it based on how far and how many tags we have. 
+         * EG. We have a std dev baseline of 0.1m. Our x component of the standard deviation is 5.0. We have 2 tags(HUB) and they are 3m away. So then the standard deviation would be 0.15m 
+         * So there would be a 68% chance that the actual pose would be between 4.85 and 5.15 and a 95% chance that the actual pose would be between 4.7 and 5.3
+         */
         double stdFactor = obs.avgTagDistance() / obs.tagCount();
         double linearStdDev = VisionConstants.linearStdDevBaseline * stdFactor;
         double angularStdDev = VisionConstants.angularStdDevBaseline * stdFactor;
 
+        if (obs.tagCount() == 1) {
+          linearStdDev *= 2.0;
+          angularStdDev = 99999;
+        }
 
         consumer.accept(obs.pose().toPose2d(), obs.timestamp(), VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
       }
     }
   }
 
+
+  //Feeds into the drive poseEstimator
   @FunctionalInterface
   public static interface VisionConsumer {
     public void accept(
