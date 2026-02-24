@@ -41,6 +41,8 @@ public class Superstructure extends SubsystemBase {
   private String gameData;
   private double periodTimer = 0;
 
+  private Alliance previousAlliance = Alliance.Blue;
+
   @SuppressWarnings("unused")
   private Drive drive;
   @SuppressWarnings("unused")
@@ -71,6 +73,11 @@ public class Superstructure extends SubsystemBase {
     Logger.recordOutput("Match Time", matchTime);
     Logger.recordOutput("Period Time", periodTimer);
     Logger.recordOutput("Auto Winner", autoWinColor);
+
+    if (previousAlliance != DriverStation.getAlliance().orElse(previousAlliance)) {
+      turret.redoPassingFunction();
+    } 
+    previousAlliance = DriverStation.getAlliance().orElse(previousAlliance);
   }
 
   /**

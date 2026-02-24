@@ -23,7 +23,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Turret extends SubsystemBase {
   
-  public final InterpolatingTreeMap<Double, ShooterSetpoint> shooterMap = new InterpolatingTreeMap<>(
+  private final InterpolatingTreeMap<Double, ShooterSetpoint> shooterShootingMap = new InterpolatingTreeMap<>(
+    InverseInterpolator.forDouble(), 
+    (start, end, t) ->
+        new ShooterSetpoint(
+            start.rpm + (end.rpm - start.rpm) * t,
+            start.hoodAngle + (end.hoodAngle - start.hoodAngle) * t
+        )
+
+  );
+
+  private final InterpolatingTreeMap<Double, ShooterSetpoint> shooterPassingMap = new InterpolatingTreeMap<>(
+    InverseInterpolator.forDouble(), 
+    (start, end, t) ->
+        new ShooterSetpoint(
+            start.rpm + (end.rpm - start.rpm) * t,
+            start.hoodAngle + (end.hoodAngle - start.hoodAngle) * t
+        )
+
+  );
+
+  private final InterpolatingTreeMap<Double, ShooterSetpoint> shooterFullFieldMap = new InterpolatingTreeMap<>(
     InverseInterpolator.forDouble(), 
     (start, end, t) ->
         new ShooterSetpoint(
@@ -85,10 +105,13 @@ public class Turret extends SubsystemBase {
     this.speedsSupplier = speedsSupplier;
     inputs = new TurretIOInputsAutoLogged();
 
-    shooterMap.put(1.225, new ShooterSetpoint(2200, 0.573));
-    shooterMap.put(1.869, new ShooterSetpoint(2250, 0.573));
-    shooterMap.put(3.28, new ShooterSetpoint(2750, 0.5));
-    shooterMap.put(4.91, new ShooterSetpoint(3000, 0.377));
+    shooterShootingMap.put(1.225, new ShooterSetpoint(2200, 0.573));
+    shooterShootingMap.put(1.869, new ShooterSetpoint(2250, 0.573));
+    shooterShootingMap.put(3.28, new ShooterSetpoint(2750, 0.5));
+    shooterShootingMap.put(4.91, new ShooterSetpoint(3000, 0.377));
+    //need to entrys for the passing/fullfield
+    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(TurretConstants.flywheelPassingSpeed.get(), TurretConstants.hoodPassingAngle.get()));
+    shooterFullFieldMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(TurretConstants.flywheelPassingSpeed.get(), TurretConstants.hoodPassingAngle.get()));
 
     //sim entrys for testing DELETE
     timeOfFlightMap.put(0.0, 0.0);
@@ -224,7 +247,7 @@ public class Turret extends SubsystemBase {
     // Logger.recordOutput("Calculations/turretToTargetAngle", turretToTargetAngle);
     //calculate hood angle based off distance
     double distance = robotToTarget.getNorm();
-    setpoint = shooterMap.get(MathUtil.clamp(distance, shooterSetpointMinDistance, shooterSetpointMaxDistance));
+    setpoint = shooterShootingMap.get(MathUtil.clamp(distance, shooterSetpointMinDistance, shooterSetpointMaxDistance));
     hoodSetPoint = MathUtil.clamp(setpoint.hoodAngle, TurretConstants.hoodMinAngle, TurretConstants.hoodMaxAngle);
     flywheelSetPoint = MathUtil.clamp(setpoint.rpm, 0, 6758);
   }
@@ -297,5 +320,15 @@ public class Turret extends SubsystemBase {
 
   public double getTurretAngle() {
     return inputs.turretAngle;
+  }
+
+  public void redoPassingFunction() {
+    shooterPassingMap.clear();
+    shooterFullFieldMap.clear();
+
+    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
+    shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
+    shooterFullFieldMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.startFullField);
+    shooterFullFieldMap.put(TurretConstants.fieldEnd, TurretConstants.endFullField);
   }
 }

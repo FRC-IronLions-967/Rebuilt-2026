@@ -48,7 +48,7 @@ public class VisionConstants {
 
     // public static final int hubAprilTag = DriverStation.getAlliance().get() == Alliance.Red ? 10 : 26;
 
-  public static final double linearStdDevBaseline = 0.12; // Meters
+  public static final double linearStdDevBaseline = 0.2; // Meters
   public static final double angularStdDevBaseline = 0.524; // Radians 30 degrees
 
 }

@@ -29,6 +29,7 @@ public class TurretConstants {
     private static final Translation2d right = new Translation2d(1, 1);
     public static final double allianceZoneEnd = 4.5;
     public static final double oppositeAllianceEnd = VisionConstants.kTagLayout.getFieldLength() - allianceZoneEnd;
+    public static final double fieldEnd = VisionConstants.kTagLayout.getFieldLength();
     public static final double center = 4.0;
 
     //methods for getting the correct translation based on alliance color: (THIS IS WHY OUR DATA FROM 2/7 WAS BAD)
@@ -113,4 +114,10 @@ public class TurretConstants {
     public static final LoggedNetworkNumber hoodIDLEPosition = new LoggedNetworkNumber("hoodIDLEPosition", hoodMaxAngle);
     public static final double turretIDLEPosition = -1.6;
     public static final double turretTolerance = 0.1;
+
+    public static final ShooterSetpoint startNZ = new ShooterSetpoint(2000, 0.5);
+    public static final ShooterSetpoint endNZ = new ShooterSetpoint(2000, 0.5);
+
+    public static final ShooterSetpoint startFullField = new ShooterSetpoint(2000, 0.5);
+    public static final ShooterSetpoint endFullField = new ShooterSetpoint(2000, 0.5);
 }
