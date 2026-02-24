@@ -71,6 +71,7 @@ public class TurretConstants {
     }
 
     public static final double turretGearRatio = 46.02;//got from cad 2/16
+    public static final double turretOutputRange = 0.5;
 
     public static final double flywheelP = 1.0e-3;
     public static final double flywheelD = 1.0e-6;

@@ -9,8 +9,8 @@
         "containers": [
           {
             "title": "Auto Choices",
-            "x": 128.0,
-            "y": 128.0,
+            "x": 0.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "ComboBox Chooser",
@@ -22,8 +22,8 @@
           },
           {
             "title": "Turret State",
-            "x": 384.0,
-            "y": 256.0,
+            "x": 256.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -36,8 +36,8 @@
           },
           {
             "title": "CurrentState",
-            "x": 384.0,
-            "y": 128.0,
+            "x": 256.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -50,8 +50,8 @@
           },
           {
             "title": "Match Time",
-            "x": 640.0,
-            "y": 128.0,
+            "x": 512.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Match Time",
@@ -66,10 +66,10 @@
           },
           {
             "title": "Auto Winner",
-            "x": 1152.0,
-            "y": 128.0,
+            "x": 512.0,
+            "y": 256.0,
             "width": 256.0,
-            "height": 256.0,
+            "height": 128.0,
             "type": "Single Color View",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Auto Winner",
@@ -79,8 +79,8 @@
           },
           {
             "title": "Period Time",
-            "x": 896.0,
-            "y": 128.0,
+            "x": 768.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Match Time",
@@ -112,8 +112,8 @@
           },
           {
             "title": "BatteryVoltage",
-            "x": 640.0,
-            "y": 384.0,
+            "x": 0.0,
+            "y": 256.0,
             "width": 512.0,
             "height": 128.0,
             "type": "Voltage View",
@@ -126,6 +126,23 @@
               "divisions": 5,
               "inverted": false,
               "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Hub Active",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Hub Active",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
