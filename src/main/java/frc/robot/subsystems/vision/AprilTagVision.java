@@ -89,8 +89,12 @@ public class AprilTagVision extends SubsystemBase {
          * So there would be a 68% chance that the actual pose would be between 4.85 and 5.15 and a 95% chance that the actual pose would be between 4.7 and 5.3
          */
         double stdFactor = obs.avgTagDistance() / obs.tagCount();
-        double linearStdDev = VisionConstants.linearStdDevBaseline * stdFactor;
-        double angularStdDev = VisionConstants.angularStdDevBaseline * stdFactor;
+        double linearStdDev = VisionConstants.camera2linearStdDevBaseline * stdFactor;
+        double angularStdDev = VisionConstants.camera2angularStdDevBaseline * stdFactor;
+        if (cameraIndex == 0) {
+          linearStdDev = VisionConstants.camera1linearStdDevBaseline * stdFactor;
+          angularStdDev = VisionConstants.camera1angularStdDevBaseline * stdFactor;
+        }
 
         if (obs.tagCount() == 1) {
           linearStdDev *= 2.0;

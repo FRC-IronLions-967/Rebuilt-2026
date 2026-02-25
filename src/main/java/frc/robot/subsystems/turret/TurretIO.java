@@ -78,4 +78,6 @@ public interface TurretIO {
     public default boolean home() {return false;}
 
     public default void testTurret(double speed) {}
+
+    public default void stopTurret() {}
 }

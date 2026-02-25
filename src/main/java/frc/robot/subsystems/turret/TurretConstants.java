@@ -25,8 +25,8 @@ public class TurretConstants {
     }
 
     private static final Translation2d hub = new Translation2d(4.625, 4);
-    private static final Translation2d left = new Translation2d(1, 7);
-    private static final Translation2d right = new Translation2d(1, 1);
+    private static final Translation2d left = new Translation2d(1, 6);
+    private static final Translation2d right = new Translation2d(1, 2);
     public static final double allianceZoneEnd = 4.5;
     public static final double oppositeAllianceEnd = VisionConstants.kTagLayout.getFieldLength() - allianceZoneEnd;
     public static final double fieldEnd = VisionConstants.kTagLayout.getFieldLength();
@@ -95,8 +95,8 @@ public class TurretConstants {
     public static final int hoodCurrentLimit = 40; 
     public static final int turretCurrentLimit = 30;
 
-    public static final double hoodMaxAngle = 0.576;
-    public static final double hoodMinAngle = 0.199;
+    public static final double hoodMaxAngle = 0.616;
+    public static final double hoodMinAngle = 0.239;
 
     public static final double turretMaxAngle = 1.6;
     public static final double turretMinAngle = -2.60;
@@ -115,9 +115,10 @@ public class TurretConstants {
     public static final double turretIDLEPosition = -1.6;
     public static final double turretTolerance = 0.1;
 
-    public static final ShooterSetpoint startNZ = new ShooterSetpoint(2000, 0.5);
-    public static final ShooterSetpoint endNZ = new ShooterSetpoint(2000, 0.5);
+    public static final ShooterSetpoint startNZ = new ShooterSetpoint(2500, 0.3);
+    public static final ShooterSetpoint endNZ = new ShooterSetpoint(3250, 0.25);
 
-    public static final ShooterSetpoint startFullField = new ShooterSetpoint(2000, 0.5);
-    public static final ShooterSetpoint endFullField = new ShooterSetpoint(2000, 0.5);
+
+    public static final ShooterSetpoint startFullField = endNZ;
+    public static final ShooterSetpoint endFullField = new ShooterSetpoint(4000, 0.25);
 }

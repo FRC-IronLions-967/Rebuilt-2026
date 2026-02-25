@@ -135,6 +135,7 @@ public class RobotContainer {
 
     //Add Named Comands here
     NamedCommands.registerCommand("start", superstructure.setWantedStateCommand(Superstructure.WantedState.SHOOTING));
+    NamedCommands.registerCommand("reverse", superstructure.setWantedStateCommand(Superstructure.WantedState.EJECTING));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

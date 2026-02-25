@@ -133,25 +133,25 @@ public class IntakeIOSpark implements IntakeIO {
    @Override
    public void setIntakeSpeed(double speed) {
       intakeSetSpeed = speed;
-      // intake.set(intakeSetSpeed);
+      intake.set(intakeSetSpeed);
    }
 
    @Override
    public void setFeederSpeed(double speed) {
       feederSetSpeed = speed;
-      // feeder.set(feederSetSpeed);
+      feeder.set(feederSetSpeed);
    }
 
    @Override
    public void setHorizontal1Speed(double speed) {
       horizontal1SetSpeed = speed;
-      // horizontal1.set(horizontal1SetSpeed);
+      horizontal1.set(horizontal1SetSpeed);
    }
 
    @Override
    public void setHorizontal2Speed(double speed) {
       horizontal2SetSpeed = speed;
-      // horizontal2.set(horizontal2SetSpeed);
+      horizontal2.set(horizontal2SetSpeed);
    }
 
    @Override

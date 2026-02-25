@@ -95,8 +95,8 @@ public class Turret extends SubsystemBase {
   private Translation2d adjustedTarget;
   private Translation2d robotToTarget;
   private Rotation2d turretToTargetAngle;
-  private ShooterSetpoint setpoint;
   private ChassisSpeeds speeds;
+  private ShooterSetpoint setpoint;
 
   /** Creates a new Turret. */
   public Turret(TurretIO io, Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> speedsSupplier) {
@@ -110,10 +110,15 @@ public class Turret extends SubsystemBase {
     shooterShootingMap.put(3.28, new ShooterSetpoint(2750, 0.5));
     shooterShootingMap.put(4.91, new ShooterSetpoint(3000, 0.377));
     //need to entrys for the passing/fullfield
-    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(TurretConstants.flywheelPassingSpeed.get(), TurretConstants.hoodPassingAngle.get()));
+    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
+    shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
+    shooterFullFieldMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.endNZ);
     shooterFullFieldMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(TurretConstants.flywheelPassingSpeed.get(), TurretConstants.hoodPassingAngle.get()));
 
-    //sim entrys for testing DELETE
+    // timeOfFlightMap.put(1.805, 1.008);
+    // timeOfFlightMap.put(2.97, 1.378);
+    // timeOfFlightMap.put(3.35, 2.043);
+    // timeOfFlightMap.put(4.890, 1.433);
     timeOfFlightMap.put(0.0, 0.0);
   }
 
@@ -170,7 +175,7 @@ public class Turret extends SubsystemBase {
       case IDLE:
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
-        io.setTurretAngle(TurretConstants.turretIDLEPosition);
+        io.stopTurret();
         break;
       case SHOOTING:
         calculationToTarget(TurretConstants.hub());
@@ -179,15 +184,17 @@ public class Turret extends SubsystemBase {
         io.setTurretAngle(turretSetPoint);
         break;
       case PASSING:
+        setpoint = shooterPassingMap.get(pose.getX());
         calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
-        io.setFlyWheelSpeed(TurretConstants.flywheelPassingSpeed.get());
-        io.setHoodAngle(TurretConstants.hoodPassingAngle.get());
+        io.setFlyWheelSpeed(setpoint.rpm);
+        io.setHoodAngle(setpoint.hoodAngle);
         io.setTurretAngle(turretSetPoint);
         break;
       case FULLFIELD:
+        setpoint = shooterFullFieldMap.get(pose.getX());
         calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
-        io.setFlyWheelSpeed(TurretConstants.flywheelFullFieldSpeed.get());
-        io.setHoodAngle(TurretConstants.hoodFullFieldAngle.get());
+        io.setFlyWheelSpeed(setpoint.rpm);
+        io.setHoodAngle(setpoint.hoodAngle);
         io.setTurretAngle(turretSetPoint);
         break;
       case HOMING:
@@ -196,7 +203,7 @@ public class Turret extends SubsystemBase {
       default:
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
-        io.setTurretAngle(inputs.turretAngle);
+        io.stopTurret();;
         break;
     }
   }
@@ -296,8 +303,7 @@ public class Turret extends SubsystemBase {
    * @return true if intake operation is safe, false otherwise
    */
   public boolean intakeSafe() {
-    // return inputs.intakeSafe;
-    return true;
+    return inputs.intakeSafe;
   }
 
   /**

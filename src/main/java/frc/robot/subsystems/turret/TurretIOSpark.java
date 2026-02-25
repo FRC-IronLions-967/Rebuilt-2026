@@ -23,6 +23,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.util.LimitSwitchManager;
 
 // import frc.robot.util.LimitSwitchManager;
@@ -122,9 +124,9 @@ public class TurretIOSpark implements TurretIO{
         inputs.turretAngle = turret.getEncoder().getPosition();
         inputs.turretSetAngle = turretSetAngle;
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
-        inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) > TurretConstants.turretTolerance;
+        inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) < TurretConstants.turretTolerance;
 
-        // flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
+        flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
     }
 
     @Override
@@ -141,10 +143,19 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setTurretAngle(double angle) {
         Logger.recordOutput("angleInTurret", angle);
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            angle += Math.PI;
+        }
         angle = MathUtil.inputModulus(angle, -Math.PI, Math.PI);
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
         turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
+    }
+
+    @Override
+    public void stopTurret() {
+        turretSetAngle = TurretConstants.turretIDLEPosition;
+        turretController.setSetpoint(TurretConstants.turretIDLEPosition, ControlType.kPosition);
     }
     
     // @Override
