@@ -24,13 +24,15 @@ public class Superstructure extends SubsystemBase {
   public enum WantedState {
     IDLE,
     SHOOTING,
-    EJECTING  
+    EJECTING,
+    TESTING 
   }
 
   public enum CurrentState {
     IDLE,
     SHOOTING,
-    EJECTING
+    EJECTING,
+    TESTING
   }
 
   private WantedState wantedState = WantedState.IDLE;
@@ -94,6 +96,8 @@ public class Superstructure extends SubsystemBase {
         yield CurrentState.SHOOTING;
       case EJECTING:
         yield CurrentState.EJECTING;
+      case TESTING:
+        yield CurrentState.TESTING;
     };
   }
 
@@ -116,6 +120,10 @@ public class Superstructure extends SubsystemBase {
       case EJECTING:
         turret.setWantedState(Turret.WantedState.SHOOTING);
         intake.setWantedState(Intake.WantedState.REVERSING);
+        break;
+      case TESTING:
+        turret.setWantedState(Turret.WantedState.TESTING);
+        intake.setWantedState(Intake.WantedState.INTAKING);
         break;
       default:
         turret.setWantedState(Turret.WantedState.IDLE);

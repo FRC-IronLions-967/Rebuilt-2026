@@ -125,4 +125,7 @@ public class TurretConstants {
 
     public static final ShooterSetpoint startFullField = endNZ;
     public static final ShooterSetpoint endFullField = new ShooterSetpoint(4000, 0.25);
+
+    public static final LoggedNetworkNumber testingFlywheelSpeed = new LoggedNetworkNumber("Testing Flywheel Speed", 2500);
+    public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Flywheel Speed", 0.616);
 }

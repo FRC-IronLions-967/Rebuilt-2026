@@ -61,7 +61,8 @@ public class Turret extends SubsystemBase {
 
   public enum WantedState {
     IDLE,
-    SHOOTING
+    SHOOTING,
+    TESTING
   }
 
   public enum CurrentState {
@@ -69,7 +70,8 @@ public class Turret extends SubsystemBase {
     SHOOTING,
     PASSING,
     FULLFIELD,
-    HOMING
+    HOMING,
+    TESTING
   }
 
   private WantedState wantedState = WantedState.IDLE;
@@ -153,6 +155,8 @@ public class Turret extends SubsystemBase {
           yield CurrentState.PASSING;
         }
         yield CurrentState.FULLFIELD;
+      case TESTING:
+        yield CurrentState.TESTING;
     };
   }
 
@@ -193,6 +197,12 @@ public class Turret extends SubsystemBase {
         break;
       case HOMING:
         homed = true;
+        break;
+      case TESTING:
+        io.setFlyWheelSpeed(TurretConstants.testingFlywheelSpeed.get());
+        io.setHoodAngle(TurretConstants.testingHoodAngle.get());
+        calculationToTarget(TurretConstants.hub());
+        io.setTurretAngle(turretSetPoint);
         break;
       default:
         io.setFlyWheelSpeed(0.0);
