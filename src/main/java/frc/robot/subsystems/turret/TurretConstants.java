@@ -27,7 +27,7 @@ public class TurretConstants {
     private static final Translation2d hub = new Translation2d(4.625, 4);
     private static final Translation2d left = new Translation2d(1, 6);
     private static final Translation2d right = new Translation2d(1, 2);
-    public static final double allianceZoneEnd = 4.5;
+    public static final double allianceZoneEnd = 5;
     public static final double oppositeAllianceEnd = VisionConstants.kTagLayout.getFieldLength() - allianceZoneEnd;
     public static final double fieldEnd = VisionConstants.kTagLayout.getFieldLength();
     public static final double center = 4.0;
@@ -65,6 +65,10 @@ public class TurretConstants {
 
     public static double oppositeAllianceEnd() {
         return flipXLineForRed(oppositeAllianceEnd);
+    }
+
+    public static double fieldEnd() {
+        return flipXLineForRed(fieldEnd);
     }
 
     public static double center() {
