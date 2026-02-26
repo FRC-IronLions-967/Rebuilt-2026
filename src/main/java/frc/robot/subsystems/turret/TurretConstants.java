@@ -99,8 +99,9 @@ public class TurretConstants {
     public static final int hoodCurrentLimit = 40; 
     public static final int turretCurrentLimit = 30;
 
-    public static final double hoodMaxAngle = 0.616;
-    public static final double hoodMinAngle = 0.239;
+    public static final double hoodOffset = -0.012; //used when encoder gets messed up
+    public static final double hoodMaxAngle = 0.616 + hoodOffset;
+    public static final double hoodMinAngle = 0.239 + hoodOffset;
 
     public static final double turretMaxAngle = 1.6;
     public static final double turretMinAngle = -2.60;
@@ -110,7 +111,7 @@ public class TurretConstants {
     public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 2500);
     public static final LoggedNetworkNumber flywheelMinRunningSpeed = new LoggedNetworkNumber("Flywheel Running Min Speed", 1000);
     public static final LoggedNetworkNumber flywheelTolerance = new LoggedNetworkNumber("flywheelTolerance", 250);
-    public static final LoggedNetworkNumber hoodPassingAngle = new LoggedNetworkNumber("Hood Passing Angle", 0.3);
+    public static final LoggedNetworkNumber hoodPassingAngle = new LoggedNetworkNumber("Hood Passing Angle", 0.3 + hoodOffset);
 
     public static final LoggedNetworkNumber flywheelFullFieldSpeed = new LoggedNetworkNumber("flywheelFullFieldSpeed", 4000);
     public static final LoggedNetworkNumber hoodFullFieldAngle = new LoggedNetworkNumber("Hood FullField Angle", 0.25);
@@ -119,13 +120,13 @@ public class TurretConstants {
     public static final double turretIDLEPosition = -1.6;
     public static final double turretTolerance = 0.1;
 
-    public static final ShooterSetpoint startNZ = new ShooterSetpoint(2500, 0.3);
-    public static final ShooterSetpoint endNZ = new ShooterSetpoint(3250, 0.25);
+    public static final ShooterSetpoint startNZ = new ShooterSetpoint(2500, 0.3 + hoodOffset);
+    public static final ShooterSetpoint endNZ = new ShooterSetpoint(3250, 0.25 + hoodOffset);
 
 
     public static final ShooterSetpoint startFullField = endNZ;
-    public static final ShooterSetpoint endFullField = new ShooterSetpoint(4000, 0.25);
+    public static final ShooterSetpoint endFullField = new ShooterSetpoint(4000, 0.25 + hoodOffset);
 
     public static final LoggedNetworkNumber testingFlywheelSpeed = new LoggedNetworkNumber("Testing Flywheel Speed", 2500);
-    public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Flywheel Speed", 0.616);
+    public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Flywheel Speed", 0.616 + hoodOffset);
 }

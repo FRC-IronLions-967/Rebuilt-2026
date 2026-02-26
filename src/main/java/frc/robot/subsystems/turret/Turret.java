@@ -100,10 +100,10 @@ public class Turret extends SubsystemBase {
     this.speedsSupplier = speedsSupplier;
     inputs = new TurretIOInputsAutoLogged();
 
-    shooterShootingMap.put(1.225, new ShooterSetpoint(2200, 0.573));
-    shooterShootingMap.put(1.869, new ShooterSetpoint(2250, 0.573));
-    shooterShootingMap.put(3.28, new ShooterSetpoint(2750, 0.5));
-    shooterShootingMap.put(4.91, new ShooterSetpoint(3000, 0.377));
+    shooterShootingMap.put(1.225, new ShooterSetpoint(2200, 0.573 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(1.869, new ShooterSetpoint(2250, 0.573 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(3.28, new ShooterSetpoint(2750, 0.5 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(4.91, new ShooterSetpoint(3000, 0.377 + TurretConstants.hoodOffset));
     //need to entrys for the passing/fullfield
     shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
     shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
