@@ -104,7 +104,7 @@ public class TurretConstants {
     public static final double hoodMinAngle = 0.239 + hoodOffset;
 
     public static final double turretMaxAngle = 1.6;
-    public static final double turretMinAngle = -2.60;
+    public static final double turretMinAngle = -4.261;
     public static final double turretStartingAngle = -1.6;
     public static final LoggedNetworkNumber turretHomingSpeed = new LoggedNetworkNumber("Turret Homing Speed", 0.1);
 
@@ -128,5 +128,5 @@ public class TurretConstants {
     public static final ShooterSetpoint endFullField = new ShooterSetpoint(4000, 0.25 + hoodOffset);
 
     public static final LoggedNetworkNumber testingFlywheelSpeed = new LoggedNetworkNumber("Testing Flywheel Speed", 2500);
-    public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Flywheel Speed", 0.616 + hoodOffset);
+    public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Hood Speed", 0.616 + hoodOffset);
 }

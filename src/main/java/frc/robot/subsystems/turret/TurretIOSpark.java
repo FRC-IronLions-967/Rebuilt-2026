@@ -148,6 +148,10 @@ public class TurretIOSpark implements TurretIO{
         }
         angle = MathUtil.inputModulus(angle, -Math.PI, Math.PI);
 
+        if (angle > 2.022 && angle < Math.PI) {
+            angle -= 2 * Math.PI;
+        }
+
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
         turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }

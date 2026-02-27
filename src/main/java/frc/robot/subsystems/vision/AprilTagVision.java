@@ -7,6 +7,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -14,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.subsystems.vision.AprilTagIO.TargetInfo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -25,6 +29,11 @@ public class AprilTagVision extends SubsystemBase {
 
   private final VisionConsumer consumer;
   private final Supplier<ChassisSpeeds> speedsSupplier;
+
+  private List<Pose3d> acceptedPoses;
+  private List<Double> acceptedTimestamps;
+  private List<Double> acceptedLinearW;
+  private List<Double> acceptedAngularW;
 
   private boolean rejectPose;
 
@@ -39,6 +48,11 @@ public class AprilTagVision extends SubsystemBase {
     for (int i = 0; i < inputs.length; i++) {
       inputs[i] = new AprilTagIOInputsAutoLogged();
     }
+
+    acceptedPoses = new ArrayList<>();
+    acceptedTimestamps = new ArrayList<>();
+    acceptedLinearW = new ArrayList<>();
+    acceptedAngularW = new ArrayList<>();
   }
 
   /**
@@ -66,6 +80,13 @@ public class AprilTagVision extends SubsystemBase {
     //update speed supplier here for better runtime
     speeds = speedsSupplier.get();
     // Update Pose
+    if (acceptedPoses.size() > 0) {
+      acceptedAngularW.clear();
+      acceptedLinearW.clear();
+      acceptedPoses.clear();
+      acceptedTimestamps.clear();
+    }
+    acceptedPoses.clear();
     for (int cameraIndex = 0; cameraIndex < inputs.length; cameraIndex++) {
       for (var obs : inputs[cameraIndex].poseObservations) {
         // filtering
@@ -81,6 +102,8 @@ public class AprilTagVision extends SubsystemBase {
 
         if (rejectPose) continue;
 
+        acceptedPoses.add(obs.pose());
+        acceptedTimestamps.add(obs.timestamp());
         /*
          * If you have/are taken AP Stat this can make sense. 
          * The base line is in radians/meters and is how far of you think the pose is 68% of the time.
@@ -89,20 +112,101 @@ public class AprilTagVision extends SubsystemBase {
          * So there would be a 68% chance that the actual pose would be between 4.85 and 5.15 and a 95% chance that the actual pose would be between 4.7 and 5.3
          */
         double stdFactor = obs.avgTagDistance() / obs.tagCount();
-        double linearStdDev = VisionConstants.camera2linearStdDevBaseline * stdFactor;
-        double angularStdDev = VisionConstants.camera2angularStdDevBaseline * stdFactor;
-        if (cameraIndex == 0) {
-          linearStdDev = VisionConstants.camera1linearStdDevBaseline * stdFactor;
-          angularStdDev = VisionConstants.camera1angularStdDevBaseline * stdFactor;
-        }
+        double linearStdDev = VisionConstants.camera1linearStdDevBaseline * stdFactor;
+        double angularStdDev = VisionConstants.camera1angularStdDevBaseline * stdFactor;
 
         if (obs.tagCount() == 1) {
           linearStdDev *= 2.0;
           angularStdDev = 99999;
         }
 
-        consumer.accept(obs.pose().toPose2d(), obs.timestamp(), VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+        acceptedLinearW.add(1/linearStdDev);
+        acceptedAngularW.add(1/angularStdDev);
+
+        // consumer.accept(obs.pose().toPose2d(), obs.timestamp(), VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
       }
+    }
+    double sumX = 0;
+    double sumY = 0;
+    double sumZ = 0;
+
+    double sumCosYaw = 0;
+    double sumSinYaw = 0;
+
+    double sumCosPitch = 0;
+    double sumSinPitch = 0;
+
+    double sumCosRoll = 0;
+    double sumSinRoll = 0;
+
+    double weightedTimestampSum = 0;
+    double totalLinearWeight = 0;
+    double totalAngularWeight = 0;
+
+    for (int i = 0; i < acceptedPoses.size(); i++) {
+
+      Pose3d pose = acceptedPoses.get(i);
+
+      double linearW = acceptedLinearW.get(i);
+      double angularW = acceptedAngularW.get(i);
+
+      // Weighted position
+      sumX += pose.getX() * linearW;
+      sumY += pose.getY() * linearW;
+      sumZ += pose.getZ() * linearW;
+
+      // Weighted timestamp
+      weightedTimestampSum += acceptedTimestamps.get(i) * linearW;
+
+      totalLinearWeight += linearW;
+
+      // Rotation — use sin/cos averaging to avoid wrap issues
+      double yaw = pose.getRotation().getZ();
+      double pitch = pose.getRotation().getY();
+      double roll = pose.getRotation().getX();
+
+      sumCosYaw += Math.cos(yaw) * angularW;
+      sumSinYaw += Math.sin(yaw) * angularW;
+
+      sumCosPitch += Math.cos(pitch) * angularW;
+      sumSinPitch += Math.sin(pitch) * angularW;
+
+      sumCosRoll += Math.cos(roll) * angularW;
+      sumSinRoll += Math.sin(roll) * angularW;
+
+      totalAngularWeight += angularW;
+    }
+
+    if (totalLinearWeight > 0 && totalAngularWeight > 0) {
+
+      double fusedX = sumX / totalLinearWeight;
+      double fusedY = sumY / totalLinearWeight;
+      double fusedZ = sumZ / totalLinearWeight;
+
+      double fusedYaw = Math.atan2(sumSinYaw, sumCosYaw);
+      double fusedPitch = Math.atan2(sumSinPitch, sumCosPitch);
+      double fusedRoll = Math.atan2(sumSinRoll, sumCosRoll);
+
+      double fusedTimestamp = weightedTimestampSum / totalLinearWeight;
+
+      Pose3d combinedPose =
+          new Pose3d(
+              fusedX,
+              fusedY,
+              fusedZ,
+              new Rotation3d(fusedRoll, fusedPitch, fusedYaw));
+
+      // Proper fused variance:
+      double fusedLinearVar = 1.0 / Math.pow(totalLinearWeight, 2);
+      double fusedAngularVar = 1.0 / Math.pow(totalAngularWeight, 2);
+
+      double fusedLinearStd = Math.sqrt(fusedLinearVar);
+      double fusedAngularStd = Math.sqrt(fusedAngularVar);
+
+      consumer.accept(
+          combinedPose.toPose2d(),
+          fusedTimestamp,
+          VecBuilder.fill(fusedLinearStd, fusedLinearStd, fusedAngularStd));
     }
   }
 

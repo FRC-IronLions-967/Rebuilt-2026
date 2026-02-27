@@ -104,17 +104,23 @@ public class Turret extends SubsystemBase {
     shooterShootingMap.put(1.869, new ShooterSetpoint(2250, 0.573 + TurretConstants.hoodOffset));
     shooterShootingMap.put(3.28, new ShooterSetpoint(2750, 0.5 + TurretConstants.hoodOffset));
     shooterShootingMap.put(4.91, new ShooterSetpoint(3000, 0.377 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(0.916, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(2.25, new ShooterSetpoint(2500, 0.614 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(4.231, new ShooterSetpoint(2750, 0.51 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(3.01, new ShooterSetpoint(2500, 0.51 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(3.70, new ShooterSetpoint(2600, 0.435 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(4.952, new ShooterSetpoint(3000, 0.36 + TurretConstants.hoodOffset));
     //need to entrys for the passing/fullfield
     shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
     shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
     shooterFullFieldMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ.rpm);
     shooterFullFieldMap.put(TurretConstants.fieldEnd(), TurretConstants.endFullField.rpm);
 
-    timeOfFlightMap.put(1.805, 1.008);
-    timeOfFlightMap.put(2.97, 1.378);
-    timeOfFlightMap.put(3.35, 2.043);
-    timeOfFlightMap.put(4.890, 1.433);
-    // timeOfFlightMap.put(0.0, 0.0);
+    // timeOfFlightMap.put(1.805, 1.008);
+    // timeOfFlightMap.put(2.97, 1.378);
+    // timeOfFlightMap.put(3.35, 2.043);
+    // timeOfFlightMap.put(4.890, 1.433);
+    timeOfFlightMap.put(0.0, 0.0);
   }
 
   @Override
