@@ -72,6 +72,8 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  private ChassisSpeeds commandedFieldRelativeSpeeds = new ChassisSpeeds();
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -191,6 +193,7 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
+    commandedFieldRelativeSpeeds = speeds;
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
@@ -269,6 +272,11 @@ public class Drive extends SubsystemBase {
   @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
   public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
+  }
+
+  @AutoLogOutput(key = "SwerveChassisSpeeds/Set") 
+  public ChassisSpeeds getFieldRelativeSpeeds () {
+    return commandedFieldRelativeSpeeds;
   }
 
   /** Returns the position of each module in radians. */

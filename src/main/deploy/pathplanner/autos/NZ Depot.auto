@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Depot"
+                  "pathName": "Depot Trench"
                 }
               },
               {
@@ -27,7 +27,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.1
+                        "waitTime": 0.25
                       }
                     },
                     {
@@ -43,15 +43,21 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "start"
+            "pathName": "Depot NZ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot Intake"
+            "pathName": "NZ to Depot Corner"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reverse Depot Intake"
           }
         }
       ]

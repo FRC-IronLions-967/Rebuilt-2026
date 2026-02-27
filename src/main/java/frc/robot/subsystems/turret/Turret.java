@@ -110,17 +110,34 @@ public class Turret extends SubsystemBase {
     // shooterShootingMap.put(3.01, new ShooterSetpoint(2500, 0.51 + TurretConstants.hoodOffset));
     // shooterShootingMap.put(3.70, new ShooterSetpoint(2600, 0.435 + TurretConstants.hoodOffset));
     // shooterShootingMap.put(4.952, new ShooterSetpoint(3000, 0.36 + TurretConstants.hoodOffset));
+
+    
+    //This is how we are going to tune the shots. This is how 6328 did it
+    // shooterShootingMap.put(idk, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(idk, new ShooterSetpoint(2125, 0.60 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(idk, new ShooterSetpoint(2250, 0.575 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(idk, new ShooterSetpoint(2375, 0.55 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(idk, new ShooterSetpoint(2500, 0.525 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(idk, new ShooterSetpoint(2625, 0.50 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(idk, new ShooterSetpoint(2750, 0.475 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(idk, new ShooterSetpoint(2875, 0.450 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(idk, new ShooterSetpoint(3000, 0.425 + TurretConstants.hoodOffset));
+
+
+
+
+
     //need to entrys for the passing/fullfield
     shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
     shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
     shooterFullFieldMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ.rpm);
     shooterFullFieldMap.put(TurretConstants.fieldEnd(), TurretConstants.endFullField.rpm);
 
-    // timeOfFlightMap.put(1.805, 1.008);
-    // timeOfFlightMap.put(2.97, 1.378);
-    // timeOfFlightMap.put(3.35, 2.043);
-    // timeOfFlightMap.put(4.890, 1.433);
-    timeOfFlightMap.put(0.0, 0.0);
+    timeOfFlightMap.put(1.805, 1.008);
+    timeOfFlightMap.put(2.97, 1.378);
+    timeOfFlightMap.put(3.35, 2.043);
+    timeOfFlightMap.put(4.890, 1.433);
+    // timeOfFlightMap.put(0.0, 0.0);
   }
 
   @Override
@@ -238,12 +255,13 @@ public class Turret extends SubsystemBase {
     double TOF = 0;
     double previousTOF = 0;
     speeds = speedsSupplier.get();
+    ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, pose.getRotation());
     for (int i = 0; i < 3; i++) {
       previousTOF = TOF;
-      TOF = timeOfFlightMap.get(MathUtil.clamp(target.getDistance(pose.getTranslation()), TOFMinDistance, TOFMaxDistance));
+      TOF = timeOfFlightMap.get(MathUtil.clamp(target.getDistance(pose.getTranslation()), TOFMinDistance, TOFMaxDistance)) * TurretConstants.ToFRealityConstant.get();
       target = new Translation2d(
-        target.getX() - speeds.vxMetersPerSecond * (TOF - previousTOF),
-        target.getY() - speeds.vyMetersPerSecond * (TOF - previousTOF));
+        target.getX() - fieldRelativeSpeeds.vxMetersPerSecond * (TOF - previousTOF),
+        target.getY() - fieldRelativeSpeeds.vyMetersPerSecond * (TOF - previousTOF));
     }
     return target;
   }
@@ -272,20 +290,26 @@ public class Turret extends SubsystemBase {
   private boolean isPastLine(double robotX, double lineX) {
     boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
     if (isRed) {
-        // For Red, the field is mirrored along X, so we consider "past" if robotX > lineX
         return robotX > lineX;
     } else {
-        // For Blue, "past" if robotX < lineX
         return robotX < lineX;
     }
   }
 
-  private Translation2d chooseTargetBasedOnY(Translation2d pose, Translation2d left, Translation2d right, double centerY) {
-    // All targets are already flipped for Red in TurretConstants, so no need to adjust further
-    if (pose.getY() > centerY && right.getY() > centerY) {
-        return right;
+  private Translation2d chooseTargetBasedOnY(
+    Translation2d robotPose,
+    Translation2d left,
+    Translation2d right,
+    double centerY) {
+
+    boolean isRed =
+        DriverStation.getAlliance().orElse(Alliance.Blue)
+        == Alliance.Red;
+
+    if (isRed) {
+        return robotPose.getY() > centerY ? right : left;
     } else {
-        return left;
+        return robotPose.getY() > centerY ? left : right;
     }
   }
 

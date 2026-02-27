@@ -39,6 +39,8 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
     if (inputs.isConnected) {
       poseObservations.clear();
       targetInfos.clear();
+      inputs.poseObservations = new PoseObservation[0];
+      inputs.targetInfo = new TargetInfo[0];
       var results = camera.getAllUnreadResults();
       if (!results.isEmpty()) {
         var result = results.get(results.size() - 1);
