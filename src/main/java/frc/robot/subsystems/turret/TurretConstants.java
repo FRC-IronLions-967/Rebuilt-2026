@@ -51,7 +51,7 @@ public class TurretConstants {
     }
 
     public static final double turretGearRatio = 46.02;//got from cad 2/16
-    public static final double turretOutputRange = 0.5;
+    public static final double turretOutputRange = 0.8;
 
     public static final double flywheelP = 1.0e-3;
     public static final double flywheelD = 1.0e-6;
@@ -84,7 +84,7 @@ public class TurretConstants {
     public static final LoggedNetworkNumber turretHomingSpeed = new LoggedNetworkNumber("Turret Homing Speed", 0.1);
 
     public static final LoggedNetworkNumber flywheelPassingSpeed = new LoggedNetworkNumber("flywheelPassingSpeed", 2500);
-    public static final LoggedNetworkNumber flywheelMinRunningSpeed = new LoggedNetworkNumber("Flywheel Running Min Speed", 1000);
+    public static final LoggedNetworkNumber flywheelMinRunningSpeed = new LoggedNetworkNumber("Flywheel Running Min Speed", 1750);
     public static final LoggedNetworkNumber flywheelTolerance = new LoggedNetworkNumber("flywheelTolerance", 250);
     public static final LoggedNetworkNumber hoodPassingAngle = new LoggedNetworkNumber("Hood Passing Angle", 0.3 + hoodOffset);
 
@@ -105,5 +105,5 @@ public class TurretConstants {
     public static final LoggedNetworkNumber testingFlywheelSpeed = new LoggedNetworkNumber("Testing Flywheel Speed", 2500);
     public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Hood Speed", 0.616 + hoodOffset);
 
-    public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 0.8);
+    public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 0.5);
 }

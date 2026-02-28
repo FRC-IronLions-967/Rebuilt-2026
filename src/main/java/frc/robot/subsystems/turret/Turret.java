@@ -146,12 +146,12 @@ public class Turret extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    io.updateInputs(inputs);
+    Logger.processInputs("Turret", inputs);
     pose = poseSupplier.get();
     Logger.recordOutput("Turret Pose", pose);
     currentState = updateState();
     applyState();
-    io.updateInputs(inputs);
-    Logger.processInputs("Turret", inputs);
     Logger.recordOutput("Turret State", currentState);
     Logger.recordOutput("DistanceToHub", pose.getTranslation().getDistance(TurretConstants.hub()));
   }

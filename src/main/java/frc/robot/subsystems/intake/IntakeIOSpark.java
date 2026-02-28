@@ -77,7 +77,7 @@ public class IntakeIOSpark implements IntakeIO {
       feederConfig = new SparkFlexConfig();
 
       feederConfig
-         .idleMode(IdleMode.kCoast)
+         .idleMode(IdleMode.kBrake)
          .smartCurrentLimit(40)
          .inverted(true);
       feeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

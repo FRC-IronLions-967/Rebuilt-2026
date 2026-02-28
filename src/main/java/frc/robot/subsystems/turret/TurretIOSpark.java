@@ -123,7 +123,7 @@ public class TurretIOSpark implements TurretIO{
         inputs.hoodCurrent = hood.getOutputCurrent();
         inputs.turretAngle = turret.getEncoder().getPosition();
         inputs.turretSetAngle = turretSetAngle;
-        inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
+        inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI/6;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) < TurretConstants.turretTolerance;
 
         flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
@@ -143,9 +143,9 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setTurretAngle(double angle) {
         Logger.recordOutput("angleInTurret", angle);
-        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+        // if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
             angle += Math.PI;
-        }
+        // }
         angle = MathUtil.inputModulus(angle, -Math.PI, Math.PI);
 
         if (angle > 2.022 && angle < Math.PI) {
