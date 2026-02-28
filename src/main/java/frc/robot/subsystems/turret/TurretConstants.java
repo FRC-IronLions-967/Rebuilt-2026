@@ -7,22 +7,11 @@ package frc.robot.subsystems.turret;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.util.AllianceFlipUtil;
 
 /** Add your docs here. */
 public class TurretConstants {
-
-    public static Translation2d flipForRed(Translation2d bluePose) {
-        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            return new Translation2d(
-                VisionConstants.kTagLayout.getFieldLength() - bluePose.getX(),
-                VisionConstants.kTagLayout.getFieldWidth()  - bluePose.getY()
-            );
-        }
-        return bluePose;
-    }
 
     private static final Translation2d hub = new Translation2d(4.625, 4);
     private static final Translation2d left = new Translation2d(1, 6);
@@ -34,45 +23,31 @@ public class TurretConstants {
 
     //methods for getting the correct translation based on alliance color: (THIS IS WHY OUR DATA FROM 2/7 WAS BAD)
     public static Translation2d hub() {
-        return flipForRed(hub);
+        return AllianceFlipUtil.apply(hub);
     }
 
     public static Translation2d left() {
-        return flipForRed(left);
+        return AllianceFlipUtil.apply(left);
     }
 
     public static Translation2d right() {
-        return flipForRed(right);
-    }
-
-    public static double flipXLineForRed(double line) {
-        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            return VisionConstants.kTagLayout.getFieldLength() - line;
-        }
-        return line;
-    }
-
-    public static double flipYLineForRed(double line) {
-        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            return VisionConstants.kTagLayout.getFieldWidth() - line;
-        }
-        return line;
+        return AllianceFlipUtil.apply(right);
     }
 
     public static double allianceZoneEnd() {
-        return flipXLineForRed(allianceZoneEnd);
+        return AllianceFlipUtil.applyX(allianceZoneEnd);
     }
 
     public static double oppositeAllianceEnd() {
-        return flipXLineForRed(oppositeAllianceEnd);
+        return AllianceFlipUtil.applyX(oppositeAllianceEnd);
     }
 
     public static double fieldEnd() {
-        return flipXLineForRed(fieldEnd);
+        return AllianceFlipUtil.applyX(fieldEnd);
     }
 
     public static double center() {
-        return flipYLineForRed(center);
+        return AllianceFlipUtil.applyY(center);
     }
 
     public static final double turretGearRatio = 46.02;//got from cad 2/16

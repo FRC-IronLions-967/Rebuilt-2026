@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.AllianceFlipUtil;
 
 
 public class Turret extends SubsystemBase {
@@ -213,7 +214,7 @@ public class Turret extends SubsystemBase {
         break;
       case FULLFIELD:
         calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
-        double rpm = shooterFullFieldMap.get(TurretConstants.flipXLineForRed(pose.getX()));
+        double rpm = shooterFullFieldMap.get(AllianceFlipUtil.applyX(pose.getX()));
         io.setFlyWheelSpeed(rpm);
         io.setHoodAngle(TurretConstants.endFullField.hoodAngle);
         io.setTurretAngle(turretSetPoint);
