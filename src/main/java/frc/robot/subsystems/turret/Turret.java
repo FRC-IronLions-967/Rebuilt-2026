@@ -134,11 +134,11 @@ public class Turret extends SubsystemBase {
     shooterFullFieldMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ.rpm);
     shooterFullFieldMap.put(TurretConstants.fieldEnd(), TurretConstants.endFullField.rpm);
 
-    timeOfFlightMap.put(1.805, 1.008);
-    timeOfFlightMap.put(2.97, 1.378);
-    timeOfFlightMap.put(3.35, 2.043);
-    timeOfFlightMap.put(4.890, 1.433);
-    // timeOfFlightMap.put(0.0, 0.0);
+    // timeOfFlightMap.put(1.805, 1.008);
+    // timeOfFlightMap.put(2.97, 1.378);
+    // timeOfFlightMap.put(3.35, 2.043);
+    // timeOfFlightMap.put(4.890, 1.433);
+    timeOfFlightMap.put(0.0, 0.0);
   }
 
   @Override

@@ -21,16 +21,16 @@ public class VisionConstants {
         Units.inchesToMeters(new LoggedNetworkNumber("ATC1x", -9.733).get()),
         Units.inchesToMeters(new LoggedNetworkNumber("ATC1y", 9.733).get()), 
         Units.inchesToMeters(new LoggedNetworkNumber("ATC1z", 9.314).get()),
-        new Rotation3d(0, Units.degreesToRadians(30), Units.degreesToRadians(new LoggedNetworkNumber("ATC1yaw", -150).get())));//-150
+        new Rotation3d(0, Units.degreesToRadians(30), Units.degreesToRadians(new LoggedNetworkNumber("ATC1yaw", -144).get())));
   public static final int AprilTagCamera1Index = 0;
 
   public static final String AprilTagCamera2Name = "April_Tag_2";
   public static final Transform3d AprilTagCamera2Transform =
       new Transform3d(
         Units.inchesToMeters(new LoggedNetworkNumber("ATC2x", -9.733).get()),
-        Units.inchesToMeters(new LoggedNetworkNumber("ATC2y", -9.733).get())+0.2,
+        Units.inchesToMeters(new LoggedNetworkNumber("ATC2y", -9.733).get()),
         Units.inchesToMeters(new LoggedNetworkNumber("ATC2z", 9.314).get()),
-        new Rotation3d(0, Units.degreesToRadians(30), Units.degreesToRadians(new LoggedNetworkNumber("ATC2yaw", 155).get())));//-60||135
+        new Rotation3d(0, Units.degreesToRadians(30), Units.degreesToRadians(new LoggedNetworkNumber("ATC2yaw", 160).get())));//-60||135
   public static final int AprilTagCamera2Index = 1;
 
   public static final AprilTagFieldLayout kTagLayout =
@@ -53,5 +53,12 @@ public class VisionConstants {
 
   public static final double camera2linearStdDevBaseline = 0.5; // Meters
   public static final double camera2angularStdDevBaseline = 1.0;
+
+  public static final double camera0OffsetX = 0.7;
+  public static final double camera0OffsetY = -0.1;
+
+  public static final double camera1OffsetX = 0.7;
+  public static final double camera1OffsetY = -0.8;
+
 
 }
