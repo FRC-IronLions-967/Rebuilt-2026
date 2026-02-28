@@ -101,28 +101,28 @@ public class Turret extends SubsystemBase {
     this.speedsSupplier = speedsSupplier;
     inputs = new TurretIOInputsAutoLogged();
 
-    shooterShootingMap.put(1.225, new ShooterSetpoint(2200, 0.573 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(1.869, new ShooterSetpoint(2250, 0.573 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(3.28, new ShooterSetpoint(2750, 0.5 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(4.91, new ShooterSetpoint(3000, 0.377 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(0.916, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(2.25, new ShooterSetpoint(2500, 0.614 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(4.231, new ShooterSetpoint(2750, 0.51 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(1.225, new ShooterSetpoint(2200, 0.573 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(1.869, new ShooterSetpoint(2250, 0.573 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(3.28, new ShooterSetpoint(2750, 0.5 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(4.91, new ShooterSetpoint(3000, 0.377 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(0.916, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(2.25, new ShooterSetpoint(2500, 0.614 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(4.231, new ShooterSetpoint(2750, 0.51 + TurretConstants.hoodOffset));
     // shooterShootingMap.put(3.01, new ShooterSetpoint(2500, 0.51 + TurretConstants.hoodOffset));
     // shooterShootingMap.put(3.70, new ShooterSetpoint(2600, 0.435 + TurretConstants.hoodOffset));
     // shooterShootingMap.put(4.952, new ShooterSetpoint(3000, 0.36 + TurretConstants.hoodOffset));
 
     
     //This is how we are going to tune the shots. This is how 6328 did it
-    // shooterShootingMap.put(idk, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(idk, new ShooterSetpoint(2125, 0.60 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(idk, new ShooterSetpoint(2250, 0.575 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(idk, new ShooterSetpoint(2375, 0.55 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(idk, new ShooterSetpoint(2500, 0.525 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(idk, new ShooterSetpoint(2625, 0.50 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(idk, new ShooterSetpoint(2750, 0.475 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(idk, new ShooterSetpoint(2875, 0.450 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(idk, new ShooterSetpoint(3000, 0.425 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(1.769, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(1.69, new ShooterSetpoint(2125, 0.60 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(2.15, new ShooterSetpoint(2250, 0.575 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(2.44, new ShooterSetpoint(2375, 0.55 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(3.2, new ShooterSetpoint(2500, 0.525 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(3.74, new ShooterSetpoint(2625, 0.50 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(4.12, new ShooterSetpoint(2750, 0.475 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(4.64, new ShooterSetpoint(2875, 0.450 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(5.65, new ShooterSetpoint(3000, 0.425 + TurretConstants.hoodOffset));
 
 
 
@@ -134,11 +134,13 @@ public class Turret extends SubsystemBase {
     shooterFullFieldMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ.rpm);
     shooterFullFieldMap.put(TurretConstants.fieldEnd(), TurretConstants.endFullField.rpm);
 
-    // timeOfFlightMap.put(1.805, 1.008);
-    // timeOfFlightMap.put(2.97, 1.378);
-    // timeOfFlightMap.put(3.35, 2.043);
+    //distance,
+    timeOfFlightMap.put(1.762, 0.82);
+    timeOfFlightMap.put(2.71, 1.1775);
+    timeOfFlightMap.put(4.1, 1.3375);
+    timeOfFlightMap.put(4.71, 1.5425);
     // timeOfFlightMap.put(4.890, 1.433);
-    timeOfFlightMap.put(0.0, 0.0);
+    // timeOfFlightMap.put(0.0, 0.0);
   }
 
   @Override

@@ -7,6 +7,7 @@ package frc.robot.subsystems.vision;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -59,6 +60,7 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
             var multitagResult = result.getMultiTagResult().get();
 
             fieldToCamera = multitagResult.estimatedPose.best;
+            Logger.recordOutput("fieldToCamera", fieldToCamera);
             fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
             robotPose = new Pose3d(fieldToRobot.getTranslation(), fieldToRobot.getRotation());
 
