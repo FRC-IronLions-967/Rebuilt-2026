@@ -54,6 +54,8 @@ public class TurretIOSpark implements TurretIO{
     protected double hoodSetAngle = 0.35;
     protected double turretSetAngle;
 
+    protected boolean backlashUsed = false;
+
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
         flywheelConfig = new SparkFlexConfig();
@@ -126,6 +128,7 @@ public class TurretIOSpark implements TurretIO{
         inputs.turretSetAngle = turretSetAngle;
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI/6;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) < TurretConstants.turretTolerance;
+        inputs.backlashUsed = backlashUsed;
 
         flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
     }
@@ -144,9 +147,7 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setTurretAngle(double angle) {
         Logger.recordOutput("angleInTurret", angle);
-        // if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            angle += Math.PI;
-        // }
+        angle += Math.PI;
         angle = MathUtil.inputModulus(angle, -Math.PI, Math.PI);
 
         if (angle > 2.022 && angle < Math.PI) {
@@ -154,6 +155,16 @@ public class TurretIOSpark implements TurretIO{
         }
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
+
+        if (turretSetAngle < turret.getEncoder().getPosition() 
+            && Math.abs(turretSetAngle - turret.getEncoder().getPosition()) > TurretConstants.turretTolerance) {
+            //approaching from positive
+            turretSetAngle += TurretConstants.turretBacklash;
+            backlashUsed = true;
+        } else {
+            backlashUsed = false;
+        }
+
         turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }
 

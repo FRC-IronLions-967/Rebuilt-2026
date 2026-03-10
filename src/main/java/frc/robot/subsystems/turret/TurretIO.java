@@ -19,7 +19,7 @@ public interface TurretIO {
         public boolean turretLimitSwitch;
         public boolean resetting;
         public boolean intakeSafe;
-
+        public boolean backlashUsed;
         public double flywheelCurrent;
         public double hoodCurrent;
     }
