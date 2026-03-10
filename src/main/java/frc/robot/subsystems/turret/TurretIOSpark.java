@@ -60,7 +60,8 @@ public class TurretIOSpark implements TurretIO{
         flywheelConfig
             .idleMode(IdleMode.kCoast)
             .smartCurrentLimit(TurretConstants.flywheelCurrentLimit)
-            .inverted(true);//so we have positive values
+            .inverted(true)
+            .encoder.quadratureMeasurementPeriod(20);//so we have positive values
         flywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         // flywheelController = flywheel.getClosedLoopController();
 
