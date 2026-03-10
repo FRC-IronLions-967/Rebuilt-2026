@@ -106,4 +106,6 @@ public class TurretConstants {
     public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Hood Speed", 0.616 + hoodOffset);
 
     public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 0.5);
+
+    public static final double turretBacklash = 0.1;
 }
