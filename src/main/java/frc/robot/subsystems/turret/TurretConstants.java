@@ -102,7 +102,7 @@ public class TurretConstants {
     public static final ShooterSetpoint startFullField = endNZ;
     public static final ShooterSetpoint endFullField = new ShooterSetpoint(4000, 0.25 + hoodOffset);
 
-    public static final LoggedNetworkNumber testingFlywheelSpeed = new LoggedNetworkNumber("Testing Flywheel Speed", 2500);
+    public static final LoggedNetworkNumber testingFlywheelSpeed = new LoggedNetworkNumber("Testing Flywheel Speed", 1000);
     public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Hood Speed", 0.616 + hoodOffset);
 
     public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 0.5);

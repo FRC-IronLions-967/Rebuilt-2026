@@ -22,6 +22,7 @@ public interface TurretIO {
         public boolean backlashUsed;
         public double flywheelCurrent;
         public double hoodCurrent;
+        public double turretCurrent;
     }
 
     /**
