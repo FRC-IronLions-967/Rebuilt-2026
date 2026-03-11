@@ -11,15 +11,20 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
+
   public IntakeIO io;
   private IntakeIOInputsAutoLogged inputs;
   private BooleanSupplier turretResetting;
   private BooleanSupplier flyWheelSpedUp;
+  private int jamCount = 0; 
+  private int unjamCount = 0;
+  private boolean jammed = false;
 
   public enum WantedState {
     IDLE,
     INTAKING,
-    REVERSING
+    REVERSING,
+    TESTING
   }
 
   public enum CurrentState {
@@ -56,13 +61,38 @@ public class Intake extends SubsystemBase {
    * @return the corresponding CurrentState
    */
   private CurrentState updateState() {
+    if (wantedState != WantedState.INTAKING) {
+      jamCount = 0;
+      unjamCount = 0;
+      jammed = false;
+    }
+
     return switch(wantedState) {
       case IDLE:
         yield CurrentState.IDLE;
       case INTAKING:
+        if (inputs.intakeCurrent > IntakeConstants.jamCurrent && inputs.intakeSpeed < IntakeConstants.jamSpeed && !jammed) {
+          jamCount++;
+        } else {
+          jamCount = 0;
+        }
+        if (jamCount >= IntakeConstants.jamMinCount) {
+          jammed = true;
+        }
+        if (jammed) {
+          unjamCount++;
+          if (unjamCount >= IntakeConstants.unjamMinCount) {
+            jammed = false;
+            jamCount = 0;
+            unjamCount = 0;
+          }
+          yield CurrentState.REVERSING;
+        }
         yield CurrentState.INTAKING;
       case REVERSING:
         yield CurrentState.REVERSING;
+      case TESTING:
+        yield CurrentState.INTAKING;//running withou unjam
     };
   }
 

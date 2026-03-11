@@ -123,7 +123,7 @@ public class Superstructure extends SubsystemBase {
         break;
       case TESTING:
         turret.setWantedState(Turret.WantedState.TESTING);
-        intake.setWantedState(Intake.WantedState.INTAKING);
+        intake.setWantedState(Intake.WantedState.TESTING);
         break;
       default:
         turret.setWantedState(Turret.WantedState.IDLE);

@@ -26,5 +26,10 @@ public class IntakeConstants{
   public static final double horizontal2Speed = 0.65;
 
   public static final double armMaxOutput = 0.25;
+
+  public static final double jamCurrent = 35;
+  public static final double jamSpeed = 1000;
+  public static final double jamMinCount = 50;
+  public static final double unjamMinCount = 50;
 }
 
