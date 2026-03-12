@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.Superstructure;
@@ -36,7 +37,6 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretIOSpark;
@@ -183,6 +183,12 @@ public class RobotContainer {
     // controller.povDown().onTrue(new InstantCommand(()->{turret.io.setHoodAngle(turret.getHoodAngle()-0.025);}));
     // controller.rightBumper().onTrue(new InstantCommand(()->{turret.io.testTurret(turret.getTurretAngle()-0.1);}));
     // controller.leftBumper().onTrue(new InstantCommand(()->{turret.io.testTurret(turret.getTurretAngle()+0.1);}));
+
+    new Trigger(intake::getRumble)
+        .onTrue(new InstantCommand(
+            () -> {controller.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1);}))
+        .onFalse(new InstantCommand(
+            () -> {controller.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0);}));
   }
 
   /**

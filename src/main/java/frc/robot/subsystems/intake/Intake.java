@@ -170,4 +170,8 @@ public class Intake extends SubsystemBase {
   public CurrentState getCurrentState() {
     return currentState;
   }
+
+  public boolean getRumble() {
+    return jammed;
+  }
 }
