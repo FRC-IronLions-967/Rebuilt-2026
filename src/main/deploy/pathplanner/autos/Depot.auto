@@ -41,18 +41,6 @@
               }
             ]
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "start"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot Intake"
-          }
         }
       ]
     }

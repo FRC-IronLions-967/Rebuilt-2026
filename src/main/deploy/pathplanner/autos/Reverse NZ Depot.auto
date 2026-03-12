@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Depot Trench"
+                  "pathName": "Depot"
                 }
               },
               {
@@ -43,21 +43,21 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Depot NZ"
+            "name": "start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NZ to Depot Corner"
+            "pathName": "Depot Corner to NZ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Reverse Depot Intake"
+            "pathName": "Late NZ"
           }
         }
       ]
