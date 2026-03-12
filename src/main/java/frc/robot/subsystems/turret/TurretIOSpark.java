@@ -155,16 +155,16 @@ public class TurretIOSpark implements TurretIO{
             angle -= 2 * Math.PI;
         }
 
-        turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
+        // if (turretSetAngle < turret.getEncoder().getPosition() 
+        //     && Math.abs(turretSetAngle - turret.getEncoder().getPosition()) > TurretConstants.turretTolerance) {
+        //     //approaching from positive
+        //     turretSetAngle += TurretConstants.turretBacklash;
+        //     backlashUsed = true;
+        // } else {
+        //     backlashUsed = false;
+        // }
 
-        if (turretSetAngle < turret.getEncoder().getPosition() 
-            && Math.abs(turretSetAngle - turret.getEncoder().getPosition()) > TurretConstants.turretTolerance) {
-            //approaching from positive
-            turretSetAngle += TurretConstants.turretBacklash;
-            backlashUsed = true;
-        } else {
-            backlashUsed = false;
-        }
+        turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
 
         turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }

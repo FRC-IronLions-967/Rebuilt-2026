@@ -156,6 +156,9 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+    autoChooser.addOption("Move Forward", 
+        DriveCommands.joystickDrive(drive, () -> 0.0, () -> -1/4.2, () -> 0.0));
+
     // Configure the button bindings
     configureButtonBindings();
   }

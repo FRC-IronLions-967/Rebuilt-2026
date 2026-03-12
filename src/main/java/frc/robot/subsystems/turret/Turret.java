@@ -261,11 +261,15 @@ public class Turret extends SubsystemBase {
     ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, pose.getRotation());
     for (int i = 0; i < 3; i++) {
       previousTOF = TOF;
-      TOF = timeOfFlightMap.get(MathUtil.clamp(target.getDistance(pose.getTranslation()), TOFMinDistance, TOFMaxDistance)) * TurretConstants.ToFRealityConstant.get();
+
+      double distance = target.getDistance(pose.getTranslation());
+      TOF = timeOfFlightMap.get(MathUtil.clamp(distance, TOFMinDistance, TOFMaxDistance)) * TurretConstants.ToFRealityConstant.get();;
+
       target = new Translation2d(
-        target.getX() - fieldRelativeSpeeds.vxMetersPerSecond * (TOF - previousTOF),
-        target.getY() - fieldRelativeSpeeds.vyMetersPerSecond * (TOF - previousTOF));
+          target.getX() - fieldRelativeSpeeds.vxMetersPerSecond * (TOF - previousTOF),
+          target.getY() - fieldRelativeSpeeds.vyMetersPerSecond * (TOF - previousTOF));
     }
+    Logger.recordOutput("TOF", TOF);
     return target;
   }
 

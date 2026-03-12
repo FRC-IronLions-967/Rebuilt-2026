@@ -105,7 +105,14 @@ public class TurretConstants {
     public static final LoggedNetworkNumber testingFlywheelSpeed = new LoggedNetworkNumber("Testing Flywheel Speed", 1000);
     public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Hood Speed", 0.616 + hoodOffset);
 
-    public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 0.5);
+    /*
+     * This is how we will tune this number
+     * 1) Drive at a constant speed horizontal and shoot a ball.
+     * 2) Record where it would have entered
+     * 3) find the error in ToF = miss distance / robot speed (miss distance could have a - on it)
+     * 4) add the error in ToF to the ToF and divide by the ToF. That is this constant.
+     */
+    public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 1);
 
     public static final double turretBacklash = 0.1;
 }
