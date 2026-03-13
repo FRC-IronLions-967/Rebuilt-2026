@@ -37,6 +37,7 @@ public class IntakeIOSpark implements IntakeIO {
 
    protected SparkFlex intake;
    protected SparkFlexConfig intakeConfig;
+   protected SparkClosedLoopController intakeController;
 
    protected double intakeSetSpeed;
 
@@ -49,10 +50,14 @@ public class IntakeIOSpark implements IntakeIO {
    public IntakeIOSpark() {
       intake = new SparkFlex(13, MotorType.kBrushless);
       intakeConfig = new SparkFlexConfig();
+      intakeController = intake.getClosedLoopController();
 
       intakeConfig
          .idleMode(IdleMode.kCoast)
-         .smartCurrentLimit(40);
+         .smartCurrentLimit(40)
+         .closedLoop
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .pid(IntakeConstants.intakeP, 0.0, IntakeConstants.intakeD);
       intake.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
       arm = new SparkFlex(14, MotorType.kBrushless);
@@ -133,7 +138,7 @@ public class IntakeIOSpark implements IntakeIO {
    @Override
    public void setIntakeSpeed(double speed) {
       intakeSetSpeed = speed;
-      intake.set(intakeSetSpeed);
+      intakeController.setSetpoint(speed, ControlType.kVelocity);
    }
 
    @Override
