@@ -70,6 +70,9 @@ public class Superstructure extends SubsystemBase {
     Logger.recordOutput("FieldBasedTurret", turret.getTurretAngle()-drive.getPose().getRotation().getRadians());
     matchTime = DriverStation.getMatchTime();
     gameData = DriverStation.getGameSpecificMessage();
+    if (gameData == null || gameData.isEmpty()) {
+      gameData = "";
+    }
 
     Logger.recordOutput("Hub Active", updateHubStatusAndPeriod(matchTime, gameData));
     Logger.recordOutput("Match Time", matchTime);
