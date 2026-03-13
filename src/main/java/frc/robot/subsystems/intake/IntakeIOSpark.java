@@ -17,6 +17,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class IntakeIOSpark implements IntakeIO {
 
@@ -37,7 +39,8 @@ public class IntakeIOSpark implements IntakeIO {
 
    protected SparkFlex intake;
    protected SparkFlexConfig intakeConfig;
-   protected SparkClosedLoopController intakeController;
+   protected PIDController intakePID;
+   protected SimpleMotorFeedforward intakFeedforward; 
 
    protected double intakeSetSpeed;
 
@@ -50,15 +53,14 @@ public class IntakeIOSpark implements IntakeIO {
    public IntakeIOSpark() {
       intake = new SparkFlex(13, MotorType.kBrushless);
       intakeConfig = new SparkFlexConfig();
-      intakeController = intake.getClosedLoopController();
 
       intakeConfig
          .idleMode(IdleMode.kCoast)
-         .smartCurrentLimit(40)
-         .closedLoop
-            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .pid(IntakeConstants.intakeP, 0.0, IntakeConstants.intakeD);
+         .smartCurrentLimit(40);
       intake.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+      intakePID = new PIDController(IntakeConstants.intakeP, 0.0, IntakeConstants.intakeD);
+      intakFeedforward = new SimpleMotorFeedforward(0.0, IntakeConstants.intakekV);
 
       arm = new SparkFlex(14, MotorType.kBrushless);
       armConfig = new SparkFlexConfig();
@@ -128,6 +130,7 @@ public class IntakeIOSpark implements IntakeIO {
       inputs.subsystemCurrent = inputs.armCurrent + inputs.intakeCurrent+inputs.feederCurrent+inputs.horizontal1Current+inputs.horizontal2Current;
 
       armController.setSetpoint(armSetAngle, ControlType.kPosition);
+      intake.setVoltage(MathUtil.clamp(12 * intakePID.calculate(intakeSetSpeed, inputs.feederSpeed) + intakFeedforward.calculate(intakeSetSpeed), 0, 12));
    }
 
    @Override
@@ -138,7 +141,6 @@ public class IntakeIOSpark implements IntakeIO {
    @Override
    public void setIntakeSpeed(double speed) {
       intakeSetSpeed = speed;
-      intakeController.setSetpoint(speed, ControlType.kVelocity);
    }
 
    @Override

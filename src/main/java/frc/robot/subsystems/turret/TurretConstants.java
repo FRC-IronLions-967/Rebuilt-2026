@@ -93,7 +93,7 @@ public class TurretConstants {
 
     public static final LoggedNetworkNumber hoodIDLEPosition = new LoggedNetworkNumber("hoodIDLEPosition", hoodMaxAngle);
     public static final double turretIDLEPosition = -1.6;
-    public static final double turretTolerance = 0.1;
+    public static final double turretTolerance = 0.05;
 
     public static final ShooterSetpoint startNZ = new ShooterSetpoint(2500, 0.3 + hoodOffset);
     public static final ShooterSetpoint endNZ = new ShooterSetpoint(3250, 0.25 + hoodOffset);
@@ -114,5 +114,5 @@ public class TurretConstants {
      */
     public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 1);
 
-    public static final double turretBacklash = 0.1;
+    public static final double turretBacklash = 0.082664; // mesured 3/12
 }

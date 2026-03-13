@@ -23,9 +23,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.util.LimitSwitchManager;
 
 // import frc.robot.util.LimitSwitchManager;
 
@@ -55,6 +52,7 @@ public class TurretIOSpark implements TurretIO{
     protected double turretSetAngle;
 
     protected boolean backlashUsed = false;
+    private int lastDirection = 1; // 1 = CCW, -1 = CW (choose convention)
 
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
@@ -155,18 +153,26 @@ public class TurretIOSpark implements TurretIO{
             angle -= 2 * Math.PI;
         }
 
-        // if (turretSetAngle < turret.getEncoder().getPosition() 
-        //     && Math.abs(turretSetAngle - turret.getEncoder().getPosition()) > TurretConstants.turretTolerance) {
-        //     //approaching from positive
-        //     turretSetAngle += TurretConstants.turretBacklash;
-        //     backlashUsed = true;
-        // } else {
-        //     backlashUsed = false;
-        // }
+        double delta = angle - turret.getEncoder().getPosition();
+
+        int direction = lastDirection;
+
+        if (Math.abs(delta) > TurretConstants.turretTolerance) {
+            direction = delta > 0 ? 1 : -1;
+        }
+
+        if (direction != lastDirection) {
+            angle += TurretConstants.turretBacklash * direction;
+            backlashUsed = true;
+        } else {
+            backlashUsed = false;
+        }
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
 
         turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
+
+        lastDirection = direction;
     }
 
     @Override
