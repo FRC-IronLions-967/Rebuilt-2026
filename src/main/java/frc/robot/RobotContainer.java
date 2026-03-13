@@ -179,7 +179,8 @@ public class RobotContainer {
             () -> -controller.getRightX()));
 
     controller.rightTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.SHOOTING));
-    controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
+    controller.rightBumper().onTrue(superstructure.setWantedStateCommand(WantedState.PAUSED));
+    controller.leftTrigger().onTrue(superstructure.setWantedStateCommand(WantedState.IDLE));
     controller.leftBumper().onTrue(superstructure.setWantedStateCommand(WantedState.EJECTING));
     controller.start().onTrue(superstructure.setWantedStateCommand(WantedState.TESTING));
     // controller.povUp().onTrue(new InstantCommand(()->{turret.io.setHoodAngle(turret.getHoodAngle()+0.025);}));

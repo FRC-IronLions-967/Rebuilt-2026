@@ -62,12 +62,15 @@ public class Turret extends SubsystemBase {
 
   public enum WantedState {
     IDLE,
+    PAUSED,
     SHOOTING,
     TESTING
   }
 
   public enum CurrentState {
     IDLE,
+    PAUSEDSHOOTING,
+    PAUSEDPASSING,
     SHOOTING,
     PASSING,
     FULLFIELD,
@@ -172,6 +175,13 @@ public class Turret extends SubsystemBase {
           yield CurrentState.IDLE;
         }
         yield CurrentState.HOMING;
+      case PAUSED:
+        if(isPastLine(pose.getX(), TurretConstants.allianceZoneEnd())) {
+          yield CurrentState.PAUSEDSHOOTING;
+        } else if(isPastLine(pose.getX(), TurretConstants.oppositeAllianceEnd())) {
+          yield CurrentState.PAUSEDSHOOTING;
+        }
+        yield CurrentState.IDLE;
       case SHOOTING:
         if (!homed) {
           yield CurrentState.HOMING;
@@ -200,6 +210,18 @@ public class Turret extends SubsystemBase {
         io.setFlyWheelSpeed(0.0);
         io.setHoodAngle(TurretConstants.hoodIDLEPosition.get());
         io.stopTurret();
+        break;
+      case PAUSEDSHOOTING:
+        calculationToTarget(TurretConstants.hub());
+        io.setFlyWheelSpeed(0.0);
+        io.setHoodAngle(hoodSetPoint);
+        io.setTurretAngle(turretSetPoint);
+        break;
+      case PAUSEDPASSING:
+        calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
+        io.setFlyWheelSpeed(0.0);
+        io.setHoodAngle(hoodSetPoint);
+        io.setTurretAngle(turretSetPoint);
         break;
       case SHOOTING:
         calculationToTarget(TurretConstants.hub());

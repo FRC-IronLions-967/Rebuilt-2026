@@ -22,6 +22,7 @@ public class Intake extends SubsystemBase {
 
   public enum WantedState {
     IDLE,
+    PAUSED,
     INTAKING,
     REVERSING,
     TESTING
@@ -29,6 +30,7 @@ public class Intake extends SubsystemBase {
 
   public enum CurrentState {
     IDLE,
+    PAUSED,
     INTAKING,
     REVERSING
   }
@@ -89,6 +91,8 @@ public class Intake extends SubsystemBase {
           yield CurrentState.REVERSING;
         }
         yield CurrentState.INTAKING;
+      case PAUSED:
+        yield CurrentState.PAUSED;
       case REVERSING:
         yield CurrentState.REVERSING;
       case TESTING:
@@ -111,6 +115,9 @@ public class Intake extends SubsystemBase {
       case REVERSING:
         reverse();
         break;
+      case PAUSED:
+      pause();
+        break;
       default:
         stopAll();
         break;
@@ -122,6 +129,13 @@ public class Intake extends SubsystemBase {
    */
   private void stopAll() {
     io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
+    io.setIntakeSpeed(0.0);
+    io.setFeederSpeed(0.0);
+    io.setHorizontal1Speed(0.0);
+    io.setHorizontal2Speed(0.0);
+  }
+
+  private void pause() {
     io.setIntakeSpeed(0.0);
     io.setFeederSpeed(0.0);
     io.setHorizontal1Speed(0.0);

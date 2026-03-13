@@ -23,6 +23,7 @@ public class Superstructure extends SubsystemBase {
   /** Creates a new Superstructure. */
   public enum WantedState {
     IDLE,
+    PAUSED,
     SHOOTING,
     EJECTING,
     TESTING 
@@ -30,6 +31,7 @@ public class Superstructure extends SubsystemBase {
 
   public enum CurrentState {
     IDLE,
+    PAUSED,
     SHOOTING,
     EJECTING,
     TESTING
@@ -95,6 +97,8 @@ public class Superstructure extends SubsystemBase {
     return switch (wantedState) {
       case IDLE:
         yield CurrentState.IDLE;
+      case PAUSED:
+        yield CurrentState.PAUSED;
       case SHOOTING:
         yield CurrentState.SHOOTING;
       case EJECTING:
@@ -114,8 +118,13 @@ public class Superstructure extends SubsystemBase {
         turret.setWantedState(Turret.WantedState.IDLE);
         if (turret.intakeSafe()) {
           intake.setWantedState(Intake.WantedState.IDLE);
+        } else {
+          intake.setWantedState(Intake.WantedState.PAUSED);
         }
         break;
+      case PAUSED:
+        turret.setWantedState(Turret.WantedState.PAUSED);
+        intake.setWantedState(Intake.WantedState.PAUSED);
       case SHOOTING:
         turret.setWantedState(Turret.WantedState.SHOOTING);
         intake.setWantedState(Intake.WantedState.INTAKING);
