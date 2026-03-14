@@ -11,9 +11,9 @@ public class IntakeConstants{
   public static final double armD = 0.0;
   public static final double armkS = 2.0;
 
-  public static final double intakeP = 0.0;
+  public static final double intakeP = 1.0e-3;
   public static final double intakeD = 0.0;
-  public static final double intakekV = 1.0;
+  public static final double intakekV = 1.217e-3;
 
   public static final double armMinPosition = 0.173;//0.176
   public static final double armMaxPosition = 0.86;

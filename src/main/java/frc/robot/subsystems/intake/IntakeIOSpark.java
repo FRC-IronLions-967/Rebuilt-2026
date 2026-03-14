@@ -130,7 +130,7 @@ public class IntakeIOSpark implements IntakeIO {
       inputs.subsystemCurrent = inputs.armCurrent + inputs.intakeCurrent+inputs.feederCurrent+inputs.horizontal1Current+inputs.horizontal2Current;
 
       armController.setSetpoint(armSetAngle, ControlType.kPosition);
-      intake.setVoltage(MathUtil.clamp(12 * intakePID.calculate(intakeSetSpeed, inputs.feederSpeed) + intakFeedforward.calculate(intakeSetSpeed), 0, 12));
+      intake.setVoltage(MathUtil.clamp(12 * intakePID.calculate(inputs.intakeSpeed, intakeSetSpeed) + intakFeedforward.calculate(intakeSetSpeed), -12, 12));
    }
 
    @Override

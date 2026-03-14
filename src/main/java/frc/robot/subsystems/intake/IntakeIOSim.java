@@ -4,17 +4,34 @@
 
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.Robot;
+
 /** Add your docs here. */
 public class IntakeIOSim extends IntakeIOSpark {
+
+    private final FlywheelSim intakeSim;
     
-    public IntakeIOSim () {}
+    public IntakeIOSim () {
+        super();
+        intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(1), 0.0009, 0.7), DCMotor.getNeoVortex(1));
+    }
 
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
+        inputs.intakeSpeed = intakeSim.getAngularVelocityRPM();
+        intakeSim.setInputVoltage(MathUtil.clamp(12 * intakePID.calculate(inputs.intakeSpeed, intakeSetSpeed) + intakFeedforward.calculate(intakeSetSpeed), -12, 12));
+
+        intakeSim.update(Robot.defaultPeriodSecs);
+
+        inputs.intakeSetSpeed = intakeSetSpeed;
+
         inputs.armAngle = armSetAngle;
-         inputs.intakeSpeed = intakeSetSpeed;
-         inputs.feederSpeed = feederSetSpeed;
-         inputs.horizontal1Speed = horizontal1SetSpeed;
-         inputs.horizontal2Speed = horizontal2SetSpeed;
+        inputs.feederSpeed = feederSetSpeed;
+        inputs.horizontal1Speed = horizontal1SetSpeed;
+        inputs.horizontal2Speed = horizontal2SetSpeed;
     }
 }
