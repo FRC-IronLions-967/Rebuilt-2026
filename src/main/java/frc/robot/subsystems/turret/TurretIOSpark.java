@@ -97,9 +97,9 @@ public class TurretIOSpark implements TurretIO{
             .smartCurrentLimit(TurretConstants.turretCurrentLimit)
             .closedLoop
                 .pid(TurretConstants.turretP.get(), 0, TurretConstants.turretD.get())
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .positionWrappingEnabled(false);
-        turretConfig.encoder.positionConversionFactor(2*Math.PI / TurretConstants.turretGearRatio);
+        turretConfig.externalEncoder.positionConversionFactor(2*Math.PI / TurretConstants.turretGearRatio).inverted(true);
         turretConfig
             .softLimit
                 .forwardSoftLimit(TurretConstants.turretMaxAngle)
@@ -107,10 +107,11 @@ public class TurretIOSpark implements TurretIO{
                 .reverseSoftLimit(TurretConstants.turretMinAngle)
                 .reverseSoftLimitEnabled(true);
         turretConfig.closedLoop.outputRange(-TurretConstants.turretOutputRange, TurretConstants.turretOutputRange);
+
         turret.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretController = turret.getClosedLoopController();
 
-        turret.getEncoder().setPosition(TurretConstants.turretStartingAngle);
+        turret.getExternalEncoder().setPosition(TurretConstants.turretStartingAngle);
     }
 
     @Override
@@ -122,7 +123,7 @@ public class TurretIOSpark implements TurretIO{
         inputs.hoodAngle = hood.getAbsoluteEncoder().getPosition();
         inputs.hoodSetAngle = hoodSetAngle;
         inputs.hoodCurrent = hood.getOutputCurrent();
-        inputs.turretAngle = turret.getEncoder().getPosition();
+        inputs.turretAngle = turret.getExternalEncoder().getPosition();
         inputs.turretSetAngle = turretSetAngle;
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI/6;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) < TurretConstants.turretTolerance;
@@ -153,26 +154,26 @@ public class TurretIOSpark implements TurretIO{
             angle -= 2 * Math.PI;
         }
 
-        double delta = angle - turret.getEncoder().getPosition();
+        // double delta = angle - turret.getEncoder().getPosition();
 
-        int direction = lastDirection;
+        // int direction = lastDirection;
 
-        if (Math.abs(delta) > TurretConstants.turretTolerance) {
-            direction = delta > 0 ? -1 : 1;
-        }
+        // if (Math.abs(delta) > TurretConstants.turretTolerance) {
+        //     direction = delta > 0 ? -1 : 1;
+        // }
 
-        if (direction != lastDirection) {
-            angle += TurretConstants.turretBacklash * direction;
-            backlashUsed = true;
-        } else {
-            backlashUsed = false;
-        }
+        // if (direction != lastDirection) {
+        //     angle += TurretConstants.turretBacklash * direction;
+        //     backlashUsed = true;
+        // } else {
+        //     backlashUsed = false;
+        // }
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
 
         turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
 
-        lastDirection = direction;
+        // lastDirection = direction;
     }
 
     @Override

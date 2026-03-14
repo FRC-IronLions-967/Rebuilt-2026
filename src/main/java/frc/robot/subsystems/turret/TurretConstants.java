@@ -50,8 +50,8 @@ public class TurretConstants {
         return AllianceFlipUtil.applyY(center);
     }
 
-    public static final double turretGearRatio = 46.02;//got from cad 2/16
-    public static final double turretOutputRange = 0.8;
+    public static final double turretGearRatio = 4.0909*2;//got from cad 3/14
+    public static final double turretOutputRange = 0.25;
 
     public static final double flywheelP = 1.0e-3;
     public static final double flywheelD = 1.0e-6;
@@ -112,7 +112,7 @@ public class TurretConstants {
      * 3) find the error in ToF = miss distance / robot speed (miss distance could have a - on it)
      * 4) add the error in ToF to the ToF and divide by the ToF. That is this constant.
      */
-    public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 1.0);
+    public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 1.0);//0.6
 
-    public static final double turretBacklash = 0.082664; // mesured 3/12
+    public static final double turretBacklash = 0.085; // mesured 3/12
 }
