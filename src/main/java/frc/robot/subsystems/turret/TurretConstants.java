@@ -112,7 +112,7 @@ public class TurretConstants {
      * 3) find the error in ToF = miss distance / robot speed (miss distance could have a - on it)
      * 4) add the error in ToF to the ToF and divide by the ToF. That is this constant.
      */
-    public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 1);
+    public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 1.0);
 
     public static final double turretBacklash = 0.082664; // mesured 3/12
 }

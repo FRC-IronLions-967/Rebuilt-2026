@@ -158,7 +158,7 @@ public class TurretIOSpark implements TurretIO{
         int direction = lastDirection;
 
         if (Math.abs(delta) > TurretConstants.turretTolerance) {
-            direction = delta > 0 ? 1 : -1;
+            direction = delta > 0 ? -1 : 1;
         }
 
         if (direction != lastDirection) {

@@ -23,7 +23,7 @@ public class IntakeIOSim extends IntakeIOSpark {
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.intakeSpeed = intakeSim.getAngularVelocityRPM();
-        intakeSim.setInputVoltage(MathUtil.clamp(12 * intakePID.calculate(inputs.intakeSpeed, intakeSetSpeed) + intakFeedforward.calculate(intakeSetSpeed), -12, 12));
+        intakeSim.setInputVoltage(MathUtil.clamp(intakFeedforward.calculate(intakeSetSpeed), -12, 12));
 
         intakeSim.update(Robot.defaultPeriodSecs);
 
