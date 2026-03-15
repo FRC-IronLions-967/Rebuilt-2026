@@ -6,10 +6,12 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -46,6 +48,13 @@ public class Superstructure extends SubsystemBase {
   private double periodTimer = 0;
 
   private Alliance previousAlliance = Alliance.Blue;
+
+  private boolean currentLogging;
+  private Timer currentTimer = new Timer();
+  private double lastTimestamp = 0;
+  private double timestamp = 0;
+  private double totalCurrent = 0;
+  private int totalTimestamps = 0;
 
   @SuppressWarnings("unused")
   private Drive drive;
@@ -85,6 +94,30 @@ public class Superstructure extends SubsystemBase {
       turret.redoPassingFunction();
     } 
     previousAlliance = DriverStation.getAlliance().orElse(previousAlliance);
+
+    //current averaging
+    if (currentLogging) {
+      if (!currentTimer.isRunning()) {
+        currentTimer.restart();
+        totalCurrent = 0;
+        totalTimestamps = 0;
+      }
+      lastTimestamp = timestamp;
+      timestamp = currentTimer.get();
+      if (timestamp-lastTimestamp > 1) {
+        totalCurrent += getTotalCurrent();
+        totalTimestamps += 1;
+      }
+    } else {
+      if (currentTimer.isRunning()) {
+        currentTimer.stop();
+        timestamp = 0;
+        lastTimestamp = 0;
+      }
+    }
+    if (totalTimestamps != 0) {
+      Logger.recordOutput("Total Current", totalCurrent / totalTimestamps);
+    }
   }
 
   /**
@@ -171,6 +204,17 @@ public class Superstructure extends SubsystemBase {
    */
   public Command setWantedStateCommand(WantedState wantedState) {
     return new InstantCommand(() -> setWantedState(wantedState));
+  }
+
+  public Command toggleCurrentLogging () {
+    return new InstantCommand(() -> {
+      currentLogging = !currentLogging;
+    });
+  }
+
+  @AutoLogOutput(key = "TotalCurrent")
+  public double getTotalCurrent() {
+    return drive.getTotalCurrent() + intake.getTotalCurrent() + turret.getTotalCurrent();
   }
 
   public boolean updateHubStatusAndPeriod(double matchTime, String gameData) {

@@ -74,7 +74,6 @@ public class Turret extends SubsystemBase {
     SHOOTING,
     PASSING,
     FULLFIELD,
-    HOMING,
     TESTING
   }
 
@@ -84,7 +83,6 @@ public class Turret extends SubsystemBase {
   private double turretSetPoint = TurretConstants.turretMinAngle;
   private double hoodSetPoint = TurretConstants.hoodMinAngle;
   private double flywheelSetPoint = 0.0;
-  private boolean homed = true;
   private Pose2d pose;
 
   double closestSafeAngle;
@@ -104,18 +102,6 @@ public class Turret extends SubsystemBase {
     this.speedsSupplier = speedsSupplier;
     inputs = new TurretIOInputsAutoLogged();
 
-    // shooterShootingMap.put(1.225, new ShooterSetpoint(2200, 0.573 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(1.869, new ShooterSetpoint(2250, 0.573 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(3.28, new ShooterSetpoint(2750, 0.5 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(4.91, new ShooterSetpoint(3000, 0.377 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(0.916, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(2.25, new ShooterSetpoint(2500, 0.614 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(4.231, new ShooterSetpoint(2750, 0.51 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(3.01, new ShooterSetpoint(2500, 0.51 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(3.70, new ShooterSetpoint(2600, 0.435 + TurretConstants.hoodOffset));
-    // shooterShootingMap.put(4.952, new ShooterSetpoint(3000, 0.36 + TurretConstants.hoodOffset));
-
-    
     //This is how we are going to tune the shots. This is how 6328 did it
     shooterShootingMap.put(1.769, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
     shooterShootingMap.put(1.69, new ShooterSetpoint(2125, 0.60 + TurretConstants.hoodOffset));
@@ -126,10 +112,6 @@ public class Turret extends SubsystemBase {
     shooterShootingMap.put(4.12, new ShooterSetpoint(2750, 0.475 + TurretConstants.hoodOffset));
     shooterShootingMap.put(4.64, new ShooterSetpoint(2875, 0.450 + TurretConstants.hoodOffset));
     shooterShootingMap.put(5.65, new ShooterSetpoint(3000, 0.425 + TurretConstants.hoodOffset));
-
-
-
-
 
     //need to entrys for the passing/fullfield
     shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
@@ -142,8 +124,6 @@ public class Turret extends SubsystemBase {
     timeOfFlightMap.put(2.71, 1.1775);
     timeOfFlightMap.put(4.1, 1.3375);
     timeOfFlightMap.put(4.71, 1.5425);
-    // timeOfFlightMap.put(4.890, 1.433);
-    // timeOfFlightMap.put(0.0, 0.0);
   }
 
   @Override
@@ -161,20 +141,16 @@ public class Turret extends SubsystemBase {
 
   
   /**
-   * Updates the turret's current state based on the wanted state and homing status.
+   * Updates the turret's current state based on the wanted state.
    *
-   * <p>If the turret is homed, it matches the wanted state (IDLE or SHOOTING).
-   * Otherwise, the turret transitions to HOMING until homed.
+   * <p>T=It matches the wanted state (IDLE or SHOOTING).
    *
    * @return the turret's current state.
    */
   private CurrentState updateState() {
     return switch(wantedState) {
       case IDLE:
-        if (homed) {
-          yield CurrentState.IDLE;
-        }
-        yield CurrentState.HOMING;
+        yield CurrentState.IDLE;
       case PAUSED:
         if(isPastLine(pose.getX(), TurretConstants.allianceZoneEnd())) {
           yield CurrentState.PAUSEDSHOOTING;
@@ -183,9 +159,7 @@ public class Turret extends SubsystemBase {
         }
         yield CurrentState.IDLE;
       case SHOOTING:
-        if (!homed) {
-          yield CurrentState.HOMING;
-        } else if(isPastLine(pose.getX(), TurretConstants.allianceZoneEnd())) {
+        if(isPastLine(pose.getX(), TurretConstants.allianceZoneEnd())) {
           yield CurrentState.SHOOTING;
         } else if(isPastLine(pose.getX(), TurretConstants.oppositeAllianceEnd())) {
           yield CurrentState.PASSING;
@@ -201,7 +175,6 @@ public class Turret extends SubsystemBase {
    *
    * <p>IDLE: Stops the flywheel, sets the hood to idle, and moves turret to the closest safe idle angle.
    * SHOOTING: Calculates target and sets flywheel, hood, and turret angles depending on robot position.
-   * HOMING: Moves the turret until limit switches indicate it is homed.
    * DEFAULT: Stops flywheel, sets hood to idle, and keeps turret at current angle.
    */
   private void applyState() {
@@ -242,9 +215,6 @@ public class Turret extends SubsystemBase {
         io.setFlyWheelSpeed(rpm);
         io.setHoodAngle(TurretConstants.endFullField.hoodAngle);
         io.setTurretAngle(turretSetPoint);
-        break;
-      case HOMING:
-        homed = true;
         break;
       case TESTING:
         io.setFlyWheelSpeed(TurretConstants.testingFlywheelSpeed.get());
@@ -399,5 +369,9 @@ public class Turret extends SubsystemBase {
     shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
     shooterFullFieldMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ.rpm);
     shooterFullFieldMap.put(TurretConstants.fieldEnd, TurretConstants.endFullField.rpm);
+  }
+
+  public double getTotalCurrent() {
+    return inputs.flywheelCurrent + inputs.hoodCurrent + inputs.turretCurrent;
   }
 }

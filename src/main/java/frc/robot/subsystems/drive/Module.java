@@ -129,4 +129,8 @@ public class Module {
   public double getFFCharacterizationVelocity() {
     return inputs.driveVelocityRadPerSec;
   }
+
+  public double getTotalCurrent() {
+    return inputs.driveCurrentAmps + inputs.turnCurrentAmps;
+  }
 }

@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.turret;
 
-import java.util.function.BooleanSupplier;
-
 import org.littletonrobotics.junction.Logger;
 
 // import java.util.function.BooleanSupplier;
@@ -31,7 +29,6 @@ public class TurretIOSpark implements TurretIO{
 
     protected SparkFlex flywheel;
     protected SparkFlexConfig flywheelConfig;
-    // protected SparkClosedLoopController flywheelController;
 
     protected SparkFlex flywheelFollower;
     protected SparkFlexConfig flywheelFollowerConfig;
@@ -50,9 +47,6 @@ public class TurretIOSpark implements TurretIO{
     protected double flywheelSetSpeed = 0.0;
     protected double hoodSetAngle = 0.35;
     protected double turretSetAngle;
-
-    protected boolean backlashUsed = false;
-    private int lastDirection = 1; // 1 = CCW, -1 = CW (choose convention)
 
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
@@ -127,7 +121,6 @@ public class TurretIOSpark implements TurretIO{
         inputs.turretSetAngle = turretSetAngle;
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI/6;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) < TurretConstants.turretTolerance;
-        inputs.backlashUsed = backlashUsed;
         inputs.turretCurrent = turret.getOutputCurrent();
 
         flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
@@ -181,18 +174,6 @@ public class TurretIOSpark implements TurretIO{
         turretSetAngle = TurretConstants.turretIDLEPosition;
         turretController.setSetpoint(TurretConstants.turretIDLEPosition, ControlType.kPosition);
     }
-    
-    // @Override
-    // public boolean home() {
-    //     homed = turretLimitSwitch.getAsBoolean();
-    //     if (!homed) {
-    //         turret.set(TurretConstants.turretHomingSpeed.get());
-    //     } else {
-    //         turret.set(0);
-    //     }
-    //     return homed;
-    //     // return true;
-    // }
 
     @Override
     public void testTurret(double speed) {

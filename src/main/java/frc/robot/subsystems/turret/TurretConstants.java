@@ -51,7 +51,7 @@ public class TurretConstants {
     }
 
     public static final double turretGearRatio = 4.0909*2;//got from cad 3/14
-    public static final double turretOutputRange = 0.25;
+    public static final double turretOutputRange = 0.75;
 
     public static final double flywheelP = 1.0e-3;
     public static final double flywheelD = 1.0e-6;
@@ -113,6 +113,4 @@ public class TurretConstants {
      * 4) add the error in ToF to the ToF and divide by the ToF. That is this constant.
      */
     public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 1.0);//0.6
-
-    public static final double turretBacklash = 0.085; // mesured 3/12
 }

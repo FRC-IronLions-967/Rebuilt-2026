@@ -19,7 +19,6 @@ public interface TurretIO {
         public boolean turretLimitSwitch;
         public boolean resetting;
         public boolean intakeSafe;
-        public boolean backlashUsed;
         public double flywheelCurrent;
         public double hoodCurrent;
         public double turretCurrent;
@@ -67,16 +66,6 @@ public interface TurretIO {
      * @param angle Desired hood angle.
      */
     public default void setTurretAngle(double angle) {}
-
-    /**
-     * Attempts to home the turret using limit switches.
-     *
-     * <p>If neither limit switch is triggered, the turret moves at the homing speed.
-     * Once a switch is triggered, the turret starts going to {@code turretSetAngle}.
-     *
-     * @return true if the turret is homed, false otherwise.
-     */
-    public default boolean home() {return false;}
 
     public default void testTurret(double speed) {}
 

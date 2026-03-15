@@ -330,4 +330,12 @@ public class Drive extends SubsystemBase {
   public double getMaxAngularSpeedRadPerSec() {
     return maxSpeedMetersPerSec / driveBaseRadius;
   }
+
+  public double getTotalCurrent() {
+    double totalCurrent = 0;
+    for (var i : modules) {
+      totalCurrent += i.getTotalCurrent();
+    }
+    return totalCurrent;
+  }
 }

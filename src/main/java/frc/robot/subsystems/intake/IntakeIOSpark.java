@@ -64,7 +64,8 @@ public class IntakeIOSpark implements IntakeIO {
       armController = arm.getClosedLoopController();
 
       armConfig
-         .idleMode(IdleMode.kBrake);
+         .idleMode(IdleMode.kBrake)
+         .smartCurrentLimit(40);
       armConfig
             .absoluteEncoder
             .zeroOffset(IntakeConstants.armZeroOffset);

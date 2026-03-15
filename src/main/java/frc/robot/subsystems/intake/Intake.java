@@ -188,4 +188,8 @@ public class Intake extends SubsystemBase {
   public boolean getRumble() {
     return jammed;
   }
+
+  public double getTotalCurrent() {
+    return inputs.subsystemCurrent;
+  }
 }

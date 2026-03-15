@@ -31,7 +31,6 @@ public class TurretIOSim extends TurretIOSpark {
         inputs.turretSetAngle = turretSetAngle;
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) > TurretConstants.turretTolerance;
-        inputs.backlashUsed = backlashUsed;
     }
 
     @Override
