@@ -188,7 +188,7 @@ public class RobotContainer {
     // controller.rightBumper().onTrue(new InstantCommand(()->{turret.io.testTurret(turret.getTurretAngle()-0.1);}));
     // controller.leftBumper().onTrue(new InstantCommand(()->{turret.io.testTurret(turret.getTurretAngle()+0.1);}));
 
-    new Trigger(intake::getRumble)
+    new Trigger(superstructure::getRumble)
         .onTrue(new InstantCommand(
             () -> {controller.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1);}))
         .onFalse(new InstantCommand(

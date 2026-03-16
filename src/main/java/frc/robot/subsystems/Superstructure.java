@@ -46,6 +46,7 @@ public class Superstructure extends SubsystemBase {
   private Color autoWinColor;
   private String gameData;
   private double periodTimer = 0;
+  private boolean hubActive = true;
 
   private Alliance previousAlliance = Alliance.Blue;
 
@@ -206,6 +207,10 @@ public class Superstructure extends SubsystemBase {
     return new InstantCommand(() -> setWantedState(wantedState));
   }
 
+  public boolean getRumble() {
+    return (turret.getCurrentState() == T)
+  }
+
   public Command toggleCurrentLogging () {
     return new InstantCommand(() -> {
       currentLogging = !currentLogging;
@@ -264,7 +269,6 @@ public class Superstructure extends SubsystemBase {
     };
 
     // Determine hub status and period timer based on match time
-    boolean hubActive;
     if (matchTime > 130) {
         hubActive = true;
         periodTimer = matchTime - 130; // seconds left until shift 1
