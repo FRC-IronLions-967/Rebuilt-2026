@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.turret;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -31,6 +32,7 @@ public class TurretIOSim extends TurretIOSpark {
         inputs.turretSetAngle = turretSetAngle;
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) > TurretConstants.turretTolerance;
+        inputs.turretOffset = Rotation2d.fromRadians(turretOffset);
     }
 
     @Override

@@ -21,6 +21,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 // import frc.robot.util.LimitSwitchManager;
 
@@ -47,6 +48,8 @@ public class TurretIOSpark implements TurretIO{
     protected double flywheelSetSpeed = 0.0;
     protected double hoodSetAngle = 0.35;
     protected double turretSetAngle;
+
+    protected double turretOffset = TurretConstants.turretStartingOffset;
 
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
@@ -122,6 +125,7 @@ public class TurretIOSpark implements TurretIO{
         inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI/6;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) < TurretConstants.turretTolerance;
         inputs.turretCurrent = turret.getOutputCurrent();
+        inputs.turretOffset = Rotation2d.fromRadians(turretOffset);
 
         flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
     }
@@ -140,7 +144,7 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setTurretAngle(double angle) {
         Logger.recordOutput("angleInTurret", angle);
-        angle += Math.PI;
+        angle += turretOffset;
         angle = MathUtil.inputModulus(angle, -Math.PI, Math.PI);
 
         if (angle > 2.022 && angle < Math.PI) {
@@ -167,6 +171,11 @@ public class TurretIOSpark implements TurretIO{
         turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
 
         // lastDirection = direction;
+    }
+
+    @Override
+    public void changeTurretOffset(double amount) {
+        turretOffset += amount;
     }
 
     @Override

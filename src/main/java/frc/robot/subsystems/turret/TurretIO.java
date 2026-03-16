@@ -6,6 +6,8 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 /** Add your docs here. */
 public interface TurretIO {
     @AutoLog
@@ -22,6 +24,8 @@ public interface TurretIO {
         public double flywheelCurrent;
         public double hoodCurrent;
         public double turretCurrent;
+
+        public Rotation2d turretOffset;
     }
 
     /**
@@ -70,4 +74,6 @@ public interface TurretIO {
     public default void testTurret(double speed) {}
 
     public default void stopTurret() {}
+
+    public default void changeTurretOffset(double amount) {}
 }

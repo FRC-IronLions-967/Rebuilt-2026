@@ -37,6 +37,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretIOSpark;
@@ -64,6 +65,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController adjController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -193,6 +195,9 @@ public class RobotContainer {
             () -> {controller.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1);}))
         .onFalse(new InstantCommand(
             () -> {controller.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0);}));
+
+    adjController.leftBumper().onTrue(turret.changeTurretOffset(TurretConstants.turretOffsetChange));
+    adjController.rightBumper().onTrue(turret.changeTurretOffset(-TurretConstants.turretOffsetChange));
   }
 
   /**

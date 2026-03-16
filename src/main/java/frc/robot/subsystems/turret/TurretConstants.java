@@ -113,4 +113,7 @@ public class TurretConstants {
      * 4) add the error in ToF to the ToF and divide by the ToF. That is this constant.
      */
     public static final LoggedNetworkNumber ToFRealityConstant = new LoggedNetworkNumber("The Constant of Reality", 1.0);//0.6
+
+    public static final double turretStartingOffset = Math.PI;
+    public static final double turretOffsetChange = 0.05;
 }

@@ -208,7 +208,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   public boolean getRumble() {
-    return (turret.getCurrentState() == T)
+    return (turret.getCurrentState() == Turret.CurrentState.SHOOTING && !hubActive) || intake.getRumble(); 
   }
 
   public Command toggleCurrentLogging () {
