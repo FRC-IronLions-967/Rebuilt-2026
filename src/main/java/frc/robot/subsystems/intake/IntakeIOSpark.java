@@ -40,6 +40,9 @@ public class IntakeIOSpark implements IntakeIO {
    protected SparkFlexConfig intakeConfig;
    protected SimpleMotorFeedforward intakFeedforward; 
 
+   protected SparkFlex intake2;
+   protected SparkFlexConfig intake2Config;
+
    protected double intakeSetSpeed;
 
    protected SparkFlex arm;
@@ -54,8 +57,18 @@ public class IntakeIOSpark implements IntakeIO {
 
       intakeConfig
          .idleMode(IdleMode.kCoast)
-         .smartCurrentLimit(40);
+         .smartCurrentLimit(30)
+         .inverted(true);
       intake.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+      intake2 = new SparkFlex(18, MotorType.kBrushless);
+      intake2Config = new SparkFlexConfig();
+
+      intake2Config
+         .idleMode(IdleMode.kCoast)
+         .smartCurrentLimit(30)
+         .follow(intake);
+      intake2.configure(intake2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
       intakFeedforward = new SimpleMotorFeedforward(0.0, IntakeConstants.intakekV);
 
@@ -83,7 +96,7 @@ public class IntakeIOSpark implements IntakeIO {
 
       feederConfig
          .idleMode(IdleMode.kBrake)
-         .smartCurrentLimit(40)
+         .smartCurrentLimit(30)
          .inverted(true);
       feeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -92,7 +105,7 @@ public class IntakeIOSpark implements IntakeIO {
 
       horizontal1Config
          .idleMode(IdleMode.kCoast)
-         .smartCurrentLimit(40);
+         .smartCurrentLimit(20);
       horizontal1.configure(horizontal1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
       horizontal2 = new SparkMax(17, MotorType.kBrushless);
@@ -100,7 +113,7 @@ public class IntakeIOSpark implements IntakeIO {
 
       horizontal2Config
          .idleMode(IdleMode.kCoast)
-         .smartCurrentLimit(40)
+         .smartCurrentLimit(20)
          .inverted(true);
       horizontal2.configure(horizontal2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    }
@@ -121,7 +134,7 @@ public class IntakeIOSpark implements IntakeIO {
 
       inputs.armCurrent = arm.getOutputCurrent();
       inputs.feederCurrent = feeder.getOutputCurrent();
-      inputs.intakeCurrent = intake.getOutputCurrent();
+      inputs.intakeCurrent = intake.getOutputCurrent() + intake2.getOutputCurrent();
       inputs.horizontal1Current = horizontal1.getOutputCurrent();
       inputs.horizontal2Current = horizontal2.getOutputCurrent();
 

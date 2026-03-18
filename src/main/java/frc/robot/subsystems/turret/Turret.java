@@ -46,8 +46,6 @@ public class Turret extends SubsystemBase {
 
   );
 
-  private final InterpolatingDoubleTreeMap shooterFullFieldMap = new InterpolatingDoubleTreeMap();
-
   public final double shooterSetpointMinDistance = 0.0;//first key
   public final double shooterSetpointMaxDistance = 10.0;//max key
 
@@ -105,21 +103,34 @@ public class Turret extends SubsystemBase {
     inputs = new TurretIOInputsAutoLogged();
 
     //This is how we are going to tune the shots. This is how 6328 did it
-    shooterShootingMap.put(1.769, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(1.69, new ShooterSetpoint(2125, 0.60 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(2.15, new ShooterSetpoint(2250, 0.575 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(2.44, new ShooterSetpoint(2375, 0.55 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(3.2, new ShooterSetpoint(2500, 0.525 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(3.74, new ShooterSetpoint(2625, 0.50 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(4.12, new ShooterSetpoint(2750, 0.475 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(4.64, new ShooterSetpoint(2875, 0.450 + TurretConstants.hoodOffset));
-    shooterShootingMap.put(5.65, new ShooterSetpoint(3000, 0.425 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(1.769, new ShooterSetpoint(2000, 0.614 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(1.69, new ShooterSetpoint(2125, 0.60 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(2.15, new ShooterSetpoint(2250, 0.575 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(2.44, new ShooterSetpoint(2375, 0.55 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(3.2, new ShooterSetpoint(2500, 0.525 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(3.74, new ShooterSetpoint(2625, 0.50 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(4.12, new ShooterSetpoint(2750, 0.475 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(4.64, new ShooterSetpoint(2875, 0.450 + TurretConstants.hoodOffset));
+    // shooterShootingMap.put(5.65, new ShooterSetpoint(3000, 0.425 + TurretConstants.hoodOffset));
+
+    shooterShootingMap.put(0.985, new ShooterSetpoint(1925, 0.588));
+    shooterShootingMap.put(1.56, new ShooterSetpoint(2000, 0.588));
+    shooterShootingMap.put(2.04, new ShooterSetpoint(2100, 0.588));
+    shooterShootingMap.put(2.544, new ShooterSetpoint(2100, 0.55));
+    shooterShootingMap.put(2.95, new ShooterSetpoint(2100, 0.5));
+    shooterShootingMap.put(3.05, new ShooterSetpoint(2200, 0.5));
+    shooterShootingMap.put(3.977, new ShooterSetpoint(2200, 0.45));
+    shooterShootingMap.put(4.21, new ShooterSetpoint(2300, 0.45));
+    shooterShootingMap.put(4.72, new ShooterSetpoint(2300, 0.4));
+    shooterShootingMap.put(5.06, new ShooterSetpoint(2400, 0.4));
+    shooterShootingMap.put(5.39, new ShooterSetpoint(2400, 0.35));
+    shooterShootingMap.put(5.87, new ShooterSetpoint(2500, 0.35));
 
     //need to entrys for the passing/fullfield
-    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
-    shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
-    shooterFullFieldMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ.rpm);
-    shooterFullFieldMap.put(TurretConstants.fieldEnd(), TurretConstants.endFullField.rpm);
+    shooterPassingMap.put(6.625, new ShooterSetpoint(2000, 0.3));
+    shooterPassingMap.put(8.0, new ShooterSetpoint(2250, 0.3));
+    shooterPassingMap.put(10.352, new ShooterSetpoint(3000, 0.3));
+    shooterPassingMap.put(12.765, new ShooterSetpoint(4000, 0.3));
 
     //distance,
     timeOfFlightMap.put(1.762, 0.82);
@@ -213,7 +224,7 @@ public class Turret extends SubsystemBase {
         break;
       case FULLFIELD:
         calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
-        double rpm = shooterFullFieldMap.get(AllianceFlipUtil.applyX(pose.getX()));
+        double rpm = shooterPassingMap.get(AllianceFlipUtil.applyX(pose.getX())).rpm;
         io.setFlyWheelSpeed(rpm);
         io.setHoodAngle(TurretConstants.endFullField.hoodAngle);
         io.setTurretAngle(turretSetPoint);
@@ -221,7 +232,7 @@ public class Turret extends SubsystemBase {
       case TESTING:
         io.setFlyWheelSpeed(TurretConstants.testingFlywheelSpeed.get());
         io.setHoodAngle(TurretConstants.testingHoodAngle.get());
-        calculationToTarget(TurretConstants.hub());
+        calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
         io.setTurretAngle(turretSetPoint);
         break;
       default:
@@ -369,12 +380,9 @@ public class Turret extends SubsystemBase {
 
   public void redoPassingFunction() {
     shooterPassingMap.clear();
-    shooterFullFieldMap.clear();
 
     shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
     shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
-    shooterFullFieldMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ.rpm);
-    shooterFullFieldMap.put(TurretConstants.fieldEnd, TurretConstants.endFullField.rpm);
   }
 
   public double getTotalCurrent() {
