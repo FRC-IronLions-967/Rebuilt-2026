@@ -73,7 +73,6 @@ public class Turret extends SubsystemBase {
     PAUSEDPASSING,
     SHOOTING,
     PASSING,
-    FULLFIELD,
     TESTING
   }
 
@@ -174,10 +173,8 @@ public class Turret extends SubsystemBase {
       case SHOOTING:
         if(isPastLine(pose.getX(), TurretConstants.allianceZoneEnd())) {
           yield CurrentState.SHOOTING;
-        } else if(isPastLine(pose.getX(), TurretConstants.oppositeAllianceEnd())) {
-          yield CurrentState.PASSING;
         }
-        yield CurrentState.FULLFIELD;
+        yield CurrentState.PASSING;
       case TESTING:
         yield CurrentState.TESTING;
     };
@@ -220,13 +217,6 @@ public class Turret extends SubsystemBase {
         calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
         io.setFlyWheelSpeed(passingSetpoint.rpm);
         io.setHoodAngle(passingSetpoint.hoodAngle);
-        io.setTurretAngle(turretSetPoint);
-        break;
-      case FULLFIELD:
-        calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
-        double rpm = shooterPassingMap.get(AllianceFlipUtil.applyX(pose.getX())).rpm;
-        io.setFlyWheelSpeed(rpm);
-        io.setHoodAngle(TurretConstants.endFullField.hoodAngle);
         io.setTurretAngle(turretSetPoint);
         break;
       case TESTING:
