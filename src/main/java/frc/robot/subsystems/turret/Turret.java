@@ -352,7 +352,7 @@ public class Turret extends SubsystemBase {
    * @return true if the flywheel speed exceeds the minimum running speed, false otherwise
    */
   public boolean shooterSpedUp() {
-    return inputs.flywheelSpeed > TurretConstants.flywheelMinRunningSpeed.get();
+    return inputs.flywheelSpeed - inputs.flywheelSetSpeed > -TurretConstants.flywheelTolerance.get();
   }
 
   /**

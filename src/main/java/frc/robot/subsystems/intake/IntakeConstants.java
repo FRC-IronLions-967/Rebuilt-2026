@@ -26,7 +26,7 @@ public class IntakeConstants{
   public static final double intakeIntakingSpeed = 5000;
   public static final double feederSpeed = 0.75;
   public static final double horizontal1Speed = 0.85;
-  public static final double horizontal2Speed = 0.65;
+  public static final double horizontal2Speed = 0.85;
 
   public static final double armMaxOutput = 0.25;
 
