@@ -50,7 +50,7 @@ public class TurretConstants {
         return AllianceFlipUtil.applyY(center);
     }
 
-    public static final double turretGearRatio = 180/44;//got from cad 3/18
+    public static final double turretGearRatio = 180.0/44.0;//got from cad 3/18
     public static final double turretOutputRange = 0.75;
 
     public static final double flywheelP = 1.0e-3;

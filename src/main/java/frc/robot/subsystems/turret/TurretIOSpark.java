@@ -96,6 +96,7 @@ public class TurretIOSpark implements TurretIO{
                 .pid(TurretConstants.turretP.get(), 0, TurretConstants.turretD.get())
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .positionWrappingEnabled(false);
+        turretConfig.externalEncoder.countsPerRevolution(8192);
         turretConfig.externalEncoder.positionConversionFactor(2*Math.PI / TurretConstants.turretGearRatio).inverted(true);
         turretConfig
             .softLimit

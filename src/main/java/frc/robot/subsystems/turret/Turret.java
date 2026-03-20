@@ -118,8 +118,8 @@ public class Turret extends SubsystemBase {
     shooterShootingMap.put(2.544, new ShooterSetpoint(2100, 0.55));
     shooterShootingMap.put(2.95, new ShooterSetpoint(2100, 0.5));
     shooterShootingMap.put(3.05, new ShooterSetpoint(2200, 0.5));
-    shooterShootingMap.put(3.977, new ShooterSetpoint(2200, 0.45));
-    shooterShootingMap.put(4.21, new ShooterSetpoint(2300, 0.45));
+    shooterShootingMap.put(3.79, new ShooterSetpoint(2200, 0.45));//!!
+    shooterShootingMap.put(4.21, new ShooterSetpoint(2300, 0.45));//!!
     shooterShootingMap.put(4.72, new ShooterSetpoint(2300, 0.4));
     shooterShootingMap.put(5.06, new ShooterSetpoint(2400, 0.4));
     shooterShootingMap.put(5.39, new ShooterSetpoint(2400, 0.35));
@@ -222,7 +222,7 @@ public class Turret extends SubsystemBase {
       case TESTING:
         io.setFlyWheelSpeed(TurretConstants.testingFlywheelSpeed.get());
         io.setHoodAngle(TurretConstants.testingHoodAngle.get());
-        calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
+        calculationToTarget(TurretConstants.hub());
         io.setTurretAngle(turretSetPoint);
         break;
       default:
