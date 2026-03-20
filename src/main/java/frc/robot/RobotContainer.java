@@ -198,6 +198,8 @@ public class RobotContainer {
 
     adjController.leftBumper().onTrue(turret.changeTurretOffset(TurretConstants.turretOffsetChange));
     adjController.rightBumper().onTrue(turret.changeTurretOffset(-TurretConstants.turretOffsetChange));
+
+    // adjController.a().onTrue(new InstantCommand(()->{turret.io.testTurret(0.0);}));
   }
 
   /**

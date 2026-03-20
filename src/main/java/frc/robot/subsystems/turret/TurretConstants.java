@@ -51,12 +51,13 @@ public class TurretConstants {
     }
 
     public static final double turretGearRatio = 180.0/44.0;//got from cad 3/18
-    public static final double turretOutputRange = 0.75;
+    public static final double turretOutputRange = 0.5;
 
     public static final double flywheelP = 1.0e-3;
     public static final double flywheelD = 1.0e-6;
 
-    public static final double flywheelkS = 0.0;
+    public static final double turretkS = 0.275;
+    public static final double turretkV = 0.25;
     public static final double flywheelkV = 1.93e-3;
     public static final double flywheelkA = 0.0;
 
@@ -116,4 +117,6 @@ public class TurretConstants {
 
     public static final double turretStartingOffset = Math.PI;
     public static final double turretOffsetChange = 0.05;
+
+    public static final LoggedNetworkNumber turretVoltage =new LoggedNetworkNumber("Turret Voltage", 0.0);
 }
