@@ -114,7 +114,7 @@ public class Turret extends SubsystemBase {
 
     shooterShootingMap.put(0.985, new ShooterSetpoint(1925, 0.588));
     shooterShootingMap.put(1.56, new ShooterSetpoint(2000, 0.588));
-    shooterShootingMap.put(2.04, new ShooterSetpoint(2100, 0.588));
+    shooterShootingMap.put(2.27, new ShooterSetpoint(2100, 0.588));
     shooterShootingMap.put(2.544, new ShooterSetpoint(2100, 0.55));
     shooterShootingMap.put(2.95, new ShooterSetpoint(2100, 0.5));
     shooterShootingMap.put(3.05, new ShooterSetpoint(2200, 0.5));

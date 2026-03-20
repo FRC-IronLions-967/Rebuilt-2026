@@ -44,8 +44,7 @@ public class TurretIOSpark implements TurretIO{
 
     protected SparkFlex turret;
     protected SparkFlexConfig turretConfig;
-    protected SimpleMotorFeedforward turretFeedforward;
-    protected PIDController turretPIDController;
+    protected SparkClosedLoopController turretController;
 
     protected double flywheelSetSpeed = 0.0;
     protected double hoodSetAngle = 0.35;
@@ -91,13 +90,15 @@ public class TurretIOSpark implements TurretIO{
 
         turret = new SparkFlex(12, MotorType.kBrushless);
         turretConfig = new SparkFlexConfig();
-        turretFeedforward = new SimpleMotorFeedforward(TurretConstants.turretkS, TurretConstants.turretkV);
-        turretPIDController = new PIDController(TurretConstants.turretP.get(), 0.0, TurretConstants.turretD.get());
         turretConfig
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(TurretConstants.turretCurrentLimit)
             .closedLoopRampRate(0.15)
-            .openLoopRampRate(0.15);
+            .closedLoop
+                .pid(TurretConstants.turretP.get(), 0.0, TurretConstants.turretD.get())
+                .outputRange(-TurretConstants.turretOutputRange, TurretConstants.turretOutputRange)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+                .positionWrappingEnabled(false);
         turretConfig.externalEncoder.countsPerRevolution(8192);
         turretConfig.externalEncoder.positionConversionFactor(2*Math.PI / TurretConstants.turretGearRatio).inverted(true);
         turretConfig
@@ -108,7 +109,7 @@ public class TurretIOSpark implements TurretIO{
                 .reverseSoftLimitEnabled(true);
 
         turret.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
+        turretController = turret.getClosedLoopController();
         turret.getExternalEncoder().setPosition(TurretConstants.turretStartingAngle);
     }
 
@@ -129,9 +130,6 @@ public class TurretIOSpark implements TurretIO{
         inputs.turretOffset = Rotation2d.fromRadians(turretOffset);
 
         flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
-
-        turret.setVoltage(MathUtil.clamp(
-            8 * turretPIDController.calculate(inputs.turretAngle, turretSetAngle) /*+ turretFeedforward.calculate(turret.getExternalEncoder().getVelocity()*/, -8.0, 8.0));
     }
 
     @Override
@@ -172,6 +170,7 @@ public class TurretIOSpark implements TurretIO{
 
         turretSetAngle = MathUtil.clamp(angle, TurretConstants.turretMinAngle, TurretConstants.turretMaxAngle);
 
+        turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
         // lastDirection = direction;
     }
 
@@ -183,6 +182,7 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void stopTurret() {
         turretSetAngle = TurretConstants.turretIDLEPosition;
+        turretController.setSetpoint(turretSetAngle, ControlType.kPosition);
     }
 
     @Override
