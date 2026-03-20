@@ -93,7 +93,7 @@ public class TurretIOSpark implements TurretIO{
         turretConfig
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(TurretConstants.turretCurrentLimit)
-            .closedLoopRampRate(0.15)
+            .closedLoopRampRate(0.075)
             .closedLoop
                 .pid(TurretConstants.turretP.get(), 0.0, TurretConstants.turretD.get())
                 .outputRange(-TurretConstants.turretOutputRange, TurretConstants.turretOutputRange)

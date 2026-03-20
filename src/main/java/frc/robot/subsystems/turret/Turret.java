@@ -132,10 +132,10 @@ public class Turret extends SubsystemBase {
     shooterPassingMap.put(12.765, new ShooterSetpoint(4000, 0.3));
 
     //distance,
-    timeOfFlightMap.put(1.762, 0.82);
-    timeOfFlightMap.put(2.71, 1.1775);
-    timeOfFlightMap.put(4.1, 1.3375);
-    timeOfFlightMap.put(4.71, 1.5425);
+    timeOfFlightMap.put(2.057, 1.23);
+    timeOfFlightMap.put(4.02, 1.28);
+    timeOfFlightMap.put(4.22, 1.30);
+    timeOfFlightMap.put(5.45, 1.37);
   }
 
   @Override
