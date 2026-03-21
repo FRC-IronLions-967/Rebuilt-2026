@@ -19,9 +19,6 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.BangBangController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 // import frc.robot.util.LimitSwitchManager;
@@ -34,9 +31,7 @@ public class TurretIOSpark implements TurretIO{
 
     protected SparkFlex flywheelFollower;
     protected SparkFlexConfig flywheelFollowerConfig;
-
-    protected BangBangController flywheelBangBang;
-    protected SimpleMotorFeedforward flywheelFeedforward;
+    protected SparkClosedLoopController flywheelController; 
 
     protected SparkFlex hood;
     protected SparkFlexConfig hoodConfig;
@@ -59,9 +54,17 @@ public class TurretIOSpark implements TurretIO{
             .idleMode(IdleMode.kCoast)
             .smartCurrentLimit(TurretConstants.flywheelCurrentLimit)
             .inverted(true)
-            .encoder.quadratureMeasurementPeriod(20);//so we have positive values
+            .encoder
+                .quadratureMeasurementPeriod(2)
+                .quadratureAverageDepth(8);
+        flywheelConfig
+            .closedLoop
+                .pid(TurretConstants.flywheelP, 0.0, TurretConstants.flywheelD)
+                .feedForward
+                    .kS(TurretConstants.flywheelkS)
+                    .kV(TurretConstants.flywheelkV);
         flywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // flywheelController = flywheel.getClosedLoopController();
+        flywheelController = flywheel.getClosedLoopController();
 
         flywheelFollower = new SparkFlex(10, MotorType.kBrushless);
         flywheelFollowerConfig = new SparkFlexConfig();
@@ -70,9 +73,6 @@ public class TurretIOSpark implements TurretIO{
             .smartCurrentLimit(TurretConstants.flywheelCurrentLimit)
             .follow(flywheel, true);
         flywheelFollower.configure(flywheelFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        flywheelBangBang = new BangBangController();
-        flywheelFeedforward = new SimpleMotorFeedforward(0.0, TurretConstants.flywheelkV, TurretConstants.flywheelkA);
 
         hood = new SparkFlex(11, MotorType.kBrushless);
         hoodConfig = new SparkFlexConfig();
@@ -129,12 +129,15 @@ public class TurretIOSpark implements TurretIO{
         inputs.turretCurrent = turret.getOutputCurrent();
         inputs.turretOffset = Rotation2d.fromRadians(turretOffset);
 
-        flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
+        inputs.flywheelVolts = turret.getAppliedOutput();
+
+        // flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
     }
 
     @Override
     public void setFlyWheelSpeed(double speed) {
         flywheelSetSpeed = speed;
+        flywheelController.setSetpoint(flywheelSetSpeed, ControlType.kVelocity);
     }
 
     @Override

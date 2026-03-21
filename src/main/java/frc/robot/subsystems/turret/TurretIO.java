@@ -24,6 +24,7 @@ public interface TurretIO {
         public double flywheelCurrent;
         public double hoodCurrent;
         public double turretCurrent;
+        public double flywheelVolts;
 
         public Rotation2d turretOffset;
     }

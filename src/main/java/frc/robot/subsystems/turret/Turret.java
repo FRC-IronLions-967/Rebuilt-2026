@@ -112,18 +112,29 @@ public class Turret extends SubsystemBase {
     // shooterShootingMap.put(4.64, new ShooterSetpoint(2875, 0.450 + TurretConstants.hoodOffset));
     // shooterShootingMap.put(5.65, new ShooterSetpoint(3000, 0.425 + TurretConstants.hoodOffset));
 
-    shooterShootingMap.put(0.985, new ShooterSetpoint(1925, 0.588));
-    shooterShootingMap.put(1.56, new ShooterSetpoint(2000, 0.588));
-    shooterShootingMap.put(2.27, new ShooterSetpoint(2100, 0.588));
-    shooterShootingMap.put(2.544, new ShooterSetpoint(2100, 0.55));
-    shooterShootingMap.put(2.95, new ShooterSetpoint(2100, 0.5));
-    shooterShootingMap.put(3.05, new ShooterSetpoint(2200, 0.5));
-    shooterShootingMap.put(3.79, new ShooterSetpoint(2200, 0.45));//!!
-    shooterShootingMap.put(4.21, new ShooterSetpoint(2300, 0.45));//!!
-    shooterShootingMap.put(4.72, new ShooterSetpoint(2300, 0.4));
-    shooterShootingMap.put(5.06, new ShooterSetpoint(2400, 0.4));
-    shooterShootingMap.put(5.39, new ShooterSetpoint(2400, 0.35));
-    shooterShootingMap.put(5.87, new ShooterSetpoint(2500, 0.35));
+    // shooterShootingMap.put(0.985, new ShooterSetpoint(1925, 0.588));
+    // shooterShootingMap.put(1.56, new ShooterSetpoint(2000, 0.588));
+    // shooterShootingMap.put(2.27, new ShooterSetpoint(2100, 0.588));
+    // shooterShootingMap.put(2.544, new ShooterSetpoint(2100, 0.55));
+    // shooterShootingMap.put(2.95, new ShooterSetpoint(2100, 0.5));
+    // shooterShootingMap.put(3.05, new ShooterSetpoint(2200, 0.5));
+    // shooterShootingMap.put(3.79, new ShooterSetpoint(2200, 0.45));//!!
+    // shooterShootingMap.put(4.21, new ShooterSetpoint(2300, 0.45));//!!
+    // shooterShootingMap.put(4.72, new ShooterSetpoint(2300, 0.4));
+    // shooterShootingMap.put(5.06, new ShooterSetpoint(2400, 0.4));
+    // shooterShootingMap.put(5.39, new ShooterSetpoint(2400, 0.35));
+    // shooterShootingMap.put(5.87, new ShooterSetpoint(2500, 0.35));
+
+    shooterShootingMap.put(1.03, new ShooterSetpoint(1850, 0.588));
+    shooterShootingMap.put(1.77, new ShooterSetpoint(1950, 0.588));
+    shooterShootingMap.put(2.0, new ShooterSetpoint(2000, 0.588));
+    shooterShootingMap.put(2.38, new ShooterSetpoint(2050, 0.55));
+    shooterShootingMap.put(2.86, new ShooterSetpoint(2100, 0.525));
+    shooterShootingMap.put(3.84, new ShooterSetpoint(2300, 0.475));
+    shooterShootingMap.put(4.06, new ShooterSetpoint(2400, 0.45));
+    shooterShootingMap.put(4.66, new ShooterSetpoint(2500, 0.425));
+    shooterShootingMap.put(5.56, new ShooterSetpoint(2600, 0.4));
+    shooterShootingMap.put(6.45, new ShooterSetpoint(2700, 0.35));
 
     //need to entrys for the passing/fullfield
     shooterPassingMap.put(6.625, new ShooterSetpoint(2000, 0.3));

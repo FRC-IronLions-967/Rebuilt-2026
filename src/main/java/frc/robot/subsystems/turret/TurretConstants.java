@@ -54,12 +54,12 @@ public class TurretConstants {
     public static final double turretOutputRange = 0.5;
 
     public static final double flywheelP = 1.0e-3;
-    public static final double flywheelD = 1.0e-6;
+    public static final double flywheelD = 0.0;
 
-    public static final double turretkS = 0.275;
+    public static final double turretkS = 0.275;//0.275
     public static final double turretkV = 0.25;
     public static final double flywheelkV = 1.93e-3;
-    public static final double flywheelkA = 0.0;
+    public static final double flywheelkS = 0.2;
 
     public static final double hoodP = 5.0;
     public static final double hoodD = 0.0;
@@ -68,7 +68,7 @@ public class TurretConstants {
     public static final LoggedNetworkNumber turretP = new LoggedNetworkNumber("turretP", 1.0);
     public static final LoggedNetworkNumber turretD = new LoggedNetworkNumber("turretD", 0.0);
 
-    public static final LoggedNetworkNumber turretControllerP = new LoggedNetworkNumber("turretControllerP", 1.0e-5);
+    public static final LoggedNetworkNumber turretControllerP = new LoggedNetworkNumber("turretControllerP", 5.0e-4);
     public static final LoggedNetworkNumber turretControllerD = new LoggedNetworkNumber("turretControllerD", 0.0);
 
     public static final int flywheelCurrentLimit = 60;

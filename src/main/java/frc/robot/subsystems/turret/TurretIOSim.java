@@ -22,7 +22,7 @@ public class TurretIOSim extends TurretIOSpark {
     @Override
     public void updateInputs(TurretIOInputs inputs) {
         inputs.flywheelSpeed = flywheelSim.getAngularVelocityRPM();
-        flywheelSim.setInputVoltage(12 * flywheelBangBang.calculate(flywheelSim.getAngularVelocityRPM(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed));
+        // flywheelSim.setInputVoltage(12 * flywheelBangBang.calculate(flywheelSim.getAngularVelocityRPM(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed));
 
         flywheelSim.update(Robot.defaultPeriodSecs);
 
