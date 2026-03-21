@@ -137,15 +137,14 @@ public class Turret extends SubsystemBase {
     shooterShootingMap.put(6.45, new ShooterSetpoint(2700, 0.35));
 
     //need to entrys for the passing/fullfield
-    shooterPassingMap.put(6.625, new ShooterSetpoint(2000, 0.3));
-    shooterPassingMap.put(8.0, new ShooterSetpoint(2250, 0.3));
-    shooterPassingMap.put(10.352, new ShooterSetpoint(3000, 0.3));
-    shooterPassingMap.put(12.765, new ShooterSetpoint(4000, 0.3));
+    shooterPassingMap.put(5.0, new ShooterSetpoint(2000, 0.25));
+    shooterPassingMap.put(8.0, new ShooterSetpoint(2600, 0.25));
+    shooterPassingMap.put(11.0, new ShooterSetpoint(3250, 0.25));
 
     //distance,
-    timeOfFlightMap.put(2.057, 1.23);
-    timeOfFlightMap.put(4.02, 1.28);
-    timeOfFlightMap.put(4.22, 1.30);
+    timeOfFlightMap.put(1.93, 1.23);
+    timeOfFlightMap.put(3.92, 1.28);
+    timeOfFlightMap.put(4.13, 1.30);
     timeOfFlightMap.put(5.45, 1.37);
   }
 
@@ -233,7 +232,7 @@ public class Turret extends SubsystemBase {
       case TESTING:
         io.setFlyWheelSpeed(TurretConstants.testingFlywheelSpeed.get());
         io.setHoodAngle(TurretConstants.testingHoodAngle.get());
-        calculationToTarget(TurretConstants.hub());
+        calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
         io.setTurretAngle(turretSetPoint);
         break;
       default:
