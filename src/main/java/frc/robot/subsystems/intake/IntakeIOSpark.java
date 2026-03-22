@@ -23,22 +23,25 @@ public class IntakeIOSpark implements IntakeIO {
 
    protected SparkMax horizontal1;
    protected SparkMaxConfig horizontal1Config;
+   protected SparkClosedLoopController horizontal1Controller;
 
    protected double horizontal1SetSpeed;
 
    protected SparkMax horizontal2;
    protected SparkMaxConfig horizontal2Config;
+   protected SparkClosedLoopController horizontal2Controller;
 
    protected double horizontal2SetSpeed;
 
    protected SparkFlex feeder;
    protected SparkFlexConfig feederConfig;
+   protected SparkClosedLoopController feederController;
 
    protected double feederSetSpeed;
 
    protected SparkFlex intake;
    protected SparkFlexConfig intakeConfig;
-   protected SimpleMotorFeedforward intakFeedforward; 
+   protected SparkClosedLoopController intakeContoller; 
 
    protected SparkFlex intake2;
    protected SparkFlexConfig intake2Config;
@@ -58,19 +61,22 @@ public class IntakeIOSpark implements IntakeIO {
       intakeConfig
          .idleMode(IdleMode.kCoast)
          .smartCurrentLimit(30)
-         .inverted(true);
+         .inverted(true)
+         .closedLoop
+            .pid(IntakeConstants.intakeP, 0.0, IntakeConstants.intakeD)
+            .feedForward
+               .kV(IntakeConstants.intakekV);
       intake.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
       intake2 = new SparkFlex(18, MotorType.kBrushless);
       intake2Config = new SparkFlexConfig();
+      intakeContoller = intake.getClosedLoopController();
 
       intake2Config
          .idleMode(IdleMode.kCoast)
          .smartCurrentLimit(30)
          .follow(intake);
       intake2.configure(intake2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-      intakFeedforward = new SimpleMotorFeedforward(0.0, IntakeConstants.intakekV);
 
       arm = new SparkFlex(14, MotorType.kBrushless);
       armConfig = new SparkFlexConfig();
@@ -97,16 +103,27 @@ public class IntakeIOSpark implements IntakeIO {
       feederConfig
          .idleMode(IdleMode.kBrake)
          .smartCurrentLimit(30)
-         .inverted(true);
+         .inverted(true)
+         .closedLoopRampRate(0.05)
+         .closedLoop
+            .pid(IntakeConstants.feederP, 0.0, IntakeConstants.feederD)
+            .feedForward
+               .kV(IntakeConstants.feederkV);
       feeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      feederController = feeder.getClosedLoopController();
 
       horizontal1 = new SparkMax(16, MotorType.kBrushless);
       horizontal1Config = new SparkMaxConfig();
 
       horizontal1Config
          .idleMode(IdleMode.kCoast)
-         .smartCurrentLimit(20);
+         .smartCurrentLimit(20)
+         .closedLoop
+            .pid(IntakeConstants.horizontal1P, 0.0, IntakeConstants.horizontal1D)
+            .feedForward
+               .kV(IntakeConstants.horizontal1kV);
       horizontal1.configure(horizontal1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      horizontal1Controller = horizontal1.getClosedLoopController();
 
       horizontal2 = new SparkMax(17, MotorType.kBrushless);
       horizontal2Config = new SparkMaxConfig();
@@ -114,8 +131,13 @@ public class IntakeIOSpark implements IntakeIO {
       horizontal2Config
          .idleMode(IdleMode.kCoast)
          .smartCurrentLimit(20)
-         .inverted(true);
+         .inverted(true)
+         .closedLoop
+            .pid(IntakeConstants.horizontal2P, 0.0, IntakeConstants.horizontal2D)
+            .feedForward
+               .kV(IntakeConstants.horizontal2kV);
       horizontal2.configure(horizontal2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      horizontal2Controller = horizontal2.getClosedLoopController();
    }
 
    @Override
@@ -141,7 +163,6 @@ public class IntakeIOSpark implements IntakeIO {
       inputs.subsystemCurrent = inputs.armCurrent + inputs.intakeCurrent+inputs.feederCurrent+inputs.horizontal1Current+inputs.horizontal2Current;
 
       armController.setSetpoint(armSetAngle, ControlType.kPosition);
-      intake.setVoltage(MathUtil.clamp(intakFeedforward.calculate(intakeSetSpeed), -12, 12));
    }
 
    @Override
@@ -152,24 +173,25 @@ public class IntakeIOSpark implements IntakeIO {
    @Override
    public void setIntakeSpeed(double speed) {
       intakeSetSpeed = speed;
+      intakeContoller.setSetpoint(intakeSetSpeed, ControlType.kVelocity);
    }
 
    @Override
    public void setFeederSpeed(double speed) {
       feederSetSpeed = speed;
-      feeder.set(feederSetSpeed);
+      feederController.setSetpoint(feederSetSpeed, ControlType.kVelocity);
    }
 
    @Override
    public void setHorizontal1Speed(double speed) {
       horizontal1SetSpeed = speed;
-      horizontal1.set(horizontal1SetSpeed);
+      horizontal1Controller.setSetpoint(speed, ControlType.kVelocity);
    }
 
    @Override
    public void setHorizontal2Speed(double speed) {
       horizontal2SetSpeed = speed;
-      horizontal2.set(horizontal2SetSpeed);
+      horizontal2Controller.setSetpoint(speed, ControlType.kVelocity);
    }
 
    @Override
