@@ -47,6 +47,8 @@ public class TurretIOSpark implements TurretIO{
 
     protected double turretOffset = TurretConstants.turretStartingOffset;
 
+    protected boolean inDeadzone = false;
+
     public TurretIOSpark() {
         flywheel = new SparkFlex(9, MotorType.kBrushless);
         flywheelConfig = new SparkFlexConfig();
@@ -131,6 +133,8 @@ public class TurretIOSpark implements TurretIO{
 
         inputs.flywheelVolts = turret.getAppliedOutput();
 
+        inputs.inDeadzone = inDeadzone;
+
         // flywheel.setVoltage(MathUtil.clamp(12 * flywheelBangBang.calculate(flywheel.getEncoder().getVelocity(), flywheelSetSpeed) + flywheelFeedforward.calculate(flywheelSetSpeed), 0, 12));
     }
 
@@ -151,6 +155,8 @@ public class TurretIOSpark implements TurretIO{
         Logger.recordOutput("angleInTurret", angle);
         angle += turretOffset;
         angle = MathUtil.inputModulus(angle, -Math.PI, Math.PI);
+
+        inDeadzone =  angle < 2.022 && angle > TurretConstants.turretMaxAngle;
 
         if (angle > 2.022 && angle < Math.PI) {
             angle -= 2 * Math.PI;

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.util.AllianceFlipUtil;
 
 
@@ -137,15 +138,15 @@ public class Turret extends SubsystemBase {
     shooterShootingMap.put(6.45, new ShooterSetpoint(2700, 0.35));
 
     //need to entrys for the passing/fullfield
-    shooterPassingMap.put(5.0, new ShooterSetpoint(2000, 0.25));
-    shooterPassingMap.put(8.0, new ShooterSetpoint(2600, 0.25));
-    shooterPassingMap.put(11.0, new ShooterSetpoint(3250, 0.25));
+    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(2000, 0.25));
+    shooterPassingMap.put(VisionConstants.kTagLayout.getFieldLength()/2, new ShooterSetpoint(2600, 0.25));
+    shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), new ShooterSetpoint(3250, 0.25));
 
     //distance,
-    timeOfFlightMap.put(1.93, 1.23);
-    timeOfFlightMap.put(3.92, 1.28);
-    timeOfFlightMap.put(4.13, 1.30);
-    timeOfFlightMap.put(5.45, 1.37);
+    timeOfFlightMap.put(1.93, 1.22);
+    timeOfFlightMap.put(3.92, 1.3);
+    timeOfFlightMap.put(4.13, 1.3);
+    timeOfFlightMap.put(5.45, 1.45);
   }
 
   @Override
@@ -380,12 +381,17 @@ public class Turret extends SubsystemBase {
 
   public void redoPassingFunction() {
     shooterPassingMap.clear();
-
-    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), TurretConstants.startNZ);
-    shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), TurretConstants.endNZ);
+    
+    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(2000, 0.25));
+    shooterPassingMap.put(VisionConstants.kTagLayout.getFieldLength()/2, new ShooterSetpoint(2600, 0.25));
+    shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), new ShooterSetpoint(3250, 0.25));
   }
 
   public double getTotalCurrent() {
     return inputs.flywheelCurrent + inputs.hoodCurrent + inputs.turretCurrent;
+  }
+
+  public boolean getRumble() {
+    return inputs.inDeadzone;
   }
 }

@@ -27,6 +27,8 @@ public interface TurretIO {
         public double flywheelVolts;
 
         public Rotation2d turretOffset;
+
+        public boolean inDeadzone;
     }
 
     /**
