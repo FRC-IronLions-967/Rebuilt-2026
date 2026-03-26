@@ -55,6 +55,8 @@ public interface IntakeIO {
      */
     public default void setIntakeSpeed(double speed) {}
 
+    public default void stopIntake() {}
+
     /**
      * Sets the speed of the feeder motor.
      *

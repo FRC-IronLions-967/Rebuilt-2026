@@ -129,14 +129,14 @@ public class Intake extends SubsystemBase {
    */
   private void stopAll() {
     io.setIntakeArmAngle(IntakeConstants.armRestingPosition);
-    io.setIntakeSpeed(0.0);
+    io.stopIntake();
     io.setFeederSpeed(0.0);
     io.setHorizontal1Speed(0.0);
     io.setHorizontal2Speed(0.0);
   }
 
   private void pause() {
-    io.setIntakeSpeed(0.0);
+    io.stopIntake();
     io.setFeederSpeed(0.0);
     io.setHorizontal1Speed(0.0);
     io.setHorizontal2Speed(0.0);
@@ -191,5 +191,9 @@ public class Intake extends SubsystemBase {
 
   public double getTotalCurrent() {
     return inputs.subsystemCurrent;
+  }
+
+  public boolean armOut () {
+    return Math.abs(inputs.armAngle - inputs.armSetAngle) < 0.25;
   }
 }

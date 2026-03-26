@@ -126,7 +126,7 @@ public class TurretIOSpark implements TurretIO{
         inputs.hoodCurrent = hood.getOutputCurrent();
         inputs.turretAngle = turret.getExternalEncoder().getPosition();
         inputs.turretSetAngle = turretSetAngle;
-        inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > Math.PI/6;
+        inputs.resetting = Math.abs(inputs.turretAngle - inputs.turretSetAngle) > 0.1;
         inputs.intakeSafe = Math.abs(TurretConstants.turretIDLEPosition - inputs.turretAngle) < TurretConstants.turretTolerance;
         inputs.turretCurrent = turret.getOutputCurrent();
         inputs.turretOffset = Rotation2d.fromRadians(turretOffset);
@@ -141,7 +141,11 @@ public class TurretIOSpark implements TurretIO{
     @Override
     public void setFlyWheelSpeed(double speed) {
         flywheelSetSpeed = speed;
-        flywheelController.setSetpoint(flywheelSetSpeed, ControlType.kVelocity);
+        if (flywheelSetSpeed != 0) {
+            flywheelController.setSetpoint(flywheelSetSpeed, ControlType.kVelocity);
+        } else {
+            flywheel.set(0);
+        }
     }
 
     @Override

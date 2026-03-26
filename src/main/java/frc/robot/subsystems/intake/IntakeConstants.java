@@ -12,18 +12,18 @@ public class IntakeConstants{
   public static final double armkS = 2.0;
 
   public static final double intakeP = 1.0e-3;
-  public static final double intakeD = 0.0;
+  public static final double intakeD = 1.0e-4;
   public static final double intakekV = 1.811e-3;
 
-  public static final double horizontal1P = 1.0e-3;
+  public static final double horizontal1P = 0.0;
   public static final double horizontal1D = 0.0;
-  public static final double horizontal1kV = 1.811e-3;
+  public static final double horizontal1kV = 1.167;
 
-  public static final double horizontal2P = 1.0e-3;
+  public static final double horizontal2P = 0.0;
   public static final double horizontal2D = 0.0;
-  public static final double horizontal2kV = 1.811e-3;
+  public static final double horizontal2kV = 1.167;
 
-  public static final double feederP = 1.0e-3;
+  public static final double feederP = 1.0e-5;
   public static final double feederD = 0.0;
   public static final double feederkV = 1.811e-3;
 
@@ -36,9 +36,9 @@ public class IntakeConstants{
   public static final double armRestingPosition = 0.05;
 
   public static final double intakeIntakingSpeed = 5000;
-  public static final double feederSpeed = 5000;
-  public static final double horizontal1Speed = 8000;
-  public static final double horizontal2Speed = 8000;
+  public static final double feederSpeed = 4500;
+  public static final double horizontal1Speed = 9000;
+  public static final double horizontal2Speed = 9000;
 
   public static final double armMaxOutput = 0.25;
 

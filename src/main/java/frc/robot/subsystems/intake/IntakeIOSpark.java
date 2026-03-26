@@ -177,6 +177,12 @@ public class IntakeIOSpark implements IntakeIO {
    }
 
    @Override
+   public void stopIntake() {
+       intakeSetSpeed = 0;
+       intake.set(0);
+   }
+
+   @Override
    public void setFeederSpeed(double speed) {
       feederSetSpeed = speed;
       feederController.setSetpoint(feederSetSpeed, ControlType.kVelocity);

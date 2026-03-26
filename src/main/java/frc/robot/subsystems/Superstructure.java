@@ -161,15 +161,21 @@ public class Superstructure extends SubsystemBase {
         intake.setWantedState(Intake.WantedState.PAUSED);
         break;
       case SHOOTING:
-        turret.setWantedState(Turret.WantedState.SHOOTING);
+        if (intake.armOut()) {
+          turret.setWantedState(Turret.WantedState.SHOOTING);
+        }
         intake.setWantedState(Intake.WantedState.INTAKING);
         break;
       case EJECTING:
-        turret.setWantedState(Turret.WantedState.SHOOTING);
+        if (intake.armOut()) {
+          turret.setWantedState(Turret.WantedState.SHOOTING);
+        }
         intake.setWantedState(Intake.WantedState.REVERSING);
         break;
       case TESTING:
-        turret.setWantedState(Turret.WantedState.TESTING);
+        if (intake.armOut()) {
+          turret.setWantedState(Turret.WantedState.TESTING);
+        }
         intake.setWantedState(Intake.WantedState.TESTING);
         break;
       default:
