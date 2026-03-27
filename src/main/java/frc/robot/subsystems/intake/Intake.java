@@ -81,7 +81,7 @@ public class Intake extends SubsystemBase {
         if (jamCount >= IntakeConstants.jamMinCount) {
           jammed = true;
         }
-        if (jammed) {
+        if (jammed && armOut()) {
           unjamCount++;
           if (unjamCount >= IntakeConstants.unjamMinCount) {
             jammed = false;
