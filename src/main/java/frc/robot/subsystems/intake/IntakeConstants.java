@@ -28,12 +28,12 @@ public class IntakeConstants{
   public static final double feederkV = 1.811e-3;
 
   public static final double armMinPosition = 0.0305;
-  public static final double armMaxPosition = 0.698;
+  public static final double armMaxPosition = 0.78;
 
-  public static final double armZeroOffset = 0.3353;
+  public static final double armZeroOffset = 0.25;
 
-  public static final double intakePosition = 0.698;
-  public static final double armRestingPosition = 0.05;
+  public static final double intakePosition = 0.77;
+  public static final double armRestingPosition = 0.15;
 
   public static final double intakeIntakingSpeed = 5000;
   public static final double feederSpeed = 4500;

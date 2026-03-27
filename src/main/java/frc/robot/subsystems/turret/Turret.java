@@ -126,21 +126,21 @@ public class Turret extends SubsystemBase {
     // shooterShootingMap.put(5.39, new ShooterSetpoint(2400, 0.35));
     // shooterShootingMap.put(5.87, new ShooterSetpoint(2500, 0.35));
 
-    shooterShootingMap.put(1.03, new ShooterSetpoint(1850, 0.588));
-    shooterShootingMap.put(1.77, new ShooterSetpoint(1950, 0.588));
-    shooterShootingMap.put(2.0, new ShooterSetpoint(2000, 0.588));
-    shooterShootingMap.put(2.38, new ShooterSetpoint(2050, 0.55));
-    shooterShootingMap.put(2.86, new ShooterSetpoint(2100, 0.525));
-    shooterShootingMap.put(3.84, new ShooterSetpoint(2300, 0.475));
-    shooterShootingMap.put(4.06, new ShooterSetpoint(2400, 0.45));
-    shooterShootingMap.put(4.66, new ShooterSetpoint(2500, 0.425));
-    shooterShootingMap.put(5.56, new ShooterSetpoint(2600, 0.4));
-    shooterShootingMap.put(6.45, new ShooterSetpoint(2700, 0.35));
+    shooterShootingMap.put(1.03, new ShooterSetpoint(1850, 0.588 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(1.77, new ShooterSetpoint(1950, 0.588 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(2.0, new ShooterSetpoint(2000, 0.588 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(2.38, new ShooterSetpoint(2050, 0.55 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(2.86, new ShooterSetpoint(2100, 0.525 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(3.84, new ShooterSetpoint(2300, 0.475 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(4.06, new ShooterSetpoint(2400, 0.45 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(4.66, new ShooterSetpoint(2500, 0.425 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(5.56, new ShooterSetpoint(2600, 0.4 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(6.45, new ShooterSetpoint(2700, 0.35 + TurretConstants.hoodOffset));
 
     //need to entrys for the passing/fullfield
-    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(2000, 0.25));
-    shooterPassingMap.put(VisionConstants.kTagLayout.getFieldLength()/2, new ShooterSetpoint(2600, 0.25));
-    shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), new ShooterSetpoint(3250, 0.25));
+    shooterPassingMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(2000, 0.25 + TurretConstants.hoodOffset));
+    shooterPassingMap.put(VisionConstants.kTagLayout.getFieldLength()/2, new ShooterSetpoint(2600, 0.25 + TurretConstants.hoodOffset));
+    shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), new ShooterSetpoint(3250, 0.25 + TurretConstants.hoodOffset));
 
     //distance,
     timeOfFlightMap.put(1.93, 1.22);
