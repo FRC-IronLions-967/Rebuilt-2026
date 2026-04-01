@@ -249,6 +249,12 @@ public class Drive extends SubsystemBase {
     return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
   }
 
+  public void setCurrentLimit(int limit) {
+    for (int i = 0; i < 4; i++) {
+      modules[i].setCurrentLimit(limit);
+    }
+  }
+
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {

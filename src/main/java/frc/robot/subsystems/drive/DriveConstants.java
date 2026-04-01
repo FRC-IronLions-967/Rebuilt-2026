@@ -58,6 +58,7 @@ public class DriveConstants {
 
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 30;
+  public static final int autoDriveMotorCurrentLimit = 80;
   public static final double wheelRadiusMeters = Units.inchesToMeters(2);
   public static final double driveMotorReduction = 5.9;
   public static final DCMotor driveGearbox = DCMotor.getNEO(1);

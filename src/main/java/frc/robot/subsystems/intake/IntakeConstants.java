@@ -30,7 +30,7 @@ public class IntakeConstants{
   public static final double armMinPosition = 0.0305;
   public static final double armMaxPosition = 0.78;
 
-  public static final double armZeroOffset = 0.25;
+  public static final double armZeroOffset = 0.31;
 
   public static final double intakePosition = 0.77;
   public static final double armRestingPosition = 0.15;

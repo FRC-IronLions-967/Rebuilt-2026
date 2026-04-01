@@ -35,6 +35,8 @@ public class ModuleIOSim implements ModuleIO {
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
 
+  private int driveCurrentLimit;
+
   public ModuleIOSim() {
     // Create drive and turn sim models
     driveSim =
@@ -89,6 +91,13 @@ public class ModuleIOSim implements ModuleIO {
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
     inputs.odometryDrivePositionsRad = new double[] {inputs.drivePositionRad};
     inputs.odometryTurnPositions = new Rotation2d[] {inputs.turnPosition};
+
+    inputs.driveCurrentLimit = driveCurrentLimit;
+  }
+
+  @Override
+  public void setCurrentLimit(int limit) {
+      driveCurrentLimit = limit;
   }
 
   @Override

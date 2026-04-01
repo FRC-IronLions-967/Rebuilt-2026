@@ -131,6 +131,7 @@ public class Turret extends SubsystemBase {
     shooterShootingMap.put(2.0, new ShooterSetpoint(2000, 0.588 + TurretConstants.hoodOffset));
     shooterShootingMap.put(2.38, new ShooterSetpoint(2050, 0.55 + TurretConstants.hoodOffset));
     shooterShootingMap.put(2.86, new ShooterSetpoint(2100, 0.525 + TurretConstants.hoodOffset));
+    shooterShootingMap.put(3.377, new ShooterSetpoint(2250, 0.5 + TurretConstants.hoodOffset));
     shooterShootingMap.put(3.84, new ShooterSetpoint(2300, 0.475 + TurretConstants.hoodOffset));
     shooterShootingMap.put(4.06, new ShooterSetpoint(2400, 0.45 + TurretConstants.hoodOffset));
     shooterShootingMap.put(4.66, new ShooterSetpoint(2500, 0.425 + TurretConstants.hoodOffset));
@@ -141,6 +142,7 @@ public class Turret extends SubsystemBase {
     shooterPassingMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(2000, 0.25 + TurretConstants.hoodOffset));
     shooterPassingMap.put(VisionConstants.kTagLayout.getFieldLength()/2, new ShooterSetpoint(2600, 0.25 + TurretConstants.hoodOffset));
     shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), new ShooterSetpoint(3250, 0.25 + TurretConstants.hoodOffset));
+    shooterPassingMap.put(TurretConstants.fieldEnd(), new ShooterSetpoint(5000, 0.25 + TurretConstants.hoodOffset));
 
     //distance,
     timeOfFlightMap.put(1.93, 1.22);
@@ -233,7 +235,7 @@ public class Turret extends SubsystemBase {
       case TESTING:
         io.setFlyWheelSpeed(TurretConstants.testingFlywheelSpeed.get());
         io.setHoodAngle(TurretConstants.testingHoodAngle.get());
-        calculationToTarget(chooseTargetBasedOnY(pose.getTranslation(), TurretConstants.left(), TurretConstants.right(), TurretConstants.center()));
+        calculationToTarget(TurretConstants.hub());
         io.setTurretAngle(turretSetPoint);
         break;
       default:
@@ -385,6 +387,7 @@ public class Turret extends SubsystemBase {
     shooterPassingMap.put(TurretConstants.allianceZoneEnd(), new ShooterSetpoint(2000, 0.25));
     shooterPassingMap.put(VisionConstants.kTagLayout.getFieldLength()/2, new ShooterSetpoint(2600, 0.25));
     shooterPassingMap.put(TurretConstants.oppositeAllianceEnd(), new ShooterSetpoint(3250, 0.25));
+    shooterPassingMap.put(TurretConstants.fieldEnd(), new ShooterSetpoint(5000, 0.25 + TurretConstants.hoodOffset));
   }
 
   public double getTotalCurrent() {

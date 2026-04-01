@@ -1,0 +1,81 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "reverse"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "4646 Race"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.1
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SlowNZ 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Slow NZ 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Slow Reset"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score 2"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -34,6 +34,8 @@ public interface ModuleIO {
     public double[] odometryTimestamps = new double[] {};
     public double[] odometryDrivePositionsRad = new double[] {};
     public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
+
+    public int driveCurrentLimit;
   }
 
   /** Updates the set of loggable inputs. */
@@ -50,4 +52,6 @@ public interface ModuleIO {
 
   /** Run the turn motor to the specified rotation. */
   public default void setTurnPosition(Rotation2d rotation) {}
+
+  public default void setCurrentLimit(int limit) {}
 }

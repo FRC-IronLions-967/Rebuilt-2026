@@ -210,4 +210,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+
+  public void setCurrentLimit(int limit) {
+    drive.setCurrentLimit(limit);
+  }
 }
