@@ -103,21 +103,12 @@ public class AprilTagVision extends SubsystemBase {
 
         if (rejectPose) continue;
 
-        if (cameraIndex == 0) {
-          acceptedPoses.add(new Pose3d(
-            obs.pose().getX() + VisionConstants.camera0OffsetX,
-            obs.pose().getY() + VisionConstants.camera0OffsetY,
-            obs.pose().getZ(),
-            obs.pose().getRotation()
-          ));
-        } else {
-          acceptedPoses.add(new Pose3d(
-            obs.pose().getX() + VisionConstants.camera1OffsetX,
-            obs.pose().getY() + VisionConstants.camera1OffsetY,
-            obs.pose().getZ(),
-            obs.pose().getRotation()
-          ));
-        }
+        acceptedPoses.add(new Pose3d(
+          obs.pose().getX() + VisionConstants.camera0OffsetX,
+          obs.pose().getY() + VisionConstants.camera0OffsetY,
+          obs.pose().getZ(),
+          obs.pose().getRotation()
+        ));
         acceptedTimestamps.add(obs.timestamp());
         /*
          * If you have/are taken AP Stat this can make sense. 

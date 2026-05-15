@@ -104,7 +104,7 @@ public class TurretConstants {
     public static final ShooterSetpoint endFullField = new ShooterSetpoint(4000, 0.25 + hoodOffset);
 
     public static final LoggedNetworkNumber testingFlywheelSpeed = new LoggedNetworkNumber("Testing Flywheel Speed", 2000);
-    public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Hood Speed", 0.589 + hoodOffset);
+    public static final LoggedNetworkNumber testingHoodAngle = new LoggedNetworkNumber("Testing Hood Speed", 0.6);
 
     /*
      * This is how we will tune this number
